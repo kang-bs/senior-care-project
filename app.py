@@ -12,7 +12,7 @@ with app.app_context():
 
 @app.route('/')
 def index():
-    return 'Flask + PostgreSQL 연결 완료!'
+    return 'Flask + MySQL 연결 완료!'
 
 if __name__ == '__main__':
     app.run(debug=True)
