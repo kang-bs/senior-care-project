@@ -13,12 +13,16 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://root:comep1522w@localhost/senior_house")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://root:Ckdhfma1406!@localhost/senior_house")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Google OAuth 환경 변수 키 이름
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+
+    # Kakao OAuth 환경 변수 키 이름
+    KAKAO_CLIENT_ID = os.getenv("KAKAO_CLIENT_ID")
+    KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET")
 
     # 세션 저장 방식
     SESSION_TYPE = os.getenv("SESSION_TYPE", "filesystem")

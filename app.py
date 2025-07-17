@@ -5,6 +5,7 @@ from flask_login import LoginManager
 from flask_session import Session
 from routes.auth import auth_bp
 from routes.google_oauth import google_bp
+from routes.kakao_oauth import kakao_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -23,6 +24,7 @@ def load_user(user_id):
 # 블루프린트 등록
 app.register_blueprint(auth_bp)
 app.register_blueprint(google_bp, url_prefix="/login")
+app.register_blueprint(kakao_bp, url_prefix="/login")
 
 # 초기 DB 설정
 with app.app_context():

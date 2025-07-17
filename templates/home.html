@@ -1,52 +1,72 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>Google 로그인</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>소셜 로그인</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f6fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f6fa;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
 
-        .login-container {
-            text-align: center;
-            background-color: #fff;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+      .login-container {
+        text-align: center;
+        background-color: #fff;
+        padding: 40px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
 
-        .login-container h2 {
-            margin-bottom: 30px;
-            color: #333;
-        }
+      .login-container h2 {
+        margin-bottom: 30px;
+        color: #333;
+      }
 
-        .google-btn {
-            display: inline-block;
-            background-color: #4285f4;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
+      .login-btn {
+        display: inline-block;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+        margin: 10px;
+        min-width: 200px;
+      }
 
-        .google-btn:hover {
-            background-color: #357ae8;
-        }
+      .google-btn {
+        background-color: #4285f4;
+      }
+
+      .google-btn:hover {
+        background-color: #357ae8;
+      }
+
+      .kakao-btn {
+        background-color: #fee500;
+        color: #000;
+      }
+
+      .kakao-btn:hover {
+        background-color: #fdd835;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="login-container">
-        <h2>Google로 로그인</h2>
-        <a class="google-btn" href="{{ url_for('google.login') }}">Google 계정으로 계속하기</a>
+      <h2>소셜 로그인</h2>
+      <a class="login-btn google-btn" href="{{ url_for('google.login') }}"
+        >Google 계정으로 계속하기</a
+      >
+      <br />
+      <a class="login-btn kakao-btn" href="{{ url_for('kakao.login') }}"
+        >카카오 계정으로 계속하기</a
+      >
     </div>
-</body>
+  </body>
 </html>
