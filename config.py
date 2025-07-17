@@ -13,12 +13,17 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
     # SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://root:comep1522w@localhost/senior_house")
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://root:bguy5732!?@localhost/senior_house")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Google OAuth 환경 변수 키 이름
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+
+    NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID")
+    NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
+    NAVER_REDIRECT_URI = os.getenv("NAVER_REDIRECT_URI")
+
 
     # 세션 저장 방식
     SESSION_TYPE = os.getenv("SESSION_TYPE", "filesystem")

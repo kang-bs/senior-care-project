@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>프로필</title>
     <style>
         body {
@@ -35,6 +35,12 @@
             font-size: 15px;
         }
 
+        .profile-image {
+            width: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
         .logout-btn {
             display: inline-block;
             margin-top: 24px;
@@ -54,9 +60,27 @@
 </head>
 <body>
     <div class="profile-box">
-        <h1>{{ user.nickname }}님 환영합니다!</h1>
-        <p>소셜 로그인 방식: {{ user.social_type }}</p>
-        <p>가입 ID: {{ user.social_id }}</p>
+        {% if user.profile_image %}
+            <img src="{{ user.profile_image }}" alt="프로필 이미지" class="profile-image" />
+        {% endif %}
+        <h1>{{ user.nickname or user.name }}님 환영합니다!</h1>
+        <p><strong>소셜 로그인 방식:</strong> {{ user.social_type }}</p>
+        <p><strong>가입 ID:</strong> {{ user.social_id }}</p>
+        {% if user.name %}
+            <p><strong>이름:</strong> {{ user.name }}</p>
+        {% endif %}
+        {% if user.email %}
+            <p><strong>이메일:</strong> {{ user.email }}</p>
+        {% endif %}
+        {% if user.gender %}
+            <p><strong>성별:</strong> {{ user.gender }}</p>
+        {% endif %}
+        {% if user.birth_date %}
+            <p><strong>생년월일:</strong> {{ user.birth_date }}</p>
+        {% endif %}
+        {% if user.mobile %}
+            <p><strong>전화번호:</strong> {{ user.mobile }}</p>
+        {% endif %}
         <a class="logout-btn" href="{{ url_for('auth.logout') }}">로그아웃</a>
     </div>
 </body>
