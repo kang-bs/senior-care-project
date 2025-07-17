@@ -52,6 +52,15 @@
         .naver-btn:hover {
             background-color: #17a800;
         }
+
+        .kakao-btn {
+            background-color: #fee500;
+            color: #000;
+        }
+
+        .kakao-btn:hover {
+            background-color: #fdd835;
+        }
     </style>
 </head>
 <body>
@@ -63,8 +72,8 @@
         <a class="social-btn naver-btn" href="{{ url_for('naver.naver_login') }}">
             Naver 계정으로 계속하기
         </a>
-        <a class="login-btn kakao-btn" href="{{ url_for('kakao.login') }}">
-            카카오 계정으로 계속하기
+        <a class="social-btn kakao-btn" href="{{ url_for('kakao.login') }}">
+            Kakao 계정으로 계속하기
         </a>
     </div>
 </body>
