@@ -27,3 +27,4 @@ __pycache__/
 # 기타
 *.swp
 
+flask_session/

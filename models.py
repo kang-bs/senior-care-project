@@ -33,5 +33,17 @@ class User(db.Model):
         db.UniqueConstraint('social_type', 'social_id', name='uq_social_login'),
     )
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
     def __repr__(self):
         return f"<User id={self.id} type={self.user_type} username={self.username}>"

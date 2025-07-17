@@ -1,18 +1,32 @@
 from flask import Flask
 from config import Config
-from models import db
+from models import db, User
+from flask_login import LoginManager
+from flask_session import Session
+from routes.auth import auth_bp
+from routes.google_oauth import google_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+Session(app)
 db.init_app(app)
 
-# 최초 실행 시 테이블 생성 models.py 기반 지우지 말 것!
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "auth.home"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# 블루프린트 등록
+app.register_blueprint(auth_bp)
+app.register_blueprint(google_bp, url_prefix="/login")
+
+# 초기 DB 설정
 with app.app_context():
     db.create_all()
 
-@app.route('/')
-def index():
-    return 'Flask + MySQL 연결 완료!'
-
 if __name__ == '__main__':
-    app.run(port= 5002, debug=True)
+    app.run(port=5002, debug=True)
