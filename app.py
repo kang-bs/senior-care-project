@@ -15,4 +15,4 @@ def index():
     return 'Flask + MySQL 연결 완료!'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port= 5002, debug=True)
