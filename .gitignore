@@ -1,0 +1,29 @@
+# 가상환경
+.venv/
+venv/
+
+# Python 컴파일 파일
+__pycache__/
+*.py[cod]
+*.pyo
+
+# 환경 변수 파일 (있는 경우)
+.env
+
+# IDE 관련 설정
+.idea/
+.vscode/
+
+# Mac 시스템 파일
+.DS_Store
+
+# 데이터베이스나 임시 파일
+*.db
+*.sqlite3
+
+# 로그파일
+*.log
+
+# 기타
+*.swp
+
