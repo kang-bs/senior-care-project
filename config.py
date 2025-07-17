@@ -24,6 +24,9 @@ class Config:
     NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
     NAVER_REDIRECT_URI = os.getenv("NAVER_REDIRECT_URI")
 
+    # Kakao OAuth 환경 변수 키 이름
+    KAKAO_CLIENT_ID = os.getenv("KAKAO_CLIENT_ID")
+    KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET")
 
     # 세션 저장 방식
     SESSION_TYPE = os.getenv("SESSION_TYPE", "filesystem")
