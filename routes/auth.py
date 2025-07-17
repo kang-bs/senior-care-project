@@ -1,9 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, request, session
+from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, login_user, logout_user, current_user
 from flask_dance.contrib.google import google
 from models import db, User
-import requests
-from config import Config
 
 # 인증 관련 라우트를 담당하는 블루프린트 생성
 auth_bp = Blueprint("auth", __name__)
@@ -52,69 +50,6 @@ def google_login_callback():
 @login_required
 def profile():
     return render_template("profile.html", user=current_user)
-
-# 카카오 OAuth 로그인 후 콜백 처리
-@auth_bp.route("/kakao_login_callback")
-def kakao_login_callback():
-    # state 파라미터 검증 (CSRF 방지) - 임시로 완화
-    state = request.args.get('state')
-    session_state = session.get('oauth_state')
-    print(f"Received state: {state}")
-    print(f"Session state: {session_state}")
-    
-    # 임시로 state 검증을 건너뛰고 진행
-    # if not state or state != session.get('oauth_state'):
-    #     return "Invalid state parameter", 400
-    
-    # 인증 코드 확인
-    code = request.args.get('code')
-    if not code:
-        return "Authorization code not found", 400
-    
-    # 액세스 토큰 요청
-    token_data = {
-        'grant_type': 'authorization_code',
-        'client_id': Config.KAKAO_CLIENT_ID,
-        'client_secret': Config.KAKAO_CLIENT_SECRET,
-        'redirect_uri': 'http://localhost:5002/kakao_login_callback',
-        'code': code
-    }
-    
-    token_response = requests.post('https://kauth.kakao.com/oauth/token', data=token_data)
-    if not token_response.ok:
-        return "Failed to get access token", 400
-    
-    token_info = token_response.json()
-    access_token = token_info.get('access_token')
-    
-    # 사용자 정보 요청
-    headers = {'Authorization': f'Bearer {access_token}'}
-    user_response = requests.get('https://kapi.kakao.com/v2/user/me', headers=headers)
-    if not user_response.ok:
-        return "Failed to get user info", 400
-    
-    user_info = user_response.json()
-    social_id = str(user_info['id'])
-    nickname = user_info.get('properties', {}).get('nickname', 'Unknown')
-    
-    # 기존 사용자인지 확인하고 없으면 새로 등록
-    user = User.query.filter_by(social_type="kakao", social_id=social_id).first()
-    if not user:
-        user = User(
-            name=nickname,
-            nickname=nickname,
-            social_type="kakao",
-            social_id=social_id
-        )
-        db.session.add(user)
-        db.session.commit()
-    
-    # 세션에서 state 제거
-    session.pop('oauth_state', None)
-    
-    # 로그인 처리 후 프로필 페이지로 이동
-    login_user(user)
-    return redirect(url_for("auth.profile"))
 
 # 로그아웃 처리
 @auth_bp.route("/logout")

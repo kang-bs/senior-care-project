@@ -1,38 +1,32 @@
 <!DOCTYPE html>
 <html lang="ko">
-<<<<<<< HEAD
 <head>
     <meta charset="UTF-8">
-=======
-  <head>
-    <meta charset="UTF-8" />
->>>>>>> kakao-login
     <title>소셜 로그인</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        background-color: #f5f6fa;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-      .login-container {
-        text-align: center;
-        background-color: #fff;
-        padding: 40px 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
+        .login-container {
+            text-align: center;
+            background-color: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-      .login-container h2 {
-        margin-bottom: 30px;
-        color: #333;
-      }
+        .login-container h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
 
-<<<<<<< HEAD
         .social-btn {
             display: block;
             width: 250px;
@@ -58,41 +52,10 @@
         .naver-btn:hover {
             background-color: #17a800;
         }
-=======
-      .login-btn {
-        display: inline-block;
-        color: white;
-        padding: 12px 24px;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-        transition: background-color 0.3s;
-        margin: 10px;
-        min-width: 200px;
-      }
-
-      .google-btn {
-        background-color: #4285f4;
-      }
-
-      .google-btn:hover {
-        background-color: #357ae8;
-      }
-
-      .kakao-btn {
-        background-color: #fee500;
-        color: #000;
-      }
-
-      .kakao-btn:hover {
-        background-color: #fdd835;
-      }
->>>>>>> kakao-login
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <div class="login-container">
-<<<<<<< HEAD
         <h2>소셜 계정으로 로그인</h2>
         <a class="social-btn google-btn" href="{{ url_for('google.login') }}">
             Google 계정으로 계속하기
@@ -100,16 +63,6 @@
         <a class="social-btn naver-btn" href="{{ url_for('naver.naver_login') }}">
             Naver 계정으로 계속하기
         </a>
-=======
-      <h2>소셜 로그인</h2>
-      <a class="login-btn google-btn" href="{{ url_for('google.login') }}"
-        >Google 계정으로 계속하기</a
-      >
-      <br />
-      <a class="login-btn kakao-btn" href="{{ url_for('kakao.login') }}"
-        >카카오 계정으로 계속하기</a
-      >
->>>>>>> kakao-login
     </div>
-  </body>
+</body>
 </html>
