@@ -8,6 +8,7 @@ from routes.google_oauth import google_bp
 from routes.naver_oauth import naver_bp
 from routes.kakao_oauth import kakao_bp
 from routes.areas import areas_bp
+from routes.community import community_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -28,6 +29,8 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(google_bp, url_prefix="/login")
 app.register_blueprint(naver_bp)
 app.register_blueprint(kakao_bp, url_prefix="/login")
+app.register_blueprint(community_bp)
+
 
 app.register_blueprint(areas_bp)
 
