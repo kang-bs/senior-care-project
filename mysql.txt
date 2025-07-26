@@ -6,6 +6,10 @@ CREATE TABLE `user` (
     gender VARCHAR(10),
     birth_date DATE,
 
+    sido varchar(30),
+    sigungu varchar(30),
+    dong varchar(40),
+
     username VARCHAR(50) UNIQUE,
     password VARCHAR(255),
 

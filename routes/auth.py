@@ -130,6 +130,9 @@ def register():
         name = request.form.get("name")
         gender = request.form.get("gender")
         birth_date = request.form.get("birth_date")
+        sido = request.form.get("sido")
+        sigungu = request.form.get("sigungu")
+        dong = request.form.get("dong")
 
         if password != confirm_password:
             flash("비밀번호가 일치하지 않습니다.")
@@ -150,7 +153,10 @@ def register():
             birth_date=birth_date if birth_date else None,
             user_type=0,
             social_type=None,
-            social_id=None
+            social_id=None,
+            sido=sido,
+            sigungu=sigungu,
+            dong=dong
         )
         db.session.add(user)
         db.session.commit()
