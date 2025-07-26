@@ -13,6 +13,9 @@ class User(db.Model):
     nickname = db.Column(db.String(50), nullable=False)
     gender = db.Column(db.String(10), nullable=True)         # 'male', 'female' 등
     birth_date = db.Column(db.Date, nullable=True)
+    sido = db.Column(db.String(30))
+    sigungu = db.Column(db.String(30))
+    dong = db.Column(db.String(40))
 
     # 일반 로그인용
     username = db.Column(db.String(50), unique=True, nullable=True)
