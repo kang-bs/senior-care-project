@@ -47,3 +47,30 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User id={self.id} type={self.user_type} username={self.username}>"
+
+class JobPost(db.Model):
+    __tablename__ = 'job_post'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+    # 공고 정보
+    title = db.Column(db.String(200), nullable=False)
+    company = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+
+    # 시니어 특화 필드
+    preferred_age_min = db.Column(db.Integer, nullable=True)
+    preferred_age_max = db.Column(db.Integer, nullable=True)
+    region = db.Column(db.String(100), nullable=True)
+    is_senior_friendly = db.Column(db.Boolean, default=False)
+    work_hours = db.Column(db.String(50), nullable=True)         # 예: "오전 9~12시"
+    contact_phone = db.Column(db.String(20), nullable=True)
+
+    # 작성자 및 생성일
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    author = db.relationship('User', backref=db.backref('job_posts', lazy=True))
+
+    def __repr__(self):
+        return f"<JobPost id={self.id} title={self.title} company={self.company}>"
