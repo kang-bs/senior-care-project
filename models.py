@@ -106,3 +106,23 @@ class JobPost(db.Model):
 
     def __repr__(self):
         return f"<JobPost id={self.id} title={self.title} company={self.company}>"
+
+class JobBookmark(db.Model):
+    __tablename__ = 'job_bookmark'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_post.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # 관계 설정
+    user = db.relationship('User', backref=db.backref('bookmarks', lazy=True))
+    job = db.relationship('JobPost', backref=db.backref('bookmarks', lazy=True))
+    
+    # 유니크 제약: 한 사용자가 같은 공고를 중복으로 찜할 수 없음
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'job_id', name='uq_user_job_bookmark'),
+    )
+    
+    def __repr__(self):
+        return f"<JobBookmark user_id={self.user_id} job_id={self.job_id}>"

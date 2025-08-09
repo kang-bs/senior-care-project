@@ -9,9 +9,11 @@ import bcrypt
 # 인증 관련 라우트를 담당하는 블루프린트 생성
 auth_bp = Blueprint("auth", __name__)
 
-# 홈 화면 렌더링
+# 홈 화면 렌더링 (로그인 전)
 @auth_bp.route("/")
 def home():
+    if current_user.is_authenticated:
+        return redirect(url_for("auth.main"))
     return render_template("home.html")
 
 # Google OAuth 로그인 후 콜백 처리
@@ -44,9 +46,9 @@ def google_login_callback():
         db.session.add(user)
         db.session.commit()
 
-    # 로그인 처리 후 프로필 페이지로 이동
+    # 로그인 처리 후 메인 페이지로 이동
     login_user(user)
-    return redirect(url_for("auth.profile"))
+    return redirect(url_for("auth.main"))
 
 # 카카오 OAuth 로그인 후 콜백 처리
 @auth_bp.route("/kakao_login_callback")
@@ -107,9 +109,15 @@ def kakao_login_callback():
     # 세션에서 state 제거
     session.pop('oauth_state', None)
 
-    # 로그인 처리 후 프로필 페이지로 이동
+    # 로그인 처리 후 메인 페이지로 이동
     login_user(user)
-    return redirect(url_for("auth.profile"))
+    return redirect(url_for("auth.main"))
+
+# 로그인 후 메인 홈화면
+@auth_bp.route("/main")
+@login_required
+def main():
+    return render_template("main.html", user=current_user)
 
 # 로그인한 사용자의 프로필 페이지
 @auth_bp.route("/profile")
@@ -179,7 +187,7 @@ def login():
             return redirect(url_for("auth.login"))
 
         login_user(user)
-        return redirect(url_for("auth.profile"))
+        return redirect(url_for("auth.main"))
 
     return render_template("login.html")
 
