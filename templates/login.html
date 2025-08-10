@@ -79,6 +79,16 @@
 <body>
     <div class="login-container">
         <h2>일반 로그인</h2>
+
+         <!-- warning 카테고리 메시지 alert로 1회 출력 -->
+        {% with messages = get_flashed_messages(category_filter=["warning"]) %}
+          {% if messages %}
+            {% for message in messages %}
+              <script>alert("{{ message }}");</script>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <form method="POST" action="{{ url_for('auth.login') }}">
             <input type="text" name="username" placeholder="아이디" required>
             <input type="password" name="password" placeholder="비밀번호" required>

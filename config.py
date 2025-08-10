@@ -30,3 +30,6 @@ class Config:
 
     # 세션 저장 방식
     SESSION_TYPE = os.getenv("SESSION_TYPE", "filesystem")
+
+    UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads")
+    ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}

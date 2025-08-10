@@ -23,7 +23,11 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=True)       # 비밀번호 (해시로 저장)
 
     # 사용자 유형: 0 - 일반, 1 - 기업, 2 - 관리자
-    user_type = db.Column(db.Integer, default=0)              # 사용자 유형
+    user_type = db.Column(db.Integer, default=0)
+
+    is_verified = db.Column(db.Boolean, default=False)  # 관리자 승인 여부 (False=대기, True=승인)
+    business_registration_file = db.Column(db.String(255), nullable=True)  # 사업자 등록증 파일 경로
+    business_registration_original = db.Column(db.String(255))  # 사용자 원본 파일명
 
     # 소셜 로그인 정보
     social_type = db.Column(db.String(20), nullable=True)     # 소셜 로그인 타입 (google, kakao 등)
