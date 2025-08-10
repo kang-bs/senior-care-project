@@ -106,3 +106,91 @@ class JobPost(db.Model):
 
     def __repr__(self):
         return f"<JobPost id={self.id} title={self.title} company={self.company}>"
+
+class JobBookmark(db.Model):
+    __tablename__ = 'job_bookmark'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_post.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # 관계 설정
+    user = db.relationship('User', backref=db.backref('bookmarks', lazy=True))
+    job = db.relationship('JobPost', backref=db.backref('bookmarks', lazy=True))
+    
+    # 유니크 제약: 한 사용자가 같은 공고를 중복으로 찜할 수 없음
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'job_id', name='uq_user_job_bookmark'),
+    )
+    
+    def __repr__(self):
+        return f"<JobBookmark user_id={self.user_id} job_id={self.job_id}>"
+
+class JobApplication(db.Model):
+    """공고 지원 모델"""
+    __tablename__ = 'job_application'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 지원자
+    job_id = db.Column(db.Integer, db.ForeignKey('job_post.id'), nullable=False)  # 지원한 공고
+    status = db.Column(db.String(20), default='pending')  # 지원 상태: pending, accepted, rejected
+    message = db.Column(db.Text, nullable=True)  # 지원 메시지
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 관계 설정
+    user = db.relationship('User', backref=db.backref('applications', lazy=True))
+    job = db.relationship('JobPost', backref=db.backref('applications', lazy=True))
+    
+    # 유니크 제약: 한 사용자가 같은 공고에 중복 지원 불가
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'job_id', name='uq_user_job_application'),
+    )
+    
+    def __repr__(self):
+        return f"<JobApplication user_id={self.user_id} job_id={self.job_id} status={self.status}>"
+
+class ChatRoom(db.Model):
+    """채팅방 모델"""
+    __tablename__ = 'chat_room'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job_post.id'), nullable=False)  # 관련 공고
+    applicant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 지원자
+    employer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 고용주
+    is_active = db.Column(db.Boolean, default=True)  # 채팅방 활성 상태
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # 관계 설정
+    job = db.relationship('JobPost', backref=db.backref('chat_rooms', lazy=True))
+    applicant = db.relationship('User', foreign_keys=[applicant_id], backref=db.backref('applicant_chats', lazy=True))
+    employer = db.relationship('User', foreign_keys=[employer_id], backref=db.backref('employer_chats', lazy=True))
+    
+    # 유니크 제약: 같은 공고에 대해 같은 지원자와 고용주 간 채팅방은 하나만
+    __table_args__ = (
+        db.UniqueConstraint('job_id', 'applicant_id', 'employer_id', name='uq_chat_room'),
+    )
+    
+    def __repr__(self):
+        return f"<ChatRoom id={self.id} job_id={self.job_id} applicant_id={self.applicant_id} employer_id={self.employer_id}>"
+
+class ChatMessage(db.Model):
+    """채팅 메시지 모델"""
+    __tablename__ = 'chat_message'
+    
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    room_id = db.Column(db.Integer, db.ForeignKey('chat_room.id'), nullable=False)  # 채팅방
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 발신자
+    message = db.Column(db.Text, nullable=False)  # 메시지 내용
+    message_type = db.Column(db.String(20), default='text')  # 메시지 타입: text, image, file
+    is_read = db.Column(db.Boolean, default=False)  # 읽음 여부
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # 관계 설정
+    room = db.relationship('ChatRoom', backref=db.backref('messages', lazy=True, order_by='ChatMessage.created_at'))
+    sender = db.relationship('User', backref=db.backref('sent_messages', lazy=True))
+    
+    def __repr__(self):
+        return f"<ChatMessage id={self.id} room_id={self.room_id} sender_id={self.sender_id}>"

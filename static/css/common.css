@@ -1,0 +1,180 @@
+/* 공통 스타일 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #f8f9fa;
+  padding-bottom: 80px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* 상단 헤더 */
+.header {
+  background: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #ffd700, #ffa500);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.header-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.icon-btn {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  color: #666;
+}
+
+/* 하단 네비게이션 */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  border-top: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+  z-index: 1000;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: #666;
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.3s;
+}
+
+.nav-item.active {
+  color: #3498db;
+}
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #2980b9;
+}
+
+.btn-secondary {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-secondary:hover {
+  background: #5a6268;
+}
+
+/* 섹션 제목 */
+.section-title {
+  padding: 20px 20px 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c3e50;
+  background: #f8f9fa;
+}
+
+/* 빈 상태 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.empty-state h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.empty-state p {
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* 태그 스타일 */
+.tag {
+  background: #f8f9fa;
+  color: #666;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+/* 카드 스타일 */
+.card {
+  background: white;
+  margin: 0 20px 15px;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}

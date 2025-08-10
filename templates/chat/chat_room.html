@@ -1,0 +1,108 @@
+{% extends "base.html" %} {% block title %}{{ other_user.nickname }}님과의 채팅
+- 사람이음{% endblock %} {% block extra_css %}
+<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/chat.css') }}"
+/>
+{% endblock %} {% block content %}
+<div class="chat-room-container">
+  <!-- 채팅방 헤더 -->
+  <div class="chat-room-header">
+    <div class="chat-room-info">
+      <button
+        onclick="goToChatList()"
+        style="
+          background: none;
+          border: none;
+          font-size: 18px;
+          cursor: pointer;
+          margin-right: 10px;
+        "
+      >
+        ←
+      </button>
+      <div>
+        <div class="chat-room-title">{{ other_user.nickname }}</div>
+        <div class="chat-room-subtitle">{{ job.title }}</div>
+      </div>
+    </div>
+    <div>
+      <button
+        onclick="leaveChatRoom({{ room.id }})"
+        style="
+          background: none;
+          border: none;
+          color: #e74c3c;
+          cursor: pointer;
+          font-size: 14px;
+        "
+      >
+        나가기
+      </button>
+    </div>
+  </div>
+
+  <!-- 메시지 목록 -->
+  <div class="chat-messages" id="chatMessages">
+    {% for message in messages %}
+    <div
+      class="message {% if message.sender_id == current_user.id %}own{% endif %} {% if message.message_type == 'system' %}system{% endif %}"
+      data-message-id="{{ message.id }}"
+    >
+      {% if message.message_type != 'system' %}
+      <div class="message-avatar">
+        {{ message.sender.nickname[0] if message.sender.nickname else '?' }}
+      </div>
+      {% endif %}
+
+      <div class="message-content">
+        <div class="message-bubble">{{ message.message }}</div>
+        <div class="message-time">
+          {{ message.created_at.strftime('%H:%M') }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- 메시지 입력 -->
+  <div class="chat-input-container">
+    <div class="chat-input-form">
+      <textarea
+        id="messageInput"
+        class="chat-input"
+        placeholder="메시지를 입력하세요..."
+        onkeypress="handleMessageKeyPress(event, {{ room.id }})"
+        rows="1"
+      ></textarea>
+      <button
+        id="sendBtn"
+        class="chat-send-btn"
+        onclick="sendMessage({{ room.id }})"
+      >
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 현재 사용자 ID를 JavaScript에서 사용할 수 있도록 설정 -->
+<script>
+  window.currentUserId = {{ current_user.id }};
+</script>
+{% endblock %} {% block extra_js %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script>
+  // 페이지 로드 시 실시간 메시지 폴링 시작
+  document.addEventListener('DOMContentLoaded', function() {
+      startMessagePolling({{ room.id }});
+  });
+
+  // 페이지 언로드 시 폴링 중지
+  window.addEventListener('beforeunload', function() {
+      stopMessagePolling();
+  });
+</script>
+{% endblock %}
