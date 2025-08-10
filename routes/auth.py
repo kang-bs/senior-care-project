@@ -7,7 +7,7 @@ from config import Config
 import bcrypt
 import os
 from flask import current_app, flash
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename #필요 없을지도모름 ?
 import uuid
 
 # 인증 관련 라우트를 담당하는 블루프린트 생성
@@ -210,7 +210,7 @@ def register_company():
 
         filename = None
         if file and file.filename != "" and allowed_file(file.filename):
-            original_filename = secure_filename(file.filename)  # 원본 파일명 확보
+            original_filename = file.filename  # 원본 파일명 확보
             ext = original_filename.rsplit('.', 1)[1].lower()  # 확장자 분리
 
             # 🔸 파일명 충돌 완전 방지: UUID.확장자 로 저장
