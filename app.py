@@ -9,6 +9,7 @@ from routes.naver_oauth import naver_bp
 from routes.kakao_oauth import kakao_bp
 from routes.areas import areas_bp
 from routes.jobs import jobs_bp
+from routes.chat import chat_bp
 from utils.helpers import format_date, format_datetime, format_salary, get_work_days, calculate_time_ago
 
 app = Flask(__name__)
@@ -39,6 +40,7 @@ app.register_blueprint(naver_bp)
 app.register_blueprint(kakao_bp, url_prefix="/login")
 app.register_blueprint(areas_bp)
 app.register_blueprint(jobs_bp)
+app.register_blueprint(chat_bp)
 
 # 초기 DB 설정
 with app.app_context():

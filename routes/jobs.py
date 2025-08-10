@@ -17,7 +17,9 @@
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required, current_user
+from models import db, JobPost
 from services.job_service import JobService
+from services.application_service import ApplicationService
 from utils.helpers import format_datetime, get_work_days
 from datetime import datetime, time
 
@@ -56,6 +58,7 @@ def job_list():
     region = request.args.get('region', '')  # 지역 필터
     recruitment_type = request.args.get('recruitment_type', '')  # 모집형태 필터
     work_period = request.args.get('work_period', '')  # 근무기간 필터
+    sort_by = request.args.get('sort', 'latest')  # 정렬 기준
     
     # 필터 조건을 딕셔너리로 구성
     filters = {}
@@ -68,12 +71,25 @@ def job_list():
     
     # 검색어나 필터가 있으면 검색 실행, 없으면 전체 목록 조회
     if query or filters:
-        jobs = JobService.search_jobs(query, filters)
+        jobs = JobService.search_jobs(query, filters, sort_by)
     else:
-        jobs_pagination = JobService.get_all_jobs(page=1, per_page=20)
+        jobs_pagination = JobService.get_all_jobs(page=1, per_page=20, sort_by=sort_by)
         jobs = jobs_pagination.items
     
-    return render_template("jobs/job_list.html", jobs=jobs, current_region=region)
+    # 각 공고의 지원 상태 확인
+    jobs_with_status = []
+    for job in jobs:
+        application_status = ApplicationService.check_application_status(current_user.id, job.id)
+        job_data = {
+            'job': job,
+            'application_status': application_status
+        }
+        jobs_with_status.append(job_data)
+    
+    return render_template("jobs/job_list.html", 
+                         jobs_with_status=jobs_with_status, 
+                         current_region=region,
+                         current_sort=sort_by)
 
 # 공고 작성 페이지
 @jobs_bp.route("/jobs/create", methods=["GET", "POST"])
@@ -170,7 +186,13 @@ def job_detail(job_id):
     # 현재 사용자가 이 공고를 찜했는지 확인
     is_bookmarked = JobService.is_bookmarked(current_user.id, job_id)
     
-    return render_template("jobs/job_detail.html", job=job, is_bookmarked=is_bookmarked)
+    # 현재 사용자의 지원 상태 확인
+    application_status = ApplicationService.check_application_status(current_user.id, job_id)
+    
+    return render_template("jobs/job_detail.html", 
+                         job=job, 
+                         is_bookmarked=is_bookmarked,
+                         application_status=application_status)
 
 # 공고 수정
 @jobs_bp.route("/jobs/<int:job_id>/edit", methods=["GET", "POST"])
@@ -329,7 +351,165 @@ def bookmark_list():
     - 찜 목록이 비어있을 경우 빈 상태 메시지 표시
     """
     
+    # 정렬 기준 추출
+    sort_by = request.args.get('sort', 'latest')
+    
     # JobService를 통해 현재 사용자의 찜 목록 조회
     jobs = JobService.get_user_bookmarks(current_user.id)
     
-    return render_template("jobs/bookmark_list.html", jobs=jobs)
+    # 정렬 적용
+    if sort_by == 'popular':
+        jobs.sort(key=lambda x: x.bookmark_count + x.application_count, reverse=True)
+    elif sort_by == 'views':
+        jobs.sort(key=lambda x: x.view_count, reverse=True)
+    else:  # latest
+        jobs.sort(key=lambda x: x.created_at, reverse=True)
+    
+    # 각 공고의 지원 상태 확인
+    jobs_with_status = []
+    for job in jobs:
+        application_status = ApplicationService.check_application_status(current_user.id, job.id)
+        job_data = {
+            'job': job,
+            'application_status': application_status
+        }
+        jobs_with_status.append(job_data)
+    
+    return render_template("jobs/bookmark_list.html", 
+                         jobs_with_status=jobs_with_status,
+                         current_sort=sort_by)
+
+@jobs_bp.route("/jobs/<int:job_id>/apply", methods=["POST"])
+@login_required
+def apply_job(job_id):
+    """
+    공고 지원하기
+    ============
+    
+    기능:
+    - 공고에 지원 신청
+    - 자동으로 채팅방 생성
+    - 지원 상태 관리
+    
+    URL: POST /jobs/<job_id>/apply
+    
+    매개변수:
+    - job_id: 지원할 공고의 ID
+    
+    요청 데이터 (선택):
+    - message: 지원 메시지
+    
+    반환값 (AJAX):
+    - success: 성공 여부
+    - message: 결과 메시지
+    - chat_room_id: 생성된 채팅방 ID (성공 시)
+    
+    반환값 (일반 요청):
+    - 성공 시: 공고 상세 페이지로 리다이렉트
+    - 실패 시: 에러 메시지와 함께 공고 상세 페이지로 리다이렉트
+    """
+    
+    try:
+        print(f"지원하기 시작: user_id={current_user.id}, job_id={job_id}")
+        
+        # 지원 메시지 추출 (선택사항)
+        message = None
+        if request.is_json:
+            try:
+                data = request.get_json()
+                message = data.get('message', '').strip() if data else None
+            except Exception as json_error:
+                print(f"JSON 파싱 오류: {json_error}")
+                message = None
+        else:
+            message = request.form.get('message', '').strip()
+        
+        print(f"지원 메시지: {message}")
+        
+        # 지원 처리
+        result = ApplicationService.apply_to_job(
+            user_id=current_user.id,
+            job_id=job_id,
+            message=message
+        )
+        
+        print(f"지원 결과: {result}")
+        
+        # AJAX 요청인 경우 JSON 응답
+        if request.is_json or request.headers.get('Content-Type') == 'application/json':
+            if result['success']:
+                return jsonify({
+                    'success': True,
+                    'message': result['message'],
+                    'chat_room_id': result.get('chat_room_id')
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': result['message']
+                }), 400
+        
+        # 일반 요청인 경우 플래시 메시지와 리다이렉트
+        if result['success']:
+            flash(result['message'], "success")
+        else:
+            flash(result['message'], "error")
+        
+        return redirect(url_for("jobs.job_detail", job_id=job_id))
+        
+    except Exception as e:
+        print(f"지원하기 오류: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        error_message = f"지원 처리 중 오류가 발생했습니다: {str(e)}"
+        
+        if request.is_json or request.headers.get('Content-Type') == 'application/json':
+            return jsonify({
+                'success': False,
+                'message': error_message
+            }), 500
+        
+        flash(error_message, "error")
+        return redirect(url_for("jobs.job_detail", job_id=job_id))
+
+@jobs_bp.route("/jobs/<int:job_id>/applications")
+@login_required
+def job_applications(job_id):
+    """
+    공고 지원자 목록 (고용주용)
+    =========================
+    
+    기능:
+    - 공고에 지원한 사용자 목록 조회
+    - 지원 상태별 필터링
+    - 지원자와의 채팅방 링크 제공
+    
+    URL: GET /jobs/<job_id>/applications
+    템플릿: jobs/job_applications.html
+    
+    매개변수:
+    - job_id: 공고 ID
+    
+    반환값:
+    - job: 공고 정보
+    - applications: 지원자 목록
+    
+    주의사항:
+    - 공고 작성자만 접근 가능
+    """
+    
+    try:
+        # 지원자 목록 조회 (권한 확인 포함)
+        applications = ApplicationService.get_job_applications(job_id, current_user.id)
+        
+        # 공고 정보
+        job = JobService.get_job_by_id(job_id)
+        
+        return render_template("jobs/job_applications.html", 
+                             job=job, 
+                             applications=applications)
+        
+    except Exception as e:
+        flash("지원자 목록을 조회할 수 없습니다.", "error")
+        return redirect(url_for("jobs.job_detail", job_id=job_id))

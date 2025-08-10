@@ -497,7 +497,17 @@
           />
         </svg>
       </button>
+      {% if application_status.applied %}
+      <button
+        class="btn-apply"
+        style="background: #28a745"
+        onclick="goToChatFromDetail()"
+      >
+        채팅하기
+      </button>
+      {% else %}
       <button class="btn-apply" onclick="applyJob()">지원하기</button>
+      {% endif %}
     </div>
     {% endif %}
 
@@ -537,10 +547,79 @@
         });
       }
 
-      function applyJob() {
-        if (confirm("이 공고에 지원하시겠습니까?")) {
-          alert("지원이 완료되었습니다!");
-          // 실제로는 서버에 지원 요청을 보내야 함
+      async function applyJob() {
+        if (!confirm("이 공고에 지원하시겠습니까?\n지원하면 자동으로 채팅방이 생성됩니다.")) {
+          return;
+        }
+
+        const applyBtn = document.querySelector('.btn-apply');
+        const originalText = applyBtn.textContent;
+
+        try {
+          applyBtn.disabled = true;
+          applyBtn.textContent = '지원 중...';
+
+          const response = await fetch(`/jobs/{{ job.id }}/apply`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: ''
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            alert(data.message);
+
+            // 지원 통계 업데이트
+            const applicationStat = document.querySelector('.stat-item:nth-child(3) .stat-number');
+            if (applicationStat) {
+              applicationStat.textContent = parseInt(applicationStat.textContent) + 1;
+            }
+
+            // 채팅방으로 이동할지 묻기
+            if (data.chat_room_id && confirm('채팅방으로 이동하시겠습니까?')) {
+              window.location.href = `/chat/${data.chat_room_id}`;
+            } else {
+              // 지원하기 버튼을 채팅하기 버튼으로 변경
+              applyBtn.textContent = '채팅하기';
+              applyBtn.onclick = function() {
+                window.location.href = `/chat/${data.chat_room_id}`;
+              };
+            }
+          } else {
+            alert(data.message || '지원 중 오류가 발생했습니다.');
+            applyBtn.disabled = false;
+            applyBtn.textContent = originalText;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('지원 중 오류가 발생했습니다.');
+          applyBtn.disabled = false;
+          applyBtn.textContent = originalText;
+        }
+      }
+
+      // 채팅방으로 이동하는 함수 (상세 페이지용)
+      async function goToChatFromDetail() {
+        try {
+          const response = await fetch(`/chat/find-room/{{ job.id }}`, {
+            method: 'GET'
+          });
+
+          const data = await response.json();
+
+          if (data.success && data.room_id) {
+            window.location.href = `/chat/${data.room_id}`;
+          } else {
+            alert('채팅방을 찾을 수 없습니다.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('채팅방 이동 중 오류가 발생했습니다.');
         }
       }
     </script>

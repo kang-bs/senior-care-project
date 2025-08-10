@@ -4,11 +4,37 @@ from flask_login import current_user
 
 class JobService:
     @staticmethod
-    def get_all_jobs(page=1, per_page=10):
-        """모든 공고 조회 (페이지네이션)"""
-        return JobPost.query.order_by(desc(JobPost.created_at)).paginate(
-            page=page, per_page=per_page, error_out=False
-        )
+    def get_all_jobs(page=1, per_page=10, sort_by='latest'):
+        """
+        모든 공고 조회 (페이지네이션 및 정렬)
+        
+        Args:
+            page: 페이지 번호
+            per_page: 페이지당 항목 수
+            sort_by: 정렬 기준 ('latest', 'popular', 'views')
+        """
+        query = JobPost.query
+        
+        if sort_by == 'latest':
+            # 최신순 (기본값)
+            query = query.order_by(desc(JobPost.created_at))
+        elif sort_by == 'popular':
+            # 인기순 (찜 개수 + 지원 개수)
+            query = query.order_by(
+                desc(JobPost.bookmark_count + JobPost.application_count),
+                desc(JobPost.created_at)
+            )
+        elif sort_by == 'views':
+            # 조회수순
+            query = query.order_by(
+                desc(JobPost.view_count),
+                desc(JobPost.created_at)
+            )
+        else:
+            # 기본값: 최신순
+            query = query.order_by(desc(JobPost.created_at))
+        
+        return query.paginate(page=page, per_page=per_page, error_out=False)
     
     @staticmethod
     def get_job_by_id(job_id):
@@ -89,8 +115,15 @@ class JobService:
         ).first() is not None
     
     @staticmethod
-    def search_jobs(query, filters=None):
-        """공고 검색"""
+    def search_jobs(query, filters=None, sort_by='latest'):
+        """
+        공고 검색
+        
+        Args:
+            query: 검색어
+            filters: 필터 조건
+            sort_by: 정렬 기준 ('latest', 'popular', 'views')
+        """
         jobs_query = JobPost.query
         
         if query:
@@ -114,4 +147,20 @@ class JobService:
                     JobPost.work_period == filters['work_period']
                 )
         
-        return jobs_query.order_by(desc(JobPost.created_at)).all()
+        # 정렬 적용
+        if sort_by == 'latest':
+            jobs_query = jobs_query.order_by(desc(JobPost.created_at))
+        elif sort_by == 'popular':
+            jobs_query = jobs_query.order_by(
+                desc(JobPost.bookmark_count + JobPost.application_count),
+                desc(JobPost.created_at)
+            )
+        elif sort_by == 'views':
+            jobs_query = jobs_query.order_by(
+                desc(JobPost.view_count),
+                desc(JobPost.created_at)
+            )
+        else:
+            jobs_query = jobs_query.order_by(desc(JobPost.created_at))
+        
+        return jobs_query.all()
