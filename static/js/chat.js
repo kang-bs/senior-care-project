@@ -58,6 +58,16 @@ function addMessageToChat(messageData, isOwn = false) {
   const messagesContainer = document.getElementById("chatMessages");
   if (!messagesContainer) return;
 
+  // 이미 동일 ID의 메시지가 존재하면 중복 추가 방지
+  if (messageData && typeof messageData.id !== "undefined") {
+    const exists = messagesContainer.querySelector(
+      `[data-message-id="${messageData.id}"]`
+    );
+    if (exists) {
+      return;
+    }
+  }
+
   const messageElement = createMessageElement(messageData, isOwn);
   messagesContainer.appendChild(messageElement);
 }
@@ -65,11 +75,22 @@ function addMessageToChat(messageData, isOwn = false) {
 // 메시지 요소 생성
 function createMessageElement(messageData, isOwn = false) {
   const messageDiv = document.createElement("div");
-  messageDiv.className = `message ${isOwn ? "own" : ""}`;
+  const isSystem = messageData.message_type === "system";
+  messageDiv.className = `message ${isOwn ? "own" : ""} ${
+    isSystem ? "system" : ""
+  }`;
+
+  // 중복 판별을 위한 메시지 ID 저장
+  if (typeof messageData.id !== "undefined") {
+    messageDiv.dataset.messageId = String(messageData.id);
+  }
 
   const avatarDiv = document.createElement("div");
   avatarDiv.className = "message-avatar";
-  avatarDiv.textContent = messageData.sender_name.charAt(0);
+  const senderName = messageData.sender_name || "?";
+  if (!isSystem) {
+    avatarDiv.textContent = senderName.charAt(0);
+  }
 
   const contentDiv = document.createElement("div");
   contentDiv.className = "message-content";
@@ -85,7 +106,9 @@ function createMessageElement(messageData, isOwn = false) {
   contentDiv.appendChild(bubbleDiv);
   contentDiv.appendChild(timeDiv);
 
-  messageDiv.appendChild(avatarDiv);
+  if (!isSystem) {
+    messageDiv.appendChild(avatarDiv);
+  }
   messageDiv.appendChild(contentDiv);
 
   return messageDiv;

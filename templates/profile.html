@@ -1,130 +1,203 @@
-<!-- templates/profile.html -->
 <!DOCTYPE html>
 <html lang="ko">
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <title>프로필</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>내 프로필</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding-top: 60px; /* 상단바 공간 확보 */
-        }
-
-        .navbar {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            height: 60px;
-            background-color: #2c3e50;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-
-        .navbar h2 {
-            color: white;
-            margin: 0;
-            font-size: 20px;
-        }
-
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            margin-left: 20px;
-            font-weight: bold;
-            transition: color 0.2s;
-        }
-
-        .navbar a:hover {
-            color: #f1c40f;
-        }
-
-        .profile-box {
-            background-color: #fff;
-            padding: 40px 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 320px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        p {
-            margin: 8px 0;
-            color: #555;
-            font-size: 15px;
-        }
-
-        .profile-image {
-            width: 80px;
-            border-radius: 50%;
-            margin-bottom: 15px;
-        }
-
-        .logout-btn {
-            display: inline-block;
-            margin-top: 24px;
-            padding: 10px 18px;
-            background-color: #e74c3c;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-
-        .logout-btn:hover {
-            background-color: #c0392b;
-        }
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
     </style>
-</head>
-<body>
-    <div class="navbar">
-        <div style="display: flex; align-items: center;">
-            <a href="{{ url_for('auth.main') }}" style="color: white; text-decoration: none; margin-right: 20px;">← 홈</a>
-            <h2 style="margin-right: 20px;">내 프로필</h2>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 고정 영역 -->
+      <div class="sticky top-0 z-10 bg-white shadow-sm">
+        <!-- 상단 바 -->
+        <header class="p-4 flex justify-between items-center">
+          <a href="{{ url_for('auth.main') }}" class="flex items-center">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 mr-2"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </a>
+          <span class="text-xl font-bold text-gray-800">내 프로필</span>
+          <div class="w-6"></div>
+          <!-- 오른쪽 공간 맞춤용 빈 div -->
+        </header>
+      </div>
+
+      <!-- 메인 컨텐츠 -->
+      <main class="p-6 bg-white pb-24">
+        <div class="text-center">
+          {% if user.profile_image %}
+          <img
+            src="{{ user.profile_image }}"
+            alt="프로필 이미지"
+            class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+          />
+          {% else %}
+          <div
+            class="w-24 h-24 rounded-full mx-auto mb-4 bg-gray-200 flex items-center justify-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-12 w-12 text-gray-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          {% endif %}
+          <h1 class="text-2xl font-bold mb-2">
+            {{ user.nickname or user.name }}님 환영합니다!
+          </h1>
+          <p class="text-sm text-gray-500 mb-6">
+            <strong>소셜 로그인 방식:</strong> {{ user.social_type }}
+          </p>
         </div>
+
+        <div class="space-y-3 text-left">
+          <p>
+            <strong>가입 ID:</strong>
+            <span class="text-gray-600">{{ user.social_id }}</span>
+          </p>
+          {% if user.name %}
+          <p>
+            <strong>이름:</strong>
+            <span class="text-gray-600">{{ user.name }}</span>
+          </p>
+          {% endif %} {% if user.email %}
+          <p>
+            <strong>이메일:</strong>
+            <span class="text-gray-600">{{ user.email }}</span>
+          </p>
+          {% endif %} {% if user.gender %}
+          <p>
+            <strong>성별:</strong>
+            <span class="text-gray-600">{{ user.gender }}</span>
+          </p>
+          {% endif %} {% if user.birth_date %}
+          <p>
+            <strong>생년월일:</strong>
+            <span class="text-gray-600">{{ user.birth_date }}</span>
+          </p>
+          {% endif %} {% if user.mobile %}
+          <p>
+            <strong>전화번호:</strong>
+            <span class="text-gray-600">{{ user.mobile }}</span>
+          </p>
+          {% endif %} {% if user.sido %}
+          <p>
+            <strong>주소:</strong>
+            <span class="text-gray-600"
+              >{{ user.sido }} {{ user.sigungu }} {{ user.dong }}</span
+            >
+          </p>
+          {% endif %}
+        </div>
+
+        <div class="mt-8 text-center">
+          <a
+            class="inline-block bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-8 rounded-full transition-colors"
+            href="{{ url_for('auth.logout') }}"
+            >로그아웃</a
+          >
+        </div>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="./static/images/footer/map.png"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="./static/images/footer/favorite.png"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="./static/images/footer/home.png"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="./static/images/footer/chatting.png"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="./static/images/footer/profile_active.png"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">내정보</span>
+        </a>
+      </footer>
     </div>
-
-
-    <div class="profile-box">
-        {% if user.profile_image %}
-            <img src="{{ user.profile_image }}" alt="프로필 이미지" class="profile-image" />
-        {% endif %}
-        <h1>{{ user.nickname or user.name }}님 환영합니다!</h1>
-        <p><strong>소셜 로그인 방식:</strong> {{ user.social_type }}</p>
-        <p><strong>가입 ID:</strong> {{ user.social_id }}</p>
-        {% if user.name %}
-            <p><strong>이름:</strong> {{ user.name }}</p>
-        {% endif %}
-        {% if user.email %}
-            <p><strong>이메일:</strong> {{ user.email }}</p>
-        {% endif %}
-        {% if user.gender %}
-            <p><strong>성별:</strong> {{ user.gender }}</p>
-        {% endif %}
-        {% if user.birth_date %}
-            <p><strong>생년월일:</strong> {{ user.birth_date }}</p>
-        {% endif %}
-        {% if user.mobile %}
-            <p><strong>전화번호:</strong> {{ user.mobile }}</p>
-        {% endif %}
-
-    <!-- 시/군/동 주소 출력 추가 -->
-        {% if user.sido %}
-            <p><strong>주소(시/군/동):</strong> {{ user.sido }} {{ user.sigungu }} {{ user.dong }}</p>
-        {% endif %}
-        <a class="logout-btn" href="{{ url_for('auth.logout') }}">로그아웃</a>
-    </div>
-</body>
+  </body>
 </html>
