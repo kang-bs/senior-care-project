@@ -354,6 +354,17 @@
       </div>
     </div>
 
+    <!-- ✅ 관리자 전용 승인관리 버튼 -->
+    {% if current_user.user_type == 2 %}
+    <div style="padding: 15px; background: #fff; margin: 10px; border-radius: 8px;">
+      <a href="{{ url_for('admin.pending_companies') }}"
+         style="display: block; background: #3498db; color: white; text-align: center;
+                padding: 12px; border-radius: 6px; font-weight: bold; text-decoration: none;">
+        기업회원 승인/거부 페이지
+      </a>
+    </div>
+    {% endif %}
+
     <!-- 하단 네비게이션 -->
     <div class="bottom-nav">
       <a href="#" class="nav-item">

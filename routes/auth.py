@@ -5,6 +5,10 @@ from models import db, User
 import requests
 from config import Config
 import bcrypt
+import os
+from flask import current_app, flash
+from werkzeug.utils import secure_filename #필요 없을지도모름 ?
+import uuid
 
 # 인증 관련 라우트를 담당하는 블루프린트 생성
 auth_bp = Blueprint("auth", __name__)
@@ -173,6 +177,77 @@ def register():
 
     return render_template("register.html")
 
+    # ----------- 기업 회원가입 (관리자 승인 대기) ----------------->
+
+
+@auth_bp.route("/register_company", methods=["GET", "POST"])
+def register_company():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+        nickname = request.form["nickname"]
+        name = request.form.get("name")
+        email = request.form.get("email")
+
+        # 1. 비밀번호 확인
+        if password != confirm_password:
+            flash("비밀번호가 일치하지 않습니다.")
+            return redirect(url_for("auth.register_company"))
+
+        # 2. 아이디 중복 확인
+        if User.query.filter_by(username=username).first():
+            flash("이미 존재하는 사용자입니다.")
+            return redirect(url_for("auth.register_company"))
+
+        # 3. 파일 업로드 처리
+        file = request.files.get("business_registration")
+
+        # 허용 확장자 검사 함수
+        def allowed_file(filename):
+            return '.' in filename and \
+                filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+        filename = None
+        if file and file.filename != "" and allowed_file(file.filename):
+            original_filename = file.filename  # 원본 파일명 확보
+            ext = original_filename.rsplit('.', 1)[1].lower()  # 확장자 분리
+
+            # 🔸 파일명 충돌 완전 방지: UUID.확장자 로 저장
+            unique_filename = f"{uuid.uuid4().hex}.{ext}"
+
+            upload_path = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            os.makedirs(os.path.dirname(upload_path), exist_ok=True)
+            file.save(upload_path)
+        else:
+            flash("사업자등록증 파일을 업로드해주세요. (허용 확장자: png, jpg, jpeg, pdf)")
+            return redirect(url_for("auth.register_company"))
+
+        # 4. 비밀번호 해시 처리
+        hashed_pw = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+        # 5. User 객체 생성 및 DB 저장
+        user = User(
+            username=username,
+            password=hashed_pw.decode("utf-8"),
+            nickname=nickname,
+            name=name,
+            email=email,
+            user_type=1,  # 기업회원
+            is_verified=False,  # 승인 대기
+            business_registration_file = unique_filename,  # 업로드 파일명 저장
+            business_registration_original = original_filename,
+        )
+
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash("기업 회원가입 신청이 완료되었습니다. 관리자의 승인을 기다려 주세요.")
+        return redirect(url_for("auth.home"))
+
+    return render_template("register_company.html")
+
 
 # 로그인 라우트
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -183,7 +258,12 @@ def login():
 
         user = User.query.filter_by(username=username).first()
         if not user or not bcrypt.checkpw(password.encode("utf-8"), user.password.encode("utf-8")):
-            flash("로그인 실패. 아이디 또는 비밀번호를 확인하세요.")
+            flash("로그인 실패. 아이디 또는 비밀번호를 확인하세요.", "warning")
+            return redirect(url_for("auth.login"))
+
+        # 기업회원인 경우 승인 여부 검사
+        if user.user_type == 1 and not user.is_verified:
+            flash("기업회원 승인 대기 중입니다. 관리자의 승인이 필요합니다.", "warning")
             return redirect(url_for("auth.login"))
 
         login_user(user)

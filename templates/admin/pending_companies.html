@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>기업회원 승인 대기 목록</title>
+<style>
+  table {border-collapse: collapse; width: 100%;}
+  th, td {border: 1px solid #ccc; padding: 8px; text-align: center;}
+  th {background-color: #f0f0f0;}
+  button {padding: 6px 12px; border: none; cursor: pointer;}
+  .approve {background: #4CAF50; color: white;}
+  .reject {background: #f44336; color: white;}
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: #eee;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .back-link:hover {
+    background: #d2e6fb;
+    color: #164ba5;
+  }
+</style>
+</head>
+<body>
+<h2>승인 대기 기업회원 목록</h2>
+<table>
+  <thead>
+    <tr>
+      <th>닉네임</th>
+      <th>이메일</th>
+      <th>가입일</th>
+      <th>승인 여부</th>
+      <th>사업자등록증</th>
+      <th>관리</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for user in users %}
+    <tr>
+      <td>{{ user.nickname }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+      <td>{{ '대기중' if not user.is_verified else '승인됨' }}</td>
+      <td>
+        {% if user.business_registration_file %}
+          <a href="{{ url_for('admin.download_business_file', user_id=user.id) }}"
+             download="{{ user.business_registration_original }}">
+              {{ user.business_registration_original }}
+          </a>
+        {% else %}
+          등록된 파일 없음
+        {% endif %}
+      </td>
+      <td>
+        <form method="post" action="{{ url_for('admin.approve_company', user_id=user.id) }}" style="display:inline;">
+          <button type="submit" class="approve">승인</button>
+        </form>
+        <form method="post" action="{{ url_for('admin.reject_company', user_id=user.id) }}" style="display:inline;">
+          <button type="submit" class="reject">거부</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr>
+      <td colspan="6">승인 대기 기업회원이 없습니다.</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+<a href="{{ url_for('auth.main') }}" class="back-link">← 뒤로 나가기</a>
+</body>
+</html>

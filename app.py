@@ -11,12 +11,15 @@ from routes.areas import areas_bp
 from routes.jobs import jobs_bp
 from routes.chat import chat_bp
 from utils.helpers import format_date, format_datetime, format_salary, get_work_days, calculate_time_ago
+from cli import register_cli  # ⬅ cli.py에서 만든 함수 import
+from routes.admin.admin import admin_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
 Session(app)
 db.init_app(app)
+register_cli(app)  # ⬅ CLI 명령 등록
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -41,6 +44,7 @@ app.register_blueprint(kakao_bp, url_prefix="/login")
 app.register_blueprint(areas_bp)
 app.register_blueprint(jobs_bp)
 app.register_blueprint(chat_bp)
+app.register_blueprint(admin_bp)
 
 # 초기 DB 설정
 with app.app_context():
