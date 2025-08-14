@@ -232,6 +232,11 @@
   transition: background 0.3s;
 }
 
+.chat-send-btn img {
+  width: 20px;
+  height: 20px;
+}
+
 .chat-send-btn:hover {
   background: #2980b9;
 }
@@ -263,11 +268,11 @@
   .chat-room-container {
     height: calc(100vh - 120px);
   }
-  
+
   .message-content {
     max-width: 85%;
   }
-  
+
   .chat-input-container {
     padding: 10px 15px;
   }

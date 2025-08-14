@@ -80,9 +80,10 @@
         class="chat-send-btn"
         onclick="sendMessage({{ room.id }})"
       >
-        <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
-        </svg>
+        <img
+          src="{{ url_for('static', filename='./images/chat/send.png') }}"
+          alt="전송"
+        />
       </button>
     </div>
   </div>
