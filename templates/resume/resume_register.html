@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>시니어 이력서 등록/수정</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style> body { font-family: "Noto Sans KR", sans-serif; background: #f9fafb; } </style>
+</head>
+<body>
+  <div class="max-w-lg mx-auto bg-white p-6 mt-8 rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">시니어 이력서 등록/수정</h1>
+
+    <form method="POST">
+      <label class="block font-semibold mt-4">희망 근무 요일</label>
+      <div class="space-x-3">
+        <label><input type="checkbox" name="work_monday" {% if resume and resume.work_monday %}checked{% endif %}> 월</label>
+        <label><input type="checkbox" name="work_tuesday" {% if resume and resume.work_tuesday %}checked{% endif %}> 화</label>
+        <label><input type="checkbox" name="work_wednesday" {% if resume and resume.work_wednesday %}checked{% endif %}> 수</label>
+        <label><input type="checkbox" name="work_thursday" {% if resume and resume.work_thursday %}checked{% endif %}> 목</label>
+        <label><input type="checkbox" name="work_friday" {% if resume and resume.work_friday %}checked{% endif %}> 금</label>
+        <label><input type="checkbox" name="work_saturday" {% if resume and resume.work_saturday %}checked{% endif %}> 토</label>
+        <label><input type="checkbox" name="work_sunday" {% if resume and resume.work_sunday %}checked{% endif %}> 일</label>
+      </div>
+
+      <label class="block font-semibold mt-4">시간대</label>
+      <div class="space-x-3">
+        {% set times = resume.work_time.split(',') if resume and resume.work_time else [] %}
+        <label><input type="checkbox" name="work_time" value="오전" {% if '오전' in times %}checked{% endif %}> 오전</label>
+        <label><input type="checkbox" name="work_time" value="오후" {% if '오후' in times %}checked{% endif %}> 오후</label>
+        <label><input type="checkbox" name="work_time" value="저녁(6시 이후)" {% if '저녁(6시 이후)' in times %}checked{% endif %}> 저녁(6시 이후)</label>
+        <label><input type="checkbox" name="work_time" value="시간 관계 X" {% if '시간 관계 X' in times %}checked{% endif %}> 시간 관계 X</label>
+      </div>
+
+      <label class="block font-semibold mt-2">자유 작성(시간대)</label>
+      <input type="text" name="work_time_free_text" value="{{ resume.work_time_free_text if resume else '' }}" placeholder="자유롭게 작성하세요" class="w-full p-2 border rounded">
+
+      <label class="block font-semibold mt-4">관심 있는 일</label>
+      <div class="space-x-3">
+        {% set jobs = resume.interested_jobs.split(',') if resume and resume.interested_jobs else [] %}
+        <label><input type="checkbox" name="interested_jobs" value="공공근로/환경정비" {% if '공공근로/환경정비' in jobs %}checked{% endif %}> 공공근로/환경정비</label>
+        <label><input type="checkbox" name="interested_jobs" value="카페/식당 보조" {% if '카페/식당 보조' in jobs %}checked{% endif %}> 카페/식당 보조</label>
+        <label><input type="checkbox" name="interested_jobs" value="사무보조" {% if '사무보조' in jobs %}checked{% endif %}> 사무보조</label>
+        <label><input type="checkbox" name="interested_jobs" value="전화상담" {% if '전화상담' in jobs %}checked{% endif %}> 전화상담</label>
+        <label><input type="checkbox" name="interested_jobs" value="재능기부/교육" {% if '재능기부/교육' in jobs %}checked{% endif %}> 재능기부/교육</label>
+      </div>
+
+      <label class="block font-semibold mt-2">직접 입력</label>
+      <input type="text" name="interested_jobs_custom" value="{{ resume.interested_jobs_custom if resume else '' }}" placeholder="관심 있는 일을 직접 작성하세요" class="w-full p-2 border rounded">
+
+      <label class="block font-semibold mt-4">
+        <input type="checkbox" name="career_status" {% if resume and resume.career_status %}checked{% endif %}>
+        경력 있어요 (체크하지 않으면 신입)
+      </label>
+
+      <label class="block font-semibold mt-4">지원 동기</label>
+      <textarea name="motivation" rows="4" class="w-full p-2 border rounded" placeholder="간단하게 작성해 주세요">{{ resume.motivation if resume else '' }}</textarea>
+
+      <label class="block font-semibold mt-4">기타 요청사항 (선택)</label>
+      <textarea name="extra_requests" rows="3" class="w-full p-2 border rounded" placeholder="기타 요청사항이 있으면 작성하세요">{{ resume.extra_requests if resume else '' }}</textarea>
+
+      <button type="submit" class="mt-6 bg-indigo-600 text-white font-semibold px-4 py-2 rounded hover:bg-indigo-700">
+        저장
+      </button>
+    </form>
+
+  </div>
+</body>
+</html>

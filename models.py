@@ -198,3 +198,36 @@ class ChatMessage(db.Model):
     
     def __repr__(self):
         return f"<ChatMessage id={self.id} room_id={self.room_id} sender_id={self.sender_id}>"
+
+
+class SeniorResume(db.Model):
+    __tablename__ = 'senior_resume'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # User 테이블 FK
+
+    # 근무 요일별 Boolean 필드
+    work_monday = db.Column(db.Boolean, default=False)
+    work_tuesday = db.Column(db.Boolean, default=False)
+    work_wednesday = db.Column(db.Boolean, default=False)
+    work_thursday = db.Column(db.Boolean, default=False)
+    work_friday = db.Column(db.Boolean, default=False)
+    work_saturday = db.Column(db.Boolean, default=False)
+    work_sunday = db.Column(db.Boolean, default=False)
+
+    work_time = db.Column(db.String(100))              # 예: '오전,저녁(6시 이후),시간 관계 X'
+    work_time_free_text = db.Column(db.String(200))    # 시간대 자유 작성 텍스트
+    interested_jobs = db.Column(db.String(100))        # 예: '공공근로/환경정비,카페/식당 보조'
+    interested_jobs_custom = db.Column(db.String(100)) # 직접 입력 관심 일 텍스트
+    career_status = db.Column(db.Boolean)               # True: 경력 있음, False: 신입
+    motivation = db.Column(db.Text)                      # 지원 동기
+    extra_requests = db.Column(db.Text)                  # 기타 요청사항
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # User 관계 - user.senior_resumes로 접근 가능
+    user = db.relationship('User', backref=db.backref('senior_resumes', lazy=True))
+
+    def __repr__(self):
+        return f"<SeniorResume id={self.id} user_id={self.user_id}>"
