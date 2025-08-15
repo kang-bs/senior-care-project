@@ -4,11 +4,12 @@ from flask_dance.contrib.google import google
 from models import db, User
 import requests
 from config import Config
-import bcrypt
 import os
 from flask import current_app, flash
 from werkzeug.utils import secure_filename #필요 없을지도모름 ?
 import uuid
+import bcrypt
+from flask import request, flash
 
 # 인증 관련 라우트를 담당하는 블루프린트 생성
 auth_bp = Blueprint("auth", __name__)
@@ -127,9 +128,15 @@ def main():
 @auth_bp.route("/profile")
 @login_required
 def profile():
+    # /profile 경로에 접속하면 profile.html을 렌더링
     return render_template("profile.html", user=current_user)
-import bcrypt
-from flask import request, flash
+
+@auth_bp.route("/profile/detail")
+@login_required
+def profile_detail():
+    # /profile/detail 경로에 접속하면 profile_detail.html을 렌더링
+    return render_template("profile_detail.html", user=current_user)
+
 
 # 회원가입 라우트
 @auth_bp.route("/register", methods=["GET", "POST"])
@@ -142,6 +149,7 @@ def register():
         name = request.form.get("name")
         gender = request.form.get("gender")
         birth_date = request.form.get("birth_date")
+        phone = request.form.get("phone")
         sido = request.form.get("sido")
         sigungu = request.form.get("sigungu")
         dong = request.form.get("dong")
@@ -168,7 +176,8 @@ def register():
             social_id=None,
             sido=sido,
             sigungu=sigungu,
-            dong=dong
+            dong=dong,
+            phone=phone
         )
         db.session.add(user)
         db.session.commit()
@@ -272,6 +281,29 @@ def login():
     return render_template("login.html")
 
 
+@auth_bp.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    user = current_user
+
+    if request.method == 'POST':
+        user.name = request.form.get('name')
+        user.nickname = request.form.get('nickname')
+        user.phone = request.form.get('phone')
+        user.birth_date = request.form.get('birth_date')
+        user.sido = request.form.get('sido')
+        user.sigungu = request.form.get('sigungu')
+        user.dong = request.form.get('dong')
+
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print("Profile update failed:", e)
+
+        return redirect(url_for('auth.profile'))
+
+    return render_template('edit_profile.html', user=user)
 
 # 로그아웃 처리
 @auth_bp.route("/logout")

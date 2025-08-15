@@ -13,7 +13,6 @@ from routes.chat import chat_bp
 from utils.helpers import format_date, format_datetime, format_salary, get_work_days, calculate_time_ago
 from cli import register_cli  # ⬅ cli.py에서 만든 함수 import
 from routes.admin.admin import admin_bp
-
 app = Flask(__name__)
 app.config.from_object(Config)
 
