@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>시니어 이력서 상세</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style> body { font-family: "Noto Sans KR", sans-serif; background: #f9fafb; } </style>
+</head>
+<body>
+  <div class="max-w-xl mx-auto bg-white p-8 mt-10 rounded-2xl shadow-xl">
+    <h1 class="text-2xl font-bold mb-8 text-gray-900 border-b pb-4 flex items-center justify-between">
+      <span>시니어 이력서 상세</span>
+      <a href="{{ url_for('auth.profile') }}" class="text-blue-700 hover:text-blue-900 font-semibold flex items-center space-x-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+        <span>프로필</span>
+      </a>
+    </h1>
+
+    <!-- 사용자 기본정보 -->
+    <div class="grid grid-cols-2 gap-x-8 gap-y-4 mb-8 border-b border-gray-300 pb-6">
+      <div class="font-semibold text-gray-700">성함</div>
+      <div class="text-gray-900">{{ current_user.name }}</div>
+      <div class="font-semibold text-gray-700">연락처</div>
+      <div class="text-gray-900">{{ current_user.phone }}</div>
+      <div class="font-semibold text-gray-700">생년월일</div>
+      <div class="text-gray-900">{{ current_user.birth_date }}</div>
+      <div class="font-semibold text-gray-700">주소</div>
+      <div class="text-gray-900">{{ current_user.sido or '' }} {{ current_user.sigungu or '' }} {{ current_user.dong or '' }}</div>
+    </div>
+
+    <!-- 희망 근무 요건 -->
+    <div class="mb-8">
+      <span class="text-base font-bold text-blue-700 mb-4 block">희망 근무 요건</span>
+      <div class="bg-gray-50 rounded-lg shadow-inner p-6">
+
+        <!-- 희망근무요일 -->
+        <div class="flex items-center border-b border-gray-300 pb-4 mb-4">
+          <div class="w-32 font-semibold text-gray-600">희망근무요일</div>
+          <div class="flex flex-wrap gap-2">
+            {% for day, active in [
+              ('월', resume.work_monday),
+              ('화', resume.work_tuesday),
+              ('수', resume.work_wednesday),
+              ('목', resume.work_thursday),
+              ('금', resume.work_friday),
+              ('토', resume.work_saturday),
+              ('일', resume.work_sunday),
+            ] %}
+              <span class="px-3 py-1 rounded text-sm {{ 'bg-blue-100 text-blue-700 font-bold' if active else 'bg-gray-200 text-gray-400' }}">{{ day }}</span>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- 시간대 -->
+        <div class="flex items-center border-b border-gray-300 pb-4 mb-4">
+          <div class="w-32 font-semibold text-gray-600">시간대</div>
+          <div class="flex flex-wrap gap-2">
+            {% set times = resume.work_time.split(',') if resume and resume.work_time else [] %}
+            {% for label in ['오전','오후','저녁(6시 이후)','시간 관계 X'] %}
+              <span class="px-3 py-1 rounded text-sm {{ 'bg-blue-100 text-blue-700 font-bold' if label in times else 'bg-gray-200 text-gray-400' }}">{{ label }}</span>
+            {% endfor %}
+            {% if resume.work_time_free_text %}
+              <span class="px-3 py-1 rounded text-sm bg-yellow-100 text-yellow-800">자유: {{ resume.work_time_free_text }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- 관심직무 -->
+        <div class="flex items-center border-b border-gray-300 pb-4 mb-4">
+          <div class="w-32 font-semibold text-gray-600">관심직무</div>
+          <div class="flex flex-wrap gap-2">
+            {% set jobs = resume.interested_jobs.split(',') if resume and resume.interested_jobs else [] %}
+            {% for label in ['공공근로/환경정비','카페/식당 보조','사무보조','전화상담','재능기부/교육'] %}
+              <span class="px-3 py-1 rounded text-sm {{ 'bg-blue-100 text-blue-700 font-bold' if label in jobs else 'bg-gray-200 text-gray-400' }}">{{ label }}</span>
+            {% endfor %}
+            {% if resume.interested_jobs_custom %}
+              <span class="px-3 py-1 rounded text-sm bg-yellow-100 text-yellow-800">직접: {{ resume.interested_jobs_custom }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- 경력사항 -->
+        <div class="flex items-center">
+          <div class="w-32 font-semibold text-gray-600">경력사항</div>
+          <span class="px-3 py-1 rounded text-sm {{ 'bg-blue-500 text-white font-bold' if resume.career_status else 'bg-gray-300 text-gray-700' }}">
+            {{ '경력 있음' if resume.career_status else '신입' }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 지원동기 -->
+    <div class="mb-6">
+      <div class="text-base font-bold text-blue-700 mb-2">지원 동기</div>
+      <div class="bg-gray-50 rounded p-4 text-gray-700 min-h-[48px]">{{ resume.motivation or '-' }}</div>
+    </div>
+
+    <!-- 기타 요청사항 -->
+    <div class="mb-6">
+      <div class="text-base font-bold text-blue-700 mb-2">기타 요청사항</div>
+      <div class="bg-gray-50 rounded p-4 text-gray-700 min-h-[36px]">{{ resume.extra_requests or '-' }}</div>
+    </div>
+
+    <a href="{{ url_for('senior_resume.edit') }}" class="block w-full mt-6 text-center bg-blue-700 hover:bg-blue-900 text-white font-semibold py-3 rounded transition">
+      이력서 수정하기
+    </a>
+  </div>
+</body>
+</html>

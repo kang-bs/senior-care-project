@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>시니어 이력서 수정</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style> body { font-family: "Noto Sans KR", sans-serif; background: #f9fafb; } </style>
+</head>
+<body>
+  <div class="max-w-lg mx-auto bg-white p-8 mt-10 rounded-2xl shadow-lg">
+    <h1 class="text-3xl font-bold mb-8 text-gray-900 border-b pb-4">시니어 이력서 수정</h1>
+
+    <form method="POST" class="space-y-6">
+
+      <!-- 희망 근무 요일 -->
+      <fieldset>
+        <legend class="font-semibold text-gray-700 mb-2">희망 근무 요일</legend>
+        <div class="flex flex-wrap gap-4">
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_monday" {% if resume.work_monday %}checked{% endif %} class="form-checkbox">
+            <span>월요일</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_tuesday" {% if resume.work_tuesday %}checked{% endif %} class="form-checkbox">
+            <span>화요일</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_wednesday" {% if resume.work_wednesday %}checked{% endif %} class="form-checkbox">
+            <span>수요일</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_thursday" {% if resume.work_thursday %}checked{% endif %} class="form-checkbox">
+            <span>목요일</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_friday" {% if resume.work_friday %}checked{% endif %} class="form-checkbox">
+            <span>금요일</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_saturday" {% if resume.work_saturday %}checked{% endif %} class="form-checkbox">
+            <span>토요일</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_sunday" {% if resume.work_sunday %}checked{% endif %} class="form-checkbox">
+            <span>일요일</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- 희망 근무 시간대 -->
+      <fieldset>
+        <legend class="font-semibold text-gray-700 mb-2">희망 근무 시간대</legend>
+        <div class="flex flex-wrap gap-4">
+          {% set times = resume.work_time.split(',') if resume.work_time else [] %}
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_time" value="오전" {% if '오전' in times %}checked{% endif %} class="form-checkbox">
+            <span>오전</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_time" value="오후" {% if '오후' in times %}checked{% endif %} class="form-checkbox">
+            <span>오후</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_time" value="저녁(6시 이후)" {% if '저녁(6시 이후)' in times %}checked{% endif %} class="form-checkbox">
+            <span>저녁(6시 이후)</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="work_time" value="시간 관계 X" {% if '시간 관계 X' in times %}checked{% endif %} class="form-checkbox">
+            <span>시간 관계 X</span>
+          </label>
+        </div>
+        <input type="text" name="work_time_free_text" class="mt-3 w-full border border-gray-300 rounded px-3 py-2" placeholder="자유 작성 입력" value="{{ resume.work_time_free_text }}">
+      </fieldset>
+
+      <!-- 관심 있는 일 -->
+      <fieldset>
+        <legend class="font-semibold text-gray-700 mb-2">관심 있는 일</legend>
+        <div class="flex flex-wrap gap-4 mb-2">
+          {% set jobs = resume.interested_jobs.split(',') if resume.interested_jobs else [] %}
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="interested_jobs" value="공공근로/환경정비" {% if '공공근로/환경정비' in jobs %}checked{% endif %} class="form-checkbox">
+            <span>공공근로/환경정비</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="interested_jobs" value="카페/식당 보조" {% if '카페/식당 보조' in jobs %}checked{% endif %} class="form-checkbox">
+            <span>카페/식당 보조</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="interested_jobs" value="사무보조" {% if '사무보조' in jobs %}checked{% endif %} class="form-checkbox">
+            <span>사무보조</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="interested_jobs" value="전화상담" {% if '전화상담' in jobs %}checked{% endif %} class="form-checkbox">
+            <span>전화상담</span>
+          </label>
+          <label class="inline-flex items-center space-x-2">
+            <input type="checkbox" name="interested_jobs" value="재능기부/교육" {% if '재능기부/교육' in jobs %}checked{% endif %} class="form-checkbox">
+            <span>재능기부/교육</span>
+          </label>
+        </div>
+        <input type="text" name="interested_jobs_custom" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="직접 입력" value="{{ resume.interested_jobs_custom }}">
+      </fieldset>
+
+      <!-- 경력사항 -->
+      <div class="mb-4">
+        <label class="inline-flex items-center space-x-2 font-semibold">
+          <input type="checkbox" name="career_status" {% if resume.career_status %}checked{% endif %} class="form-checkbox">
+          <span>경력 있어요 (체크하지 않으면 신입으로 간주)</span>
+        </label>
+      </div>
+
+      <!-- 지원 동기 -->
+      <div>
+        <label class="block mb-1 font-semibold">지원 동기</label>
+        <textarea name="motivation" rows="4" class="w-full border border-gray-300 rounded p-2">{{ resume.motivation }}</textarea>
+      </div>
+
+      <!-- 기타 요청사항 -->
+      <div>
+        <label class="block mb-1 font-semibold">기타 요청사항 (선택)</label>
+        <textarea name="extra_requests" rows="3" class="w-full border border-gray-300 rounded p-2">{{ resume.extra_requests }}</textarea>
+      </div>
+
+      <button type="submit" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded font-semibold transition">
+        저장하기
+      </button>
+    </form>
+  </div>
+</body>
+</html>
