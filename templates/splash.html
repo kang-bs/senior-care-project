@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>사람이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 커스텀 애니메이션 CSS */
+      body.welcome {
+        background-color: #ffffff;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .splash {
+        height: 0px;
+        padding: 0px;
+        border: 130em solid #ffffff;
+        position: fixed;
+        left: 50%;
+        top: 100%;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        animation: puff 0.5s 1.8s cubic-bezier(0.55, 0.055, 0.675, 0.19)
+            forwards,
+          borderRadius 0.2s 2.3s linear forwards;
+      }
+
+      .welcome-logo {
+        animation: init 0.5s 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19)
+            forwards,
+          moveDown 1s 0.8s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards,
+          moveUp 1s 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+          materia 0.5s 2.7s cubic-bezier(0.86, 0, 0.07, 1) forwards,
+          hide 2s 2.9s ease forwards;
+      }
+
+      @keyframes init {
+        0% {
+          width: 0px;
+          height: 0px;
+          opacity: 0;
+        }
+        100% {
+          width: 6rem;
+          height: 6rem;
+          opacity: 1;
+        }
+      }
+
+      @keyframes puff {
+        0% {
+          top: 100%;
+          height: 0px;
+          padding: 0px;
+        }
+        100% {
+          top: 50%;
+          height: 100%;
+          padding: 0px 100%;
+        }
+      }
+
+      @keyframes borderRadius {
+        0% {
+          border-radius: 50%;
+        }
+        100% {
+          border-radius: 0px;
+        }
+      }
+
+      @keyframes moveDown {
+        0% {
+          top: 50%;
+        }
+        50% {
+          top: 40%;
+        }
+        100% {
+          top: 100%;
+        }
+      }
+
+      @keyframes moveUp {
+        0% {
+          top: 100%;
+          opacity: 1;
+        }
+        50% {
+          top: 40%;
+          opacity: 1;
+        }
+        100% {
+          top: 10%;
+          opacity: 0.1;
+        }
+      }
+
+      @keyframes materia {
+        0% {
+          background: transparent;
+        }
+        50% {
+          background: transparent;
+          top: 1.5rem;
+        }
+        100% {
+          background: #ffffff;
+          width: 100%;
+          height: 4rem;
+          border-radius: 0px;
+          top: 1.5rem;
+        }
+      }
+
+      @keyframes hide {
+        0% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      /* home.html 페이지 fade-in */
+      .home-content {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0;
+        animation: fadeInHome 1s 2.3s ease forwards;
+      }
+
+      @keyframes fadeInHome {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+          z-index: 1;
+        }
+      }
+
+      /* 스플래시 오버레이 fade-out */
+      .splash-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+        animation: fadeOutSplash 0.8s 2.3s ease forwards;
+      }
+
+      @keyframes fadeOutSplash {
+        0% {
+          opacity: 1;
+          z-index: 10;
+        }
+        100% {
+          opacity: 0;
+          z-index: -10;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="welcome font-['Noto_Sans_KR'] min-h-screen"
+    style="background-color: #ffffff"
+  >
+    <!-- home.html 콘텐츠 미리 로드 -->
+    <div class="home-content">
+      <iframe
+        src="{{ url_for('auth.home') }}"
+        width="100%"
+        height="100%"
+        frameborder="0"
+        style="border: none"
+      >
+      </iframe>
+    </div>
+
+    <!-- 스플래시 컨테이너 -->
+    <div class="splash-container">
+      <!-- 스플래시 오버레이 -->
+      <span class="splash block box-border overflow-hidden"></span>
+
+      <!-- 로고 컨테이너 -->
+      <div
+        class="welcome-logo fixed left-1/2 top-1/2 w-24 h-24 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center opacity-0 overflow-hidden"
+      >
+        <img
+          src="{{ url_for('static', filename='images/splash/logo_splash.png') }}"
+          alt="로고"
+          class="w-16 h-16 object-contain"
+        />
+      </div>
+    </div>
+
+    <script>
+      // 3.1초 후 완전히 home.html로 전환 (안전장치)
+      setTimeout(function () {
+        // 이미 iframe으로 로드되어 있으므로 실제 리다이렉트는 필요없지만 안전장치로 유지
+        if (window.location.pathname === "/") {
+          window.location.href = "{{ url_for('auth.home') }}";
+        }
+      }, 3100);
+    </script>
+  </body>
+</html>

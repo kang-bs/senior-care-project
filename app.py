@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from config import Config
 from models import db, User
 from flask_login import LoginManager
@@ -30,6 +30,11 @@ login_manager.login_view = "auth.home"
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# 루트 라우트 - 스플래시 페이지
+@app.route('/')
+def splash():
+    return render_template('splash.html')
+
 # 템플릿 필터 등록
 app.jinja_env.filters['format_date'] = format_date
 app.jinja_env.filters['format_datetime'] = format_datetime
@@ -38,7 +43,7 @@ app.jinja_env.filters['get_work_days'] = get_work_days
 app.jinja_env.filters['time_ago'] = calculate_time_ago
 
 # 블루프린트 등록
-app.register_blueprint(auth_bp)
+app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(google_bp, url_prefix="/login")
 app.register_blueprint(naver_bp)
 app.register_blueprint(kakao_bp, url_prefix="/login")
