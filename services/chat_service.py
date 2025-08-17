@@ -45,7 +45,16 @@ class ChatService:
             if not existing_room.is_active:
                 existing_room.is_active = True
                 existing_room.updated_at = datetime.utcnow()
-                db.session.commit()
+                
+            # 나간 사용자가 다시 참여하는 경우 복귀 처리
+            if existing_room.applicant_id == applicant_id and existing_room.applicant_left:
+                existing_room.applicant_left = False
+                existing_room.updated_at = datetime.utcnow()
+            elif existing_room.employer_id == employer_id and existing_room.employer_left:
+                existing_room.employer_left = False
+                existing_room.updated_at = datetime.utcnow()
+                
+            db.session.commit()
             return existing_room
         
         # 새 채팅방 생성
@@ -111,7 +120,7 @@ class ChatService:
     @staticmethod
     def get_user_chat_rooms(user_id):
         """
-        사용자의 채팅방 목록 조회
+        사용자의 채팅방 목록 조회 (나간 채팅방 제외)
         
         Args:
             user_id: 사용자 ID
@@ -122,18 +131,27 @@ class ChatService:
         rooms = ChatRoom.query.filter(
             and_(
                 or_(
-                    ChatRoom.applicant_id == user_id,
-                    ChatRoom.employer_id == user_id
+                    and_(ChatRoom.applicant_id == user_id, ChatRoom.applicant_left == False),
+                    and_(ChatRoom.employer_id == user_id, ChatRoom.employer_left == False)
                 ),
-                ChatRoom.is_active == True
+                ChatRoom.is_active == True,
+                ChatRoom.applicant_id.isnot(None),
+                ChatRoom.employer_id.isnot(None)
             )
         ).order_by(desc(ChatRoom.updated_at)).all()
         
         # 각 채팅방의 추가 정보 포함
         room_data = []
         for room in rooms:
-            # 상대방 정보
-            other_user = room.employer if room.applicant_id == user_id else room.applicant
+            # 상대방 정보 (None 체크 추가)
+            if room.applicant_id == user_id:
+                other_user = room.employer
+            else:
+                other_user = room.applicant
+            
+            # other_user가 None인 경우 건너뛰기
+            if other_user is None:
+                continue
             
             # 마지막 메시지
             last_message = ChatMessage.query.filter_by(room_id=room.id)\
@@ -241,7 +259,7 @@ class ChatService:
     @staticmethod
     def deactivate_chat_room(room_id, user_id):
         """
-        채팅방 비활성화 (나가기)
+        채팅방 나가기 (개별 사용자별)
         
         Args:
             room_id: 채팅방 ID
@@ -257,7 +275,16 @@ class ChatService:
             )
         ).first_or_404()
         
-        room.is_active = False
+        # 사용자별로 나가기 상태 설정
+        if room.applicant_id == user_id:
+            room.applicant_left = True
+        elif room.employer_id == user_id:
+            room.employer_left = True
+        
+        # 두 사용자 모두 나간 경우에만 채팅방 비활성화
+        if room.applicant_left and room.employer_left:
+            room.is_active = False
+        
         room.updated_at = datetime.utcnow()
         
         db.session.commit()

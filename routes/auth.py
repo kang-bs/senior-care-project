@@ -17,9 +17,28 @@ auth_bp = Blueprint("auth", __name__)
 # 홈 화면 렌더링 (로그인 전)
 @auth_bp.route("/")
 def home():
+    # ?logout=true 파라미터가 있으면 강제 로그아웃
+    if request.args.get('logout') == 'true':
+        if current_user.is_authenticated:
+            logout_user()
+            flash("로그아웃되었습니다.", "info")
+        return render_template("home.html")
+    
     if current_user.is_authenticated:
         return redirect(url_for("auth.main"))
     return render_template("home.html")
+
+# 프로필 완성 여부 체크 함수
+def is_profile_complete(user):
+    """사용자 프로필이 완성되었는지 확인하는 함수"""
+    return all([
+        user.gender,
+        user.birth_date,
+        user.sido,
+        user.sigungu,
+        user.dong,
+        user.phone
+    ])
 
 # Google OAuth 로그인 후 콜백 처리
 @auth_bp.route("/google_login_callback")
@@ -51,8 +70,11 @@ def google_login_callback():
         db.session.add(user)
         db.session.commit()
 
-    # 로그인 처리 후 메인 페이지로 이동
+    # 로그인 처리 후 프로필 완성 여부 확인
     login_user(user)
+    if not is_profile_complete(user):
+        flash("추가 정보를 입력해주세요.", "info")
+        return redirect(url_for("auth.onboarding"))
     return redirect(url_for("auth.main"))
 
 # 카카오 OAuth 로그인 후 콜백 처리
@@ -114,14 +136,21 @@ def kakao_login_callback():
     # 세션에서 state 제거
     session.pop('oauth_state', None)
 
-    # 로그인 처리 후 메인 페이지로 이동
+    # 로그인 처리 후 프로필 완성 여부 확인
     login_user(user)
+    if not is_profile_complete(user):
+        flash("추가 정보를 입력해주세요.", "info")
+        return redirect(url_for("auth.onboarding"))
     return redirect(url_for("auth.main"))
 
 # 로그인 후 메인 홈화면
 @auth_bp.route("/main")
 @login_required
 def main():
+    # 프로필 완성 여부 체크
+    if not is_profile_complete(current_user):
+        flash("프로필 정보를 완성해주세요.", "warning")
+        return redirect(url_for("auth.onboarding"))
     return render_template("main.html", user=current_user)
 
 # 로그인한 사용자의 프로필 페이지
@@ -137,6 +166,29 @@ def profile_detail():
     # /profile/detail 경로에 접속하면 profile_detail.html을 렌더링
     return render_template("profile_detail.html", user=current_user)
 
+# 온보딩 (추가 정보 입력) 페이지
+@auth_bp.route("/onboarding", methods=["GET", "POST"])
+@login_required
+def onboarding():
+    if request.method == "POST":
+        # 사용자 정보 업데이트
+        current_user.gender = request.form.get("gender")
+        current_user.birth_date = request.form.get("birth_date") if request.form.get("birth_date") else None
+        current_user.phone = request.form.get("phone")
+        current_user.sido = request.form.get("sido")
+        current_user.sigungu = request.form.get("sigungu")
+        current_user.dong = request.form.get("dong")
+        
+        try:
+            db.session.commit()
+            flash("프로필 정보가 완성되었습니다!", "success")
+            return redirect(url_for("auth.main"))
+        except Exception as e:
+            db.session.rollback()
+            flash("정보 저장 중 오류가 발생했습니다.", "error")
+            print("Onboarding update failed:", e)
+    
+    return render_template("onboarding.html", user=current_user)
 
 # 회원가입 라우트
 @auth_bp.route("/register", methods=["GET", "POST"])
@@ -147,12 +199,6 @@ def register():
         confirm_password = request.form["confirm_password"]
         nickname = request.form["nickname"]
         name = request.form.get("name")
-        gender = request.form.get("gender")
-        birth_date = request.form.get("birth_date")
-        phone = request.form.get("phone")
-        sido = request.form.get("sido")
-        sigungu = request.form.get("sigungu")
-        dong = request.form.get("dong")
 
         if password != confirm_password:
             flash("비밀번호가 일치하지 않습니다.")
@@ -169,20 +215,17 @@ def register():
             password=hashed_pw.decode("utf-8"),
             nickname=nickname,
             name=name,
-            gender=gender,
-            birth_date=birth_date if birth_date else None,
             user_type=0,
             social_type=None,
-            social_id=None,
-            sido=sido,
-            sigungu=sigungu,
-            dong=dong,
-            phone=phone
+            social_id=None
         )
         db.session.add(user)
         db.session.commit()
-        flash("회원가입 완료! 로그인 해주세요.")
-        return redirect(url_for("auth.home"))
+        
+        # 자동 로그인 후 온보딩으로 이동
+        login_user(user)
+        flash("회원가입 완료! 추가 정보를 입력해주세요.", "success")
+        return redirect(url_for("auth.onboarding"))
 
     return render_template("register.html")
 
@@ -276,6 +319,12 @@ def login():
             return redirect(url_for("auth.login"))
 
         login_user(user)
+        
+        # 프로필 완성 여부 확인
+        if not is_profile_complete(user):
+            flash("추가 정보를 입력해주세요.", "info")
+            return redirect(url_for("auth.onboarding"))
+        
         return redirect(url_for("auth.main"))
 
     return render_template("login.html")

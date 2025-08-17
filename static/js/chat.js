@@ -158,12 +158,12 @@ async function leaveChatRoom(roomId) {
   }
 
   try {
-    const response = await apiRequest(`/chat/${roomId}/leave`, {
-      method: "POST",
-    });
-
-    showAlert("채팅방을 나갔습니다.");
-    goToChatList();
+    // 서버 응답을 기다리지 않고 바로 리다이렉트 (Flask가 redirect 응답을 보내므로)
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = `/chat/${roomId}/leave`;
+    document.body.appendChild(form);
+    form.submit();
   } catch (error) {
     showAlert("채팅방 나가기 중 오류가 발생했습니다.");
   }

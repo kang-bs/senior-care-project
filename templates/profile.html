@@ -1,122 +1,226 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>이음 - 내 정보</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet"/>
-  <style>
-    body { font-family: "Noto Sans KR", sans-serif; }
-  </style>
-</head>
-<body class="bg-gray-100">
-  <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
-    <!-- 상단 고정 영역 -->
-    <div class="sticky top-0 z-10 bg-white shadow-sm">
-      <!-- 상단 바 -->
-      <header class="p-4 flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="w-8 h-8 mr-2 flex items-center justify-center">
-            <img src="{{ url_for('static', filename='images/header/logo.png') }}" alt="로고" class="max-w-full max-h-full object-contain"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이음 - 내 정보</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 고정 영역 -->
+      <div class="sticky top-0 z-10 bg-white shadow-sm">
+        <!-- 상단 바 -->
+        <header class="p-4 flex justify-between items-center">
+          <div class="flex items-center">
+            <div class="w-8 h-8 mr-2 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/logo.png') }}"
+                alt="로고"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <span class="text-2xl font-bold text-blue-900">이음</span>
           </div>
-          <span class="text-2xl font-bold text-blue-900">이음</span>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <img src="{{ url_for('static', filename='images/header/mic.png') }}" alt="마이크" class="max-w-full max-h-full object-contain"/>
-          </div>
-          <div class="w-6 h-6 flex items-center justify-center">
-            <img src="{{ url_for('static', filename='images/header/search.png') }}" alt="검색" class="max-w-full max-h-full object-contain"/>
-          </div>
-        </div>
-      </header>
-      <!-- 네비게이션 탭 -->
-      <nav class="flex border-b">
-        <a href="#" class="flex-1 text-center py-3 border-b-4 border-blue-900 text-blue-900 font-bold">나의 이음</a>
-        <a href="#" class="flex-1 text-center py-3 text-gray-500">기업 이음</a>
-        <a href="{{ url_for('jobs.job_list') }}" class="flex-1 text-center py-3 text-gray-500">사람 이음</a>
-      </nav>
-    </div>
-    <!-- 메인 컨텐츠: 프로필 카드 -->
-    <main class="p-4 bg-white pb-24">
-      <div class="bg-white rounded-2xl shadow p-6 max-w-md mx-auto">
-           <!-- 로그아웃 버튼 (우측 상단) -->
-          <a href="{{ url_for('auth.logout') }}"
-             class="absolute top-5 right-5 rounded-full p-2 hover:bg-blue-100 transition"
-             title="로그아웃">
-              <!-- 문 아이콘 (로그아웃) -->
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 11-4 0v-1m0-8V7a2 2 0 114 0v1" />
-              </svg>
-          </a>
-          <!-- 프로필 상단 -->
-        <div class="flex items-center mb-4">
-          <!-- 프로필 이미지(없으면 회색 원) -->
-          <div class="w-14 h-14 rounded-full bg-gray-200 mr-4"></div>
-          <div class="flex-1">
-            <div class="text-lg font-bold text-gray-800">{{ user.nickname }}</div>
-            <div class="text-gray-500 text-base">{{ user.name }}</div>
-            <div class="mt-2">
-              <span class="inline-block bg-indigo-400 text-white text-xs font-semibold rounded px-4 py-1">
-                {{ user.trust_score if user.trust_score else "수" }}
-              </span>
+          <div class="flex items-center space-x-4">
+            <div class="w-6 h-6 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/mic.png') }}"
+                alt="마이크"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div class="w-6 h-6 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/search.png') }}"
+                alt="검색"
+                class="max-w-full max-h-full object-contain"
+              />
             </div>
           </div>
-          <!-- 상세보기 화살표 -->
-          <a href="{{ url_for('auth.profile_detail') }}" class="pl-2 text-2xl text-gray-400 hover:text-indigo-500">
-            &rsaquo;
-          </a>
-        </div>
-
-        <!-- 탭 메뉴 -->
-        <div class="flex space-x-2 mb-4 mt-2">
-          <button class="flex-1 bg-indigo-100 text-indigo-700 font-semibold rounded py-2">찜</button>
-          <button class="flex-1 bg-gray-100 text-gray-500 font-semibold rounded py-2">최근 본 글</button>
-          <button onclick="location.href='{{ url_for('senior_resume.register') }}'"
-                  class="flex-1 bg-gray-100 text-gray-500 font-semibold rounded py-2">
-              이력서
-          </button>
-        </div>
-
-        <!-- 내가 올린 글, 지원이력 -->
-        <div class="bg-gray-100 rounded mb-2 px-4 py-3 text-gray-700 font-medium">내가 올린 글</div>
-        <div class="bg-gray-100 rounded px-4 py-3 text-gray-700 font-medium">지원이력</div>
+        </header>
+        <!-- 네비게이션 탭 -->
+        <nav class="flex border-b">
+          <a
+            href="{{ url_for('auth.main') }}"
+            class="flex-1 text-center py-3 text-gray-500"
+            >나의 이음</a
+          >
+          <a href="#" class="flex-1 text-center py-3 text-gray-500"
+            >기업 이음</a
+          >
+          <a
+            href="{{ url_for('jobs.job_list') }}"
+            class="flex-1 text-center py-3 text-gray-500"
+            >사람 이음</a
+          >
+        </nav>
       </div>
-    </main>
-    <!-- 하단 네비게이션 -->
-    <footer class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around">
-      <a href="#" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img src="{{ url_for('static', filename='images/footer/map.png') }}" alt="지도" class="max-w-full max-h-full object-contain"/>
+      <!-- 메인 컨텐츠: 프로필 카드 -->
+      <main class="p-4 bg-white pb-24">
+        <div class="bg-white rounded-2xl shadow p-6 max-w-md mx-auto">
+          <!-- 프로필 상단 -->
+          <div class="flex items-center mb-4">
+            <!-- 프로필 이미지(없으면 회색 원) -->
+            <div class="w-14 h-14 rounded-full bg-gray-200 mr-4"></div>
+            <div class="flex-1">
+              <div class="text-lg font-bold text-gray-800">
+                {{ user.nickname }}
+              </div>
+              <div class="text-gray-500 text-base">{{ user.name }}</div>
+              <div class="mt-2">
+                <span
+                  class="inline-block bg-indigo-400 text-white text-xs font-semibold rounded px-4 py-1"
+                >
+                  {{ user.trust_score if user.trust_score else "수" }}
+                </span>
+              </div>
+            </div>
+            <!-- 상세보기 화살표 -->
+            <a
+              href="{{ url_for('auth.profile_detail') }}"
+              class="pl-2 text-2xl text-gray-400 hover:text-indigo-500"
+            >
+              &rsaquo;
+            </a>
+          </div>
+
+          <!-- 탭 메뉴 -->
+          <div class="flex space-x-2 mb-4 mt-2">
+            <a
+              href="{{ url_for('jobs.bookmark_list') }}"
+              class="flex-1 bg-indigo-100 text-indigo-700 font-semibold rounded py-2 text-center block"
+            >
+              찜
+            </a>
+            <button
+              class="flex-1 bg-gray-100 text-gray-500 font-semibold rounded py-2"
+            >
+              최근 본 글
+            </button>
+            <button
+              onclick="location.href='{{ url_for('senior_resume.register') }}'"
+              class="flex-1 bg-gray-100 text-gray-500 font-semibold rounded py-2"
+            >
+              이력서
+            </button>
+          </div>
+
+          <!-- 내가 올린 글, 지원이력 -->
+          <div
+            class="bg-gray-100 rounded mb-2 px-4 py-3 text-gray-700 font-medium"
+          >
+            내가 올린 글
+          </div>
+          <div class="bg-gray-100 rounded px-4 py-3 text-gray-700 font-medium">
+            지원이력
+          </div>
         </div>
-        <span class="text-xs">지도</span>
-      </a>
-      <a href="{{ url_for('jobs.bookmark_list') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img src="{{ url_for('static', filename='images/footer/favorite.png') }}" alt="찜" class="max-w-full max-h-full object-contain"/>
-        </div>
-        <span class="text-xs">찜</span>
-      </a>
-      <a href="{{ url_for('auth.main') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img src="{{ url_for('static', filename='images/footer/home.png') }}" alt="홈" class="max-w-full max-h-full object-contain"/>
-        </div>
-        <span class="text-xs font-bold">홈</span>
-      </a>
-      <a href="{{ url_for('chat.chat_list') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img src="{{ url_for('static', filename='images/footer/chatting.png') }}" alt="채팅" class="max-w-full max-h-full object-contain"/>
-        </div>
-        <span class="text-xs">채팅</span>
-      </a>
-      <a href="{{ url_for('auth.profile') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img src="{{ url_for('static', filename='images/footer/profile.png') }}" alt="내정보" class="max-w-full max-h-full object-contain"/>
-        </div>
-        <span class="text-xs">내정보</span>
-      </a>
-    </footer>
-  </div>
-</body>
+      </main>
+
+      <!-- 로그아웃 버튼 -->
+      <div class="max-w-sm mx-auto px-4 pb-4 bg-white">
+        <a
+          href="{{ url_for('auth.logout') }}"
+          class="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-lg transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M17 16l4-4m0 0l-4-4m4 4H9m4 4v1a2 2 0 11-4 0v-1m0-8V7a2 2 0 114 0v1"
+            />
+          </svg>
+          로그아웃
+        </a>
+      </div>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="#"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile_filled.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">내정보</span>
+        </a>
+      </footer>
+    </div>
+  </body>
 </html>
