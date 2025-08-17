@@ -280,10 +280,9 @@ def find_chat_room(job_id):
     try:
         from models import ChatRoom
         
-        # 현재 사용자가 지원자 또는 고용주로 참여한 채팅방 찾기
+        # 현재 사용자가 지원자 또는 고용주로 참여한 채팅방 찾기 (나간 사용자도 포함)
         room = ChatRoom.query.filter(
             ChatRoom.job_id == job_id,
-            ChatRoom.is_active == True,
             (ChatRoom.applicant_id == current_user.id) | 
             (ChatRoom.employer_id == current_user.id)
         ).first()

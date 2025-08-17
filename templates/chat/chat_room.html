@@ -1,109 +1,133 @@
-{% extends "base.html" %} {% block title %}{{ other_user.nickname }}님과의 채팅
-- 사람이음{% endblock %} {% block extra_css %}
-<link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/chat.css') }}"
-/>
-{% endblock %} {% block content %}
-<div class="chat-room-container">
-  <!-- 채팅방 헤더 -->
-  <div class="chat-room-header">
-    <div class="chat-room-info">
-      <button
-        onclick="goToChatList()"
-        style="
-          background: none;
-          border: none;
-          font-size: 18px;
-          cursor: pointer;
-          margin-right: 10px;
-        "
-      >
-        ←
-      </button>
-      <div>
-        <div class="chat-room-title">{{ other_user.nickname }}</div>
-        <div class="chat-room-subtitle">{{ job.title }}</div>
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ other_user.nickname }}님과의 채팅 - 사람이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/chat.css') }}"
+    />
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen flex flex-col">
+      <!-- 채팅방 헤더 -->
+      <div class="sticky top-0 z-10 bg-white shadow-sm border-b">
+        <header class="p-4 flex justify-between items-center">
+          <div class="flex items-center">
+            <button
+              onclick="goToChatList()"
+              class="mr-3 p-1 rounded-full hover:bg-gray-100 transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <div>
+              <div class="text-lg font-bold text-blue-900">
+                {{ other_user.nickname }}
+              </div>
+              <div class="text-sm text-gray-600">{{ job.title }}</div>
+            </div>
+          </div>
+          <div>
+            <button
+              onclick="leaveChatRoom({{ room.id }})"
+              class="text-red-500 text-sm font-medium hover:text-red-600 transition-colors px-2 py-1 rounded"
+            >
+              나가기
+            </button>
+          </div>
+        </header>
       </div>
-    </div>
-    <div>
-      <button
-        onclick="leaveChatRoom({{ room.id }})"
-        style="
-          background: none;
-          border: none;
-          color: #e74c3c;
-          cursor: pointer;
-          font-size: 14px;
-        "
-      >
-        나가기
-      </button>
-    </div>
-  </div>
 
-  <!-- 메시지 목록 -->
-  <div class="chat-messages" id="chatMessages">
-    {% for message in messages %}
-    <div
-      class="message {% if message.sender_id == current_user.id %}own{% endif %} {% if message.message_type == 'system' %}system{% endif %}"
-      data-message-id="{{ message.id }}"
-    >
-      {% if message.message_type != 'system' %}
-      <div class="message-avatar">
-        {{ message.sender.nickname[0] if message.sender.nickname else '?' }}
+      <!-- 메시지 목록 -->
+      <div class="flex-1 overflow-y-auto p-4 chat-messages" id="chatMessages">
+        {% for message in messages %}
+        <div
+          class="message {% if message.sender_id == current_user.id %}own{% endif %} {% if message.message_type == 'system' %}system{% endif %}"
+          data-message-id="{{ message.id }}"
+        >
+          {% if message.message_type != 'system' %}
+          <div class="message-avatar">
+            {{ message.sender.nickname[0] if message.sender.nickname else '?' }}
+          </div>
+          {% endif %}
+
+          <div class="message-content">
+            <div class="message-bubble">{{ message.message }}</div>
+            <div class="message-time">
+              {{ message.created_at.strftime('%H:%M') }}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
       </div>
-      {% endif %}
 
-      <div class="message-content">
-        <div class="message-bubble">{{ message.message }}</div>
-        <div class="message-time">
-          {{ message.created_at.strftime('%H:%M') }}
+      <!-- 메시지 입력 -->
+      <div class="bg-white border-t p-4 chat-input-container">
+        <div class="flex items-end space-x-3 chat-input-form">
+          <div class="flex-1 relative">
+            <textarea
+              id="messageInput"
+              class="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent chat-input"
+              placeholder="메시지를 입력하세요..."
+              onkeypress="handleMessageKeyPress(event, {{ room.id }})"
+              rows="1"
+            ></textarea>
+          </div>
+          <button
+            id="sendBtn"
+            class="bg-blue-900 hover:bg-blue-800 text-white p-2 rounded-lg transition-colors chat-send-btn"
+            onclick="sendMessage({{ room.id }})"
+          >
+            <img
+              src="{{ url_for('static', filename='./images/chat/send.png') }}"
+              alt="전송"
+              class="w-5 h-5"
+            />
+          </button>
         </div>
       </div>
     </div>
-    {% endfor %}
-  </div>
 
-  <!-- 메시지 입력 -->
-  <div class="chat-input-container">
-    <div class="chat-input-form">
-      <textarea
-        id="messageInput"
-        class="chat-input"
-        placeholder="메시지를 입력하세요..."
-        onkeypress="handleMessageKeyPress(event, {{ room.id }})"
-        rows="1"
-      ></textarea>
-      <button
-        id="sendBtn"
-        class="chat-send-btn"
-        onclick="sendMessage({{ room.id }})"
-      >
-        <img
-          src="{{ url_for('static', filename='./images/chat/send.png') }}"
-          alt="전송"
-        />
-      </button>
-    </div>
-  </div>
-</div>
+    <!-- 현재 사용자 ID를 JavaScript에서 사용할 수 있도록 설정 -->
+    <script>
+      window.currentUserId = {{ current_user.id }};
+    </script>
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+    <script>
+      // 페이지 로드 시 실시간 메시지 폴링 시작
+      document.addEventListener('DOMContentLoaded', function() {
+          startMessagePolling({{ room.id }});
+      });
 
-<!-- 현재 사용자 ID를 JavaScript에서 사용할 수 있도록 설정 -->
-<script>
-  window.currentUserId = {{ current_user.id }};
-</script>
-{% endblock %} {% block extra_js %}
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-<script>
-  // 페이지 로드 시 실시간 메시지 폴링 시작
-  document.addEventListener('DOMContentLoaded', function() {
-      startMessagePolling({{ room.id }});
-  });
-
-  // 페이지 언로드 시 폴링 중지
-  window.addEventListener('beforeunload', function() {
-      stopMessagePolling();
-  });
-</script>
-{% endblock %}
+      // 페이지 언로드 시 폴링 중지
+      window.addEventListener('beforeunload', function() {
+          stopMessagePolling();
+      });
+    </script>
+  </body>
+</html>

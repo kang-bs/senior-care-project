@@ -1,7 +1,7 @@
 # routes/naver_oauth.py
 import os
 import requests
-from flask import Blueprint, redirect, url_for, request, session
+from flask import Blueprint, redirect, url_for, request, session, flash
 from flask_login import login_user
 from models import db, User
 from config import Config
@@ -11,6 +11,18 @@ naver_bp = Blueprint("naver", __name__)
 NAVER_CLIENT_ID = Config.NAVER_CLIENT_ID
 NAVER_CLIENT_SECRET = Config.NAVER_CLIENT_SECRET
 NAVER_REDIRECT_URI = Config.NAVER_REDIRECT_URI
+
+# 프로필 완성 여부 체크 함수 (auth.py와 동일)
+def is_profile_complete(user):
+    """사용자 프로필이 완성되었는지 확인하는 함수"""
+    return all([
+        user.gender,
+        user.birth_date,
+        user.sido,
+        user.sigungu,
+        user.dong,
+        user.phone
+    ])
 
 # 네이버 로그인 시작
 @naver_bp.route("/naver_login")
@@ -85,4 +97,10 @@ def naver_login_callback():
         db.session.add(user)
         db.session.commit()
     login_user(user)
-    return redirect(url_for("auth.profile"))# routes/naver_oauth.py
+    
+    # 프로필 완성 여부 확인
+    if not is_profile_complete(user):
+        flash("추가 정보를 입력해주세요.", "info")
+        return redirect(url_for("auth.onboarding"))
+    
+    return redirect(url_for("auth.main"))

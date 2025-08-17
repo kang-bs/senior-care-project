@@ -28,7 +28,7 @@
           <div class="flex items-center">
             <div class="w-8 h-8 mr-2 flex items-center justify-center">
               <img
-                src="static\images\header\logo.png"
+                src="{{ url_for('static', filename='images/header/logo.png') }}"
                 alt="로고"
                 class="max-w-full max-h-full object-contain"
               />
@@ -38,14 +38,14 @@
           <div class="flex items-center space-x-4">
             <div class="w-6 h-6 flex items-center justify-center">
               <img
-                src="static\images\header\mic.png"
+                src="{{ url_for('static', filename='images/header/mic.png') }}"
                 alt="마이크"
                 class="max-w-full max-h-full object-contain"
               />
             </div>
             <div class="w-6 h-6 flex items-center justify-center">
               <img
-                src="static\images\header\search.png"
+                src="{{ url_for('static', filename='images/header/search.png') }}"
                 alt="검색"
                 class="max-w-full max-h-full object-contain"
               />
@@ -285,7 +285,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="static\images\footer\map.png"
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
               alt="지도"
               class="max-w-full max-h-full object-contain"
             />
@@ -298,7 +298,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="static\images\footer\favorite.png"
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
               alt="찜"
               class="max-w-full max-h-full object-contain"
             />
@@ -306,12 +306,12 @@
           <span class="text-xs">찜</span>
         </a>
         <a
-          href="templates\main.html"
+          href="{{ url_for('auth.main') }}"
           class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="static\images\footer\home.png"
+              src="{{ url_for('static', filename='images/footer/home_filled.png') }}"
               alt="홈"
               class="max-w-full max-h-full object-contain"
             />
@@ -324,7 +324,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="static\images\footer\chatting.png"
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
               alt="채팅"
               class="max-w-full max-h-full object-contain"
             />
@@ -337,7 +337,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="static\images\footer\profile.png"
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
               alt="내정보"
               class="max-w-full max-h-full object-contain"
             />

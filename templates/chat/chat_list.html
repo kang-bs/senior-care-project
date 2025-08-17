@@ -1,83 +1,226 @@
-{% extends "base.html" %} {% block title %}채팅 - 사람이음{% endblock %} {%
-block extra_css %}
-<link
-  rel="stylesheet"
-  href="{{ url_for('static', filename='css/chat.css') }}"
-/>
-{% endblock %} {% block content %}
-<!-- 상단 헤더 -->
-{% include 'components/header.html' %}
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>채팅 - 사람이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/chat.css') }}"
+    />
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 고정 영역 -->
+      <div class="sticky top-0 z-10 bg-white shadow-sm">
+        <!-- 상단 바 -->
+        <header class="p-4 flex justify-between items-center">
+          <div class="flex items-center">
+            <div class="w-8 h-8 mr-2 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/logo.png') }}"
+                alt="로고"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <span class="text-2xl font-bold text-blue-900">이음</span>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-6 h-6 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/mic.png') }}"
+                alt="마이크"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div class="w-6 h-6 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/search.png') }}"
+                alt="검색"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+          </div>
+        </header>
 
-<!-- 채팅 목록 제목 -->
-<div class="section-title">
-  채팅 {% if unread_total > 0 %}
-  <span
-    style="
-      background: #e74c3c;
-      color: white;
-      border-radius: 50%;
-      padding: 2px 8px;
-      font-size: 12px;
-      margin-left: 10px;
-    "
-  >
-    {{ unread_total }}
-  </span>
-  {% endif %}
-</div>
-
-<!-- 채팅 목록 -->
-<div class="chat-list">
-  {% if chat_rooms %} {% for chat_data in chat_rooms %}
-  <div
-    class="chat-item {% if chat_data.unread_count > 0 %}unread{% endif %}"
-    onclick="goToChatRoom({{ chat_data.room.id }})"
-  >
-    {% if chat_data.unread_count > 0 %}
-    <div class="chat-unread-badge">{{ chat_data.unread_count }}</div>
-    {% endif %}
-
-    <div class="chat-header">
-      <div class="chat-user-info">
-        <div class="chat-avatar">
-          {{ chat_data.other_user.nickname[0] if chat_data.other_user.nickname
-          else '?' }}
-        </div>
-        <div>
-          <div class="chat-user-name">{{ chat_data.other_user.nickname }}</div>
-          <div class="chat-job-title">{{ chat_data.room.job.title }}</div>
-        </div>
+        <!-- 네비게이션 탭 -->
+        <nav class="flex border-b">
+          <a
+            href="{{ url_for('auth.main') }}"
+            class="flex-1 text-center py-3 text-gray-500"
+            >나의 이음</a
+          >
+          <a href="#" class="flex-1 text-center py-3 text-gray-500"
+            >기업 이음</a
+          >
+          <a
+            href="{{ url_for('jobs.job_list') }}"
+            class="flex-1 text-center py-3 text-gray-500"
+            >사람 이음</a
+          >
+        </nav>
       </div>
-      <div class="chat-time">
-        {% if chat_data.last_message %} {{
-        chat_data.last_message.created_at|time_ago }} {% else %} {{
-        chat_data.room.created_at|time_ago }} {% endif %}
-      </div>
+
+      <!-- 메인 컨텐츠 -->
+      <main class="p-4 bg-white pb-24">
+        <!-- 채팅 목록 제목 -->
+        <div class="section-title">
+          채팅 {% if unread_total > 0 %}
+          <span
+            style="
+              background: #e74c3c;
+              color: white;
+              border-radius: 50%;
+              padding: 2px 8px;
+              font-size: 12px;
+              margin-left: 10px;
+            "
+          >
+            {{ unread_total }}
+          </span>
+          {% endif %}
+        </div>
+
+        <!-- 채팅 목록 -->
+        <div class="chat-list">
+          {% if chat_rooms %} {% for chat_data in chat_rooms %}
+          <div
+            class="chat-item {% if chat_data.unread_count > 0 %}unread{% endif %}"
+            onclick="goToChatRoom({{ chat_data.room.id }})"
+          >
+            {% if chat_data.unread_count > 0 %}
+            <div class="chat-unread-badge">{{ chat_data.unread_count }}</div>
+            {% endif %}
+
+            <div class="chat-header">
+              <div class="chat-user-info">
+                <div class="chat-avatar">
+                  {{ chat_data.other_user.nickname[0] if
+                  chat_data.other_user.nickname else '?' }}
+                </div>
+                <div>
+                  <div class="chat-user-name">
+                    {{ chat_data.other_user.nickname }}
+                  </div>
+                  <div class="chat-job-title">
+                    {{ chat_data.room.job.title }}
+                  </div>
+                </div>
+              </div>
+              <div class="chat-time">
+                {% if chat_data.last_message %} {{
+                chat_data.last_message.created_at|time_ago }} {% else %} {{
+                chat_data.room.created_at|time_ago }} {% endif %}
+              </div>
+            </div>
+
+            <div class="chat-last-message">
+              {% if chat_data.last_message %} {% if
+              chat_data.last_message.message_type == 'system' %}
+              <em>{{ chat_data.last_message.message }}</em>
+              {% else %} {{ chat_data.last_message.message }} {% endif %} {%
+              else %} 채팅을 시작해보세요! {% endif %}
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <div class="chat-empty-state">
+            <h3>채팅 내역이 없습니다</h3>
+            <p>
+              공고에 지원하면 자동으로 채팅방이 생성됩니다.<br />
+              관심있는 공고에 지원해보세요!
+            </p>
+            <a href="{{ url_for('jobs.job_list') }}" class="btn-primary"
+              >공고 둘러보기</a
+            >
+          </div>
+          {% endif %}
+        </div>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="#"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting_filled.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
     </div>
 
-    <div class="chat-last-message">
-      {% if chat_data.last_message %} {% if chat_data.last_message.message_type
-      == 'system' %}
-      <em>{{ chat_data.last_message.message }}</em>
-      {% else %} {{ chat_data.last_message.message }} {% endif %} {% else %}
-      채팅을 시작해보세요! {% endif %}
-    </div>
-  </div>
-  {% endfor %} {% else %}
-  <div class="chat-empty-state">
-    <h3>채팅 내역이 없습니다</h3>
-    <p>
-      공고에 지원하면 자동으로 채팅방이 생성됩니다.<br />
-      관심있는 공고에 지원해보세요!
-    </p>
-    <a href="{{ url_for('jobs.job_list') }}" class="btn-primary"
-      >공고 둘러보기</a
-    >
-  </div>
-  {% endif %}
-</div>
-
-<!-- 하단 네비게이션 -->
-{% include 'components/bottom_nav.html' %} {% endblock %} {% block extra_js %}
-<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
-{% endblock %}
+    <script src="{{ url_for('static', filename='js/common.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+  </body>
+</html>

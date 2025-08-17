@@ -164,6 +164,8 @@ class ChatRoom(db.Model):
     applicant_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 지원자
     employer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # 고용주
     is_active = db.Column(db.Boolean, default=True)  # 채팅방 활성 상태
+    applicant_left = db.Column(db.Boolean, default=False)  # 지원자가 나갔는지 여부
+    employer_left = db.Column(db.Boolean, default=False)  # 고용주가 나갔는지 여부
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

@@ -52,20 +52,6 @@
         </button>
       </header>
 
-      <!-- 플래시 메시지 -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %}
-      <div class="p-4">
-        {% for category, message in messages %}
-        <div
-          class="p-4 rounded-md {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}"
-        >
-          {{ message }}
-        </div>
-        {% endfor %}
-      </div>
-      {% endif %} {% endwith %}
-
       <!-- 메인 컨텐츠 -->
       <main class="p-4 bg-white pb-24">
         <form id="jobForm" method="POST" class="space-y-6">
@@ -361,7 +347,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="./static/images/footer/map.png"
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
               alt="지도"
               class="max-w-full max-h-full object-contain"
             />
@@ -374,7 +360,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="./static/images/footer/favorite.png"
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
               alt="찜"
               class="max-w-full max-h-full object-contain"
             />
@@ -387,7 +373,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="./static/images/footer/home.png"
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
               alt="홈"
               class="max-w-full max-h-full object-contain"
             />
@@ -400,7 +386,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="./static/images/footer/chatting.png"
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
               alt="채팅"
               class="max-w-full max-h-full object-contain"
             />
@@ -413,7 +399,7 @@
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="./static/images/footer/profile.png"
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
               alt="내정보"
               class="max-w-full max-h-full object-contain"
             />

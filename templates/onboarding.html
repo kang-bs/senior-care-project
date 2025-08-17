@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>추가 정보 입력 - 사람이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+      .step-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      #selected-address {
+        font-weight: 700;
+        color: #1e40af;
+        min-height: 1.5rem;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background-color: #eff6ff;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen flex items-center justify-center">
+      <div class="w-full p-8">
+        <!-- 로고 및 타이틀 -->
+        <div class="text-center mb-8">
+          <div class="flex items-center justify-center mb-4">
+            <div class="w-12 h-12 mr-3 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/logo.png') }}"
+                alt="로고"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <span class="text-3xl font-bold text-blue-900">이음</span>
+          </div>
+          <h2 class="text-xl font-semibold text-gray-700 mb-2">
+            추가 정보 입력
+          </h2>
+          <p class="text-sm text-gray-500">
+            서비스 이용을 위해 몇 가지 추가 정보가 필요합니다.
+          </p>
+        </div>
+
+        <!-- 추가 정보 입력 폼 -->
+        <form method="POST" action="{{ url_for('auth.onboarding') }}" class="space-y-4">
+          <!-- 성별 선택 -->
+          <div>
+            <select 
+              name="gender" 
+              required 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            >
+              <option value="">성별 선택</option>
+              <option value="male" {{ "selected" if user.gender == "male" else "" }}>남성</option>
+              <option value="female" {{ "selected" if user.gender == "female" else "" }}>여성</option>
+            </select>
+          </div>
+
+          <!-- 생년월일 -->
+          <div>
+            <input 
+              type="date" 
+              name="birth_date" 
+              value="{{ user.birth_date }}" 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+              required 
+            />
+          </div>
+
+          <!-- 휴대폰 번호 -->
+          <div>
+            <input 
+              type="tel" 
+              name="phone" 
+              placeholder="휴대폰 번호 (010-1234-5678)" 
+              value="{{ user.phone }}" 
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              pattern="^\d{2,3}-\d{3,4}-\d{4}$"
+              title="010-1234-5678 형식으로 입력해주세요" 
+              required 
+            />
+          </div>
+
+          <!-- 주소 선택 -->
+          <div class="space-y-3">
+            <label class="step-label block text-sm font-medium text-gray-700">주소 (시/군/동)</label>
+            
+            <select 
+              id="sido-select" 
+              name="sido" 
+              required
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            >
+              <option value="">시/도 선택</option>
+            </select>
+            
+            <select 
+              id="sigungu-select" 
+              name="sigungu" 
+              required 
+              disabled
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100"
+            >
+              <option value="">시/군/구 선택</option>
+            </select>
+            
+            <select 
+              id="dong-select" 
+              name="dong" 
+              required 
+              disabled
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:bg-gray-100"
+            >
+              <option value="">읍/면/동 선택</option>
+            </select>
+            
+            <div id="selected-address"></div>
+          </div>
+
+          <!-- 완료 버튼 -->
+          <button 
+            type="submit" 
+            class="w-full bg-blue-900 hover:bg-blue-800 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+          >
+            정보 입력 완료
+          </button>
+        </form>
+      </div>
+    </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sidoSelect = document.getElementById('sido-select');
+      const sigunguSelect = document.getElementById('sigungu-select');
+      const dongSelect = document.getElementById('dong-select');
+      const addrText = document.getElementById('selected-address');
+
+      const selectedSido = "{{ user.sido|default('') }}";
+      const selectedSigungu = "{{ user.sigungu|default('') }}";
+      const selectedDong = "{{ user.dong|default('') }}";
+
+      function updateAddrText() {
+        const sido = sidoSelect.value;
+        const sigungu = sigunguSelect.value;
+        const dong = dongSelect.value;
+        if(sido && sigungu && dong) {
+          addrText.textContent = `선택된 주소: ${sido} ${sigungu} ${dong}`;
+        } else if(sido && sigungu) {
+          addrText.textContent = `선택 중: ${sido} ${sigungu}`;
+        } else if(sido) {
+          addrText.textContent = `선택 중: ${sido}`;
+        } else {
+          addrText.textContent = '';
+        }
+      }
+
+      fetch('/api/areas/sido')
+        .then(res => res.json())
+        .then(data => {
+          data.forEach(area => {
+            const opt = document.createElement('option');
+            opt.value = area.name;
+            opt.textContent = area.name;
+            sidoSelect.appendChild(opt);
+          });
+          if(selectedSido) {
+            sidoSelect.value = selectedSido;
+            sidoSelect.dispatchEvent(new Event('change'));
+          }
+        });
+
+      sidoSelect.addEventListener('change', () => {
+        const sido = sidoSelect.value;
+        sigunguSelect.innerHTML = '<option value="">시/군/구 선택</option>';
+        dongSelect.innerHTML = '<option value="">읍/면/동 선택</option>';
+        sigunguSelect.disabled = !sido;
+        dongSelect.disabled = true;
+        updateAddrText();
+
+        if(sido) {
+          fetch(`/api/areas/sigungu_by_name/${encodeURIComponent(sido)}`)
+            .then(res => res.json())
+            .then(data => {
+              data.forEach(sgg => {
+                const opt = document.createElement('option');
+                opt.value = sgg.name;
+                opt.textContent = sgg.name;
+                sigunguSelect.appendChild(opt);
+              });
+              if(selectedSigungu) {
+                sigunguSelect.value = selectedSigungu;
+                sigunguSelect.disabled = false;
+                sigunguSelect.dispatchEvent(new Event('change'));
+              }
+            });
+        }
+      });
+
+      sigunguSelect.addEventListener('change', () => {
+        const sido = sidoSelect.value;
+        const sigungu = sigunguSelect.value;
+        dongSelect.innerHTML = '<option value="">읍/면/동 선택</option>';
+        dongSelect.disabled = !sigungu;
+        updateAddrText();
+
+        if(sido && sigungu) {
+          fetch(`/api/areas/dong_by_name/${encodeURIComponent(sido)}/${encodeURIComponent(sigungu)}`)
+            .then(res => res.json())
+            .then(data => {
+              data.forEach(dong => {
+                const opt = document.createElement('option');
+                opt.value = dong.name;
+                opt.textContent = dong.name;
+                dongSelect.appendChild(opt);
+              });
+              if(selectedDong) {
+                dongSelect.value = selectedDong;
+                dongSelect.disabled = false;
+              }
+            });
+        }
+      });
+
+      dongSelect.addEventListener('change', updateAddrText);
+    });
+  </script>
+</body>
+</html>
