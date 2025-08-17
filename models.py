@@ -97,6 +97,31 @@ class JobPost(db.Model):
     # 연락처
     contact_phone = db.Column(db.String(20), nullable=True)    # 연락처 전화번호
 
+    # 기업 이음 전용 필드들
+    job_category = db.Column(db.String(50), nullable=True)     # 직무 내용 (사무직, 생산/기술직, 서비스직, 기타)
+    job_category_custom = db.Column(db.String(100), nullable=True)  # 직무 내용 직접입력
+    salary_min = db.Column(db.Integer, nullable=True)          # 최소 임금 (만원 단위)
+    salary_max = db.Column(db.Integer, nullable=True)          # 최대 임금 (만원 단위)
+    salary_negotiable = db.Column(db.Boolean, default=False)   # 임금 협의 여부
+    experience_required = db.Column(db.String(20), nullable=True)  # 경력 요구사항 (무관, 경력직)
+    
+    # 복리후생 (Boolean 필드들)
+    benefit_commute_bus = db.Column(db.Boolean, default=False)     # 통근버스
+    benefit_lunch = db.Column(db.Boolean, default=False)           # 중식제공
+    benefit_uniform = db.Column(db.Boolean, default=False)         # 근무복 제공
+    benefit_health_checkup = db.Column(db.Boolean, default=False)  # 정기 건강검진
+    benefit_other = db.Column(db.String(200), nullable=True)       # 기타 복리후생
+    
+    # 장애인용 복지시설 (Boolean 필드들)
+    disabled_parking = db.Column(db.Boolean, default=False)        # 장애인용 주차장
+    disabled_elevator = db.Column(db.Boolean, default=False)       # 장애인용 승강기
+    disabled_ramp = db.Column(db.Boolean, default=False)           # 건물 내부 경사로
+    disabled_restroom = db.Column(db.Boolean, default=False)       # 장애인용 화장실
+    
+    # 모집기간
+    recruitment_start_date = db.Column(db.Date, nullable=True)     # 모집 시작일
+    recruitment_end_date = db.Column(db.Date, nullable=True)       # 모집 마감일
+
     # 통계 정보
     application_count = db.Column(db.Integer, default=0)       # 지원횟수
     view_count = db.Column(db.Integer, default=0)              # 조회수

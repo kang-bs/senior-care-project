@@ -1,14 +1,26 @@
 import json
+import os
 from flask import Blueprint, jsonify
 
 areas_bp = Blueprint("areas", __name__)
 
-with open("./data/sido.json", encoding="utf-8") as f:
-    sido_list = json.load(f)
-with open("./data/sigungu.json", encoding="utf-8") as f:
-    sigungu_list = json.load(f)
-with open("./data/dong.json", encoding="utf-8") as f:
-    dong_list = json.load(f)
+# 현재 파일의 디렉토리를 기준으로 절대 경로 생성
+current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+data_dir = os.path.join(current_dir, "data")
+
+try:
+    with open(os.path.join(data_dir, "sido.json"), encoding="utf-8") as f:
+        sido_list = json.load(f)
+    with open(os.path.join(data_dir, "sigungu.json"), encoding="utf-8") as f:
+        sigungu_list = json.load(f)
+    with open(os.path.join(data_dir, "dong.json"), encoding="utf-8") as f:
+        dong_list = json.load(f)
+except FileNotFoundError as e:
+    print(f"Warning: {e}")
+    # 기본값 설정
+    sido_list = []
+    sigungu_list = []
+    dong_list = []
 
 
 def last_token(s):
