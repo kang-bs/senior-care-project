@@ -1,130 +1,456 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>시니어 이력서 수정</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style> body { font-family: "Noto Sans KR", sans-serif; background: #f9fafb; } </style>
-</head>
-<body>
-  <div class="max-w-lg mx-auto bg-white p-8 mt-10 rounded-2xl shadow-lg">
-    <h1 class="text-3xl font-bold mb-8 text-gray-900 border-b pb-4">시니어 이력서 수정</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이력서 수정 - 이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 고정 영역 -->
+      <div class="sticky top-0 z-10 bg-white shadow-sm">
+        <!-- 상단 바 -->
+        <header class="p-4 flex justify-between items-center">
+          <div class="flex items-center">
+            <button class="p-2" onclick="history.back()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
+            <div class="w-8 h-8 mr-2 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/logo.png') }}"
+                alt="로고"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <span class="text-2xl font-bold text-blue-900">이음</span>
+          </div>
+        </header>
 
-    <form method="POST" class="space-y-6">
-
-      <!-- 희망 근무 요일 -->
-      <fieldset>
-        <legend class="font-semibold text-gray-700 mb-2">희망 근무 요일</legend>
-        <div class="flex flex-wrap gap-4">
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_monday" {% if resume.work_monday %}checked{% endif %} class="form-checkbox">
-            <span>월요일</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_tuesday" {% if resume.work_tuesday %}checked{% endif %} class="form-checkbox">
-            <span>화요일</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_wednesday" {% if resume.work_wednesday %}checked{% endif %} class="form-checkbox">
-            <span>수요일</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_thursday" {% if resume.work_thursday %}checked{% endif %} class="form-checkbox">
-            <span>목요일</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_friday" {% if resume.work_friday %}checked{% endif %} class="form-checkbox">
-            <span>금요일</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_saturday" {% if resume.work_saturday %}checked{% endif %} class="form-checkbox">
-            <span>토요일</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_sunday" {% if resume.work_sunday %}checked{% endif %} class="form-checkbox">
-            <span>일요일</span>
-          </label>
-        </div>
-      </fieldset>
-
-      <!-- 희망 근무 시간대 -->
-      <fieldset>
-        <legend class="font-semibold text-gray-700 mb-2">희망 근무 시간대</legend>
-        <div class="flex flex-wrap gap-4">
-          {% set times = resume.work_time.split(',') if resume.work_time else [] %}
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_time" value="오전" {% if '오전' in times %}checked{% endif %} class="form-checkbox">
-            <span>오전</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_time" value="오후" {% if '오후' in times %}checked{% endif %} class="form-checkbox">
-            <span>오후</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_time" value="저녁(6시 이후)" {% if '저녁(6시 이후)' in times %}checked{% endif %} class="form-checkbox">
-            <span>저녁(6시 이후)</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="work_time" value="시간 관계 X" {% if '시간 관계 X' in times %}checked{% endif %} class="form-checkbox">
-            <span>시간 관계 X</span>
-          </label>
-        </div>
-        <input type="text" name="work_time_free_text" class="mt-3 w-full border border-gray-300 rounded px-3 py-2" placeholder="자유 작성 입력" value="{{ resume.work_time_free_text }}">
-      </fieldset>
-
-      <!-- 관심 있는 일 -->
-      <fieldset>
-        <legend class="font-semibold text-gray-700 mb-2">관심 있는 일</legend>
-        <div class="flex flex-wrap gap-4 mb-2">
-          {% set jobs = resume.interested_jobs.split(',') if resume.interested_jobs else [] %}
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="interested_jobs" value="공공근로/환경정비" {% if '공공근로/환경정비' in jobs %}checked{% endif %} class="form-checkbox">
-            <span>공공근로/환경정비</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="interested_jobs" value="카페/식당 보조" {% if '카페/식당 보조' in jobs %}checked{% endif %} class="form-checkbox">
-            <span>카페/식당 보조</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="interested_jobs" value="사무보조" {% if '사무보조' in jobs %}checked{% endif %} class="form-checkbox">
-            <span>사무보조</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="interested_jobs" value="전화상담" {% if '전화상담' in jobs %}checked{% endif %} class="form-checkbox">
-            <span>전화상담</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" name="interested_jobs" value="재능기부/교육" {% if '재능기부/교육' in jobs %}checked{% endif %} class="form-checkbox">
-            <span>재능기부/교육</span>
-          </label>
-        </div>
-        <input type="text" name="interested_jobs_custom" class="w-full border border-gray-300 rounded px-3 py-2" placeholder="직접 입력" value="{{ resume.interested_jobs_custom }}">
-      </fieldset>
-
-      <!-- 경력사항 -->
-      <div class="mb-4">
-        <label class="inline-flex items-center space-x-2 font-semibold">
-          <input type="checkbox" name="career_status" {% if resume.career_status %}checked{% endif %} class="form-checkbox">
-          <span>경력 있어요 (체크하지 않으면 신입으로 간주)</span>
-        </label>
+        <!-- 네비게이션 탭 -->
+        <nav class="flex border-b">
+          <a
+            href="{{ url_for('auth.main') }}"
+            class="flex-1 text-center py-3 border-b-4 border-blue-900 text-blue-900 font-bold"
+            >나의 이음</a
+          >
+          <a
+            href="{{ url_for('company.company_list') }}"
+            class="flex-1 text-center py-3 text-gray-500"
+            >기업 이음</a
+          >
+          <a
+            href="{{ url_for('jobs.job_list') }}"
+            class="flex-1 text-center py-3 text-gray-500"
+            >사람 이음</a
+          >
+        </nav>
       </div>
 
-      <!-- 지원 동기 -->
-      <div>
-        <label class="block mb-1 font-semibold">지원 동기</label>
-        <textarea name="motivation" rows="4" class="w-full border border-gray-300 rounded p-2">{{ resume.motivation }}</textarea>
-      </div>
+      <!-- 메인 컨텐츠 -->
+      <main class="p-4 bg-white pb-24">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">이력서 수정</h1>
+          <p class="text-sm text-gray-600">
+            나에게 맞는 일자리를 찾기 위해 정보를 입력해주세요.
+          </p>
+        </div>
 
-      <!-- 기타 요청사항 -->
-      <div>
-        <label class="block mb-1 font-semibold">기타 요청사항 (선택)</label>
-        <textarea name="extra_requests" rows="3" class="w-full border border-gray-300 rounded p-2">{{ resume.extra_requests }}</textarea>
-      </div>
+        <form method="POST" class="space-y-6">
+          <!-- 희망 근무 요일 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              희망 근무 요일
+            </h4>
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <div class="grid grid-cols-2 gap-3">
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="work_monday"
+                    {%
+                    if
+                    resume.work_monday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>월요일</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="work_tuesday"
+                    {%
+                    if
+                    resume.work_tuesday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>화요일</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="work_wednesday"
+                    {%
+                    if
+                    resume.work_wednesday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>수요일</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="work_thursday"
+                    {%
+                    if
+                    resume.work_thursday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>목요일</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="work_friday"
+                    {%
+                    if
+                    resume.work_friday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>금요일</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input
+                    type="checkbox"
+                    name="work_saturday"
+                    {%
+                    if
+                    resume.work_saturday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>토요일</span>
+                </label>
+                <label
+                  class="inline-flex items-center space-x-2 text-sm col-span-2"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_sunday"
+                    {%
+                    if
+                    resume.work_sunday
+                    %}checked{%
+                    endif
+                    %}
+                    class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  <span>일요일</span>
+                </label>
+              </div>
+            </div>
+          </section>
 
-      <button type="submit" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded font-semibold transition">
-        저장하기
-      </button>
-    </form>
-  </div>
-</body>
+          <!-- 희망 근무 시간대 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              희망 근무 시간대
+            </h4>
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                {% set times = resume.work_time.split(',') if resume.work_time
+                else [] %}
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="work_time" value="오전" {% if
+                  '오전' in times %}checked{% endif %} class="form-checkbox h-4
+                  w-4 text-blue-600 rounded border-gray-300
+                  focus:ring-blue-500">
+                  <span>오전</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="work_time" value="오후" {% if
+                  '오후' in times %}checked{% endif %} class="form-checkbox h-4
+                  w-4 text-blue-600 rounded border-gray-300
+                  focus:ring-blue-500">
+                  <span>오후</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="work_time" value="저녁(6시 이후)"
+                  {% if '저녁(6시 이후)' in times %}checked{% endif %}
+                  class="form-checkbox h-4 w-4 text-blue-600 rounded
+                  border-gray-300 focus:ring-blue-500">
+                  <span>저녁(6시 이후)</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="work_time" value="시간 관계 X" {%
+                  if '시간 관계 X' in times %}checked{% endif %}
+                  class="form-checkbox h-4 w-4 text-blue-600 rounded
+                  border-gray-300 focus:ring-blue-500">
+                  <span>시간 관계 X</span>
+                </label>
+              </div>
+              <input
+                type="text"
+                name="work_time_free_text"
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="자유 작성 입력"
+                value="{{ resume.work_time_free_text }}"
+              />
+            </div>
+          </section>
+
+          <!-- 관심 있는 일 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              관심 있는 일
+            </h4>
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <div class="space-y-3 mb-4">
+                {% set jobs = resume.interested_jobs.split(',') if
+                resume.interested_jobs else [] %}
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="interested_jobs"
+                  value="공공근로/환경정비" {% if '공공근로/환경정비' in jobs
+                  %}checked{% endif %} class="form-checkbox h-4 w-4
+                  text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                  <span>공공근로/환경정비</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="interested_jobs" value="카페/식당
+                  보조" {% if '카페/식당 보조' in jobs %}checked{% endif %}
+                  class="form-checkbox h-4 w-4 text-blue-600 rounded
+                  border-gray-300 focus:ring-blue-500">
+                  <span>카페/식당 보조</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="interested_jobs" value="사무보조"
+                  {% if '사무보조' in jobs %}checked{% endif %}
+                  class="form-checkbox h-4 w-4 text-blue-600 rounded
+                  border-gray-300 focus:ring-blue-500">
+                  <span>사무보조</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="interested_jobs" value="전화상담"
+                  {% if '전화상담' in jobs %}checked{% endif %}
+                  class="form-checkbox h-4 w-4 text-blue-600 rounded
+                  border-gray-300 focus:ring-blue-500">
+                  <span>전화상담</span>
+                </label>
+                <label class="inline-flex items-center space-x-2 text-sm">
+                  <input type="checkbox" name="interested_jobs"
+                  value="재능기부/교육" {% if '재능기부/교육' in jobs
+                  %}checked{% endif %} class="form-checkbox h-4 w-4
+                  text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                  <span>재능기부/교육</span>
+                </label>
+              </div>
+              <input
+                type="text"
+                name="interested_jobs_custom"
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="직접 입력"
+                value="{{ resume.interested_jobs_custom }}"
+              />
+            </div>
+          </section>
+
+          <!-- 경력사항 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              경력 정보
+            </h4>
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <label class="inline-flex items-center space-x-2 text-sm">
+                <input
+                  type="checkbox"
+                  name="career_status"
+                  {%
+                  if
+                  resume.career_status
+                  %}checked{%
+                  endif
+                  %}
+                  class="form-checkbox h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <span
+                  >경력 있어요
+                  <span class="text-gray-500"
+                    >(체크하지 않으면 신입으로 간주)</span
+                  ></span
+                >
+              </label>
+            </div>
+          </section>
+
+          <!-- 지원 동기 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              지원 동기
+            </h4>
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <textarea
+                name="motivation"
+                rows="4"
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                placeholder="어떤 이유로 일을 하고 싶으신지 알려주세요."
+              >
+{{ resume.motivation }}</textarea
+              >
+            </div>
+          </section>
+
+          <!-- 기타 요청사항 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              기타 요청사항
+              <span class="text-sm text-gray-500 font-normal">(선택)</span>
+            </h4>
+            <div class="bg-gray-100 p-4 rounded-lg">
+              <textarea
+                name="extra_requests"
+                rows="3"
+                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                placeholder="추가로 전달하고 싶은 내용이 있다면 입력해주세요."
+              >
+{{ resume.extra_requests }}</textarea
+              >
+            </div>
+          </section>
+
+          <!-- 저장 버튼 -->
+          <div class="mt-8">
+            <button
+              type="submit"
+              class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 px-4 rounded-lg transition-colors"
+            >
+              저장하기
+            </button>
+          </div>
+        </form>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="#"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile_filled.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">내정보</span>
+        </a>
+      </footer>
+    </div>
+  </body>
 </html>
