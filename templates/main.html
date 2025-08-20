@@ -156,7 +156,11 @@
         <section class="mb-8">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">추천 기업 이음</h2>
-            <a href="#" class="text-sm text-gray-500">더보기 ></a>
+            <a
+              href="{{ url_for('company.company_list') }}"
+              class="text-sm text-gray-500"
+              >더보기 ></a
+            >
           </div>
           <div class="space-y-4">
             <!-- 공고 카드 1 -->
@@ -228,7 +232,11 @@
         <section>
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">실시간 사람 이음</h2>
-            <a href="#" class="text-sm text-gray-500">더보기 ></a>
+            <a
+              href="{{ url_for('jobs.job_list') }}"
+              class="text-sm text-gray-500"
+              >더보기 ></a
+            >
           </div>
           <div class="space-y-4">
             <!-- 사람 카드 1 -->
