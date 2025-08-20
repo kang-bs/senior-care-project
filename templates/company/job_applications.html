@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ job.title }} - 지원자 목록</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 바 -->
+      <header
+        class="sticky top-0 z-10 p-4 flex justify-between items-center bg-white shadow-sm"
+      >
+        <button class="p-2" onclick="history.back()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold text-gray-800">지원자 목록</h1>
+        <div class="w-8">
+          <!-- 오른쪽 공간 맞춤용 빈 div -->
+        </div>
+      </header>
+
+      <!-- 메인 컨텐츠 -->
+      <main class="p-4 bg-white pb-24">
+        <!-- 공고 요약 정보 -->
+        <section class="border-b pb-4 mb-6">
+          <div class="flex items-center gap-3 mb-3">
+            <div
+              class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-lg font-bold flex-shrink-0"
+            >
+              {{ job.company[0] if job.company else '기' }}
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-gray-800">
+                {{ job.company }}
+              </h2>
+              <p class="text-sm text-gray-500">{{ job.title }}</p>
+            </div>
+          </div>
+          <div class="bg-blue-50 p-3 rounded-lg">
+            <p class="text-sm text-blue-700">
+              총 <span class="font-bold">{{ applications|length }}명</span>이
+              지원했습니다.
+            </p>
+          </div>
+        </section>
+
+        <!-- 지원자 목록 -->
+        <section>
+          <h3 class="text-lg font-bold text-gray-800 mb-4">지원자 목록</h3>
+
+          {% if applications %} {% for application in applications %}
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+            <!-- 지원자 정보 헤더 -->
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-bold"
+                >
+                  {{ application.user.name[0] if application.user.name else '?'
+                  }}
+                </div>
+                <div>
+                  <h4 class="font-semibold text-gray-800">
+                    {{ application.user.name }}
+                  </h4>
+                  <p class="text-sm text-gray-500">
+                    {{ application.created_at.strftime('%Y.%m.%d %H:%M') }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- 지원 상태 배지 -->
+              {% if application.status == 'pending' %}
+              <span
+                class="bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded-full"
+              >
+                대기중
+              </span>
+              {% elif application.status == 'accepted' %}
+              <span
+                class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full"
+              >
+                승인
+              </span>
+              {% elif application.status == 'rejected' %}
+              <span
+                class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full"
+              >
+                거절
+              </span>
+              {% endif %}
+            </div>
+
+            <!-- 지원 메시지 -->
+            {% if application.message %}
+            <div class="bg-white p-3 rounded-lg mb-3">
+              <p class="text-xs text-gray-500 mb-1">지원 메시지</p>
+              <p class="text-sm text-gray-700">{{ application.message }}</p>
+            </div>
+            {% endif %}
+
+            <!-- 연락처 정보 -->
+            <div class="bg-white p-3 rounded-lg mb-3">
+              <p class="text-xs text-gray-500 mb-2">연락처 정보</p>
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                {% if application.user.phone %}
+                <div>
+                  <p class="text-xs text-gray-400">전화번호</p>
+                  <p class="font-medium">{{ application.user.phone }}</p>
+                </div>
+                {% endif %} {% if application.user.email %}
+                <div>
+                  <p class="text-xs text-gray-400">이메일</p>
+                  <p class="font-medium">{{ application.user.email }}</p>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- 상태 변경 버튼 (대기중인 경우만 표시) -->
+            {% if application.status == 'pending' %}
+            <div class="flex gap-2">
+              <button
+                onclick="updateApplicationStatus({{ application.id }}, 'accepted')"
+                class="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                승인
+              </button>
+              <button
+                onclick="updateApplicationStatus({{ application.id }}, 'rejected')"
+                class="flex-1 bg-red-600 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded-lg transition-colors"
+              >
+                거절
+              </button>
+            </div>
+            {% endif %}
+
+            <!-- 채팅하기 버튼 -->
+            <div class="mt-3 pt-3 border-t border-gray-200">
+              <a
+                href="{{ url_for('chat.find_chat_room', job_id=job.id) }}?applicant_id={{ application.user.id }}"
+                class="block w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold text-center py-2 px-4 rounded-lg transition-colors"
+              >
+                💬 채팅하기
+              </a>
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <!-- 지원자가 없는 경우 -->
+          <div class="text-center py-12">
+            <div
+              class="w-20 h-20 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-10 w-10 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-600 mb-2">
+              아직 지원자가 없습니다
+            </h3>
+            <p class="text-sm text-gray-500">곧 좋은 지원자가 나타날 거예요!</p>
+          </div>
+          {% endif %}
+        </section>
+
+        <!-- 공고로 돌아가기 버튼 -->
+        <div class="mt-8 pt-4 border-t">
+          <a
+            href="{{ url_for('company.company_job_detail', job_id=job.id) }}"
+            class="block w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold text-center py-3 px-4 rounded-lg transition-colors"
+          >
+            공고 상세로 돌아가기
+          </a>
+        </div>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="#"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+      // 지원 상태 업데이트 함수 (추후 API 연결 시 사용)
+      function updateApplicationStatus(applicationId, status) {
+        // TODO: API 연결 후 구현
+        alert(`지원 상태를 ${status === 'accepted' ? '승인' : '거절'}로 변경하는 기능은 준비 중입니다.`);
+      }
+
+      // 플래시 메시지 표시
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            {% if category == 'error' %}
+              alert("❌ {{ message }}");
+            {% elif category == 'success' %}
+              alert("✅ {{ message }}");
+            {% elif category == 'warning' %}
+              alert("⚠️ {{ message }}");
+            {% else %}
+              alert("ℹ️ {{ message }}");
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+    </script>
+  </body>
+</html>

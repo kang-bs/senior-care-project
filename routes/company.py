@@ -340,3 +340,12 @@ def company_job_applications(job_id):
     except Exception as e:
         flash("지원자 목록을 조회할 수 없습니다.", "error")
         return redirect(url_for("company.company_job_detail", job_id=job_id))
+
+@company_bp.route("/applications/<int:application_id>/status", methods=["POST"])
+@login_required
+def update_application_status(application_id):
+    status = request.json.get('status')
+    result = ApplicationService.update_application_status(
+        application_id, current_user.id, status
+    )
+    return jsonify(result)

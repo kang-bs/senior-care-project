@@ -4,698 +4,711 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>기업 공고 작성 - 기업이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
+      /* 사용자 정의 폰트 및 스타일 */
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        background-color: #f8f9fa;
-        max-width: 480px;
-        margin: 0 auto;
-        padding-bottom: 20px;
+        font-family: "Noto Sans KR", sans-serif;
       }
-
-      /* 헤더 */
-      .header {
-        background: white;
-        padding: 15px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-
-      .back-btn {
-        background: none;
-        border: none;
-        font-size: 18px;
-        cursor: pointer;
-        color: #333;
-      }
-
-      .header-title {
-        font-size: 18px;
-        font-weight: bold;
-        color: #333;
-      }
-
-      /* 폼 컨테이너 */
-      .form-container {
-        background: white;
-        margin: 20px;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .form-group {
-        margin-bottom: 20px;
-      }
-
-      .form-label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: 600;
-        color: #2c3e50;
-      }
-
-      .required {
-        color: #e74c3c;
-      }
-
-      .form-input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 14px;
-      }
-
-      .form-input:focus {
-        outline: none;
-        border-color: #e67e22;
-        box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
-      }
-
-      .form-textarea {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 14px;
-        min-height: 120px;
-        resize: vertical;
-      }
-
-      .form-textarea:focus {
-        outline: none;
-        border-color: #e67e22;
-        box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
-      }
-
-      .form-select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 14px;
-        background: white;
-      }
-
-      .form-select:focus {
-        outline: none;
-        border-color: #e67e22;
-        box-shadow: 0 0 0 2px rgba(230, 126, 34, 0.2);
-      }
-
-      /* 버튼 그룹 */
-      .button-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 8px;
-      }
-
-      .option-btn {
-        padding: 8px 16px;
-        border: 2px solid #ddd;
-        border-radius: 20px;
-        background: white;
-        color: #666;
-        cursor: pointer;
-        font-size: 14px;
-        transition: all 0.3s;
-      }
-
-      .option-btn.active {
-        border-color: #e67e22;
-        background: #e67e22;
-        color: white;
-      }
-
-      .option-btn:hover {
-        border-color: #e67e22;
-      }
-
-      /* 체크박스 그룹 */
-      .checkbox-group {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-top: 8px;
-      }
-
-      .checkbox-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .checkbox-item:hover {
-        border-color: #e67e22;
-        background: #fff8f0;
-      }
-
-      .checkbox-item input[type="checkbox"] {
-        margin: 0;
-      }
-
-      .checkbox-item.checked {
-        border-color: #e67e22;
-        background: #fff8f0;
-      }
-
-      /* 임금 입력 그룹 */
-      .salary-group {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-top: 8px;
-      }
-
-      .salary-input {
-        flex: 1;
-        text-align: center;
-      }
-
-      /* 시간 입력 그룹 */
-      .time-group {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-top: 8px;
-      }
-
-      .time-input {
-        flex: 1;
-      }
-
-      /* 날짜 입력 그룹 */
-      .date-group {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        margin-top: 8px;
-      }
-
-      .date-input {
-        flex: 1;
-      }
-
-      /* 제출 버튼 */
-      .submit-section {
-        padding: 20px;
-      }
-
-      .submit-btn {
-        width: 100%;
-        background: #e67e22;
-        color: white;
-        border: none;
-        padding: 15px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s;
-      }
-
-      .submit-btn:hover {
-        background: #d35400;
-      }
-
-      .cancel-btn {
-        width: 100%;
-        background: #6c757d;
-        color: white;
-        border: none;
-        padding: 15px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: background 0.3s;
-      }
-
-      .cancel-btn:hover {
-        background: #5a6268;
-      }
-
-      .section-title {
-        font-size: 16px;
-        font-weight: bold;
-        color: #2c3e50;
-        margin-bottom: 15px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid #e67e22;
-      }
-
-      .help-text {
-        font-size: 12px;
-        color: #666;
-        margin-top: 5px;
-      }
-
       .custom-input {
-        margin-top: 10px;
         display: none;
       }
-
       .custom-input.show {
         display: block;
       }
     </style>
   </head>
-  <body>
-    <!-- 헤더 -->
-    <div class="header">
-      <button class="back-btn" onclick="history.back()">←</button>
-      <div class="header-title">기업 공고 작성</div>
-      <div></div>
-    </div>
-
-    <!-- 폼 -->
-    <form method="POST" action="{{ url_for('company.create_company_job') }}">
-      <!-- 모집조건 -->
-      <div class="form-container">
-        <div class="section-title">모집조건</div>
-
-        <div class="form-group">
-          <label class="form-label"
-            >채용 제목 <span class="required">*</span></label
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 바 -->
+      <header
+        class="sticky top-0 z-10 p-4 flex justify-between items-center bg-white shadow-sm"
+      >
+        <button class="p-2" onclick="history.back()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
           >
-          <input
-            type="text"
-            name="title"
-            class="form-input"
-            placeholder="예: 사무직 신입/경력 사원 모집"
-            required
-          />
-        </div>
-      </div>
-
-      <!-- 직무 내용 -->
-      <div class="form-container">
-        <div class="section-title">직무 내용</div>
-
-        <div class="form-group">
-          <label class="form-label"
-            >직무 분야 <span class="required">*</span></label
-          >
-          <div class="button-group">
-            <button
-              type="button"
-              class="option-btn"
-              data-value="사무직"
-              onclick="selectJobCategory(this)"
-            >
-              사무직
-            </button>
-            <button
-              type="button"
-              class="option-btn"
-              data-value="생산/기술직"
-              onclick="selectJobCategory(this)"
-            >
-              생산/기술직
-            </button>
-            <button
-              type="button"
-              class="option-btn"
-              data-value="서비스직"
-              onclick="selectJobCategory(this)"
-            >
-              서비스직
-            </button>
-            <button
-              type="button"
-              class="option-btn"
-              data-value="기타"
-              onclick="selectJobCategory(this)"
-            >
-              직접입력
-            </button>
-          </div>
-          <input type="hidden" name="job_category" id="job_category" required />
-          <div class="custom-input" id="custom_job_category">
-            <input
-              type="text"
-              name="job_category_custom"
-              class="form-input"
-              placeholder="직무 분야를 직접 입력해주세요"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
             />
-          </div>
-        </div>
-      </div>
-
-      <!-- 임금 -->
-      <div class="form-container">
-        <div class="section-title">임금</div>
-
-        <div class="form-group">
-          <label class="form-label">급여 범위 (만원 단위)</label>
-          <div class="salary-group">
-            <input
-              type="number"
-              name="salary_min"
-              class="form-input salary-input"
-              placeholder="최소"
-              min="0"
-              max="10000"
-            />
-            <span>~</span>
-            <input
-              type="number"
-              name="salary_max"
-              class="form-input salary-input"
-              placeholder="최대"
-              min="0"
-              max="10000"
-            />
-            <span>만원</span>
-          </div>
-          <div class="checkbox-group" style="margin-top: 10px">
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="salary_negotiable"
-                id="salary_negotiable"
-                onchange="toggleSalaryNegotiable(this)"
-              />
-              <label for="salary_negotiable">협의</label>
-            </div>
-          </div>
-          <div class="help-text">협의를 선택하면 급여 범위는 무시됩니다.</div>
-        </div>
-      </div>
-
-      <!-- 경력 -->
-      <div class="form-container">
-        <div class="section-title">경력</div>
-
-        <div class="form-group">
-          <label class="form-label">경력 요구사항</label>
-          <div class="button-group">
-            <button
-              type="button"
-              class="option-btn"
-              data-value="무관"
-              onclick="selectExperience(this)"
-            >
-              경력 무관
-            </button>
-            <button
-              type="button"
-              class="option-btn"
-              data-value="경력직"
-              onclick="selectExperience(this)"
-            >
-              경력직
-            </button>
-          </div>
-          <input
-            type="hidden"
-            name="experience_required"
-            id="experience_required"
-          />
-        </div>
-      </div>
-
-      <!-- 복리후생 -->
-      <div class="form-container">
-        <div class="section-title">복리후생</div>
-
-        <div class="form-group">
-          <label class="form-label">제공 혜택</label>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="benefit_commute_bus"
-                id="benefit_commute_bus"
-              />
-              <label for="benefit_commute_bus">통근버스</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="benefit_lunch" id="benefit_lunch" />
-              <label for="benefit_lunch">중식제공</label>
-            </div>
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="benefit_uniform"
-                id="benefit_uniform"
-              />
-              <label for="benefit_uniform">근무복 제공</label>
-            </div>
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="benefit_health_checkup"
-                id="benefit_health_checkup"
-              />
-              <label for="benefit_health_checkup">정기 건강검진</label>
-            </div>
-          </div>
-          <div class="form-group" style="margin-top: 15px">
-            <label class="form-label">기타 복리후생</label>
-            <input
-              type="text"
-              name="benefit_other"
-              class="form-input"
-              placeholder="예: 4대보험, 퇴직금, 성과급 등"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 장애인용 복지시설 -->
-      <div class="form-container">
-        <div class="section-title">장애인용 복지시설</div>
-
-        <div class="form-group">
-          <label class="form-label">장애인 편의시설</label>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="disabled_parking"
-                id="disabled_parking"
-              />
-              <label for="disabled_parking">장애인용 주차장</label>
-            </div>
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="disabled_elevator"
-                id="disabled_elevator"
-              />
-              <label for="disabled_elevator">장애인용 승강기</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="disabled_ramp" id="disabled_ramp" />
-              <label for="disabled_ramp">건물 내부 경사로</label>
-            </div>
-            <div class="checkbox-item">
-              <input
-                type="checkbox"
-                name="disabled_restroom"
-                id="disabled_restroom"
-              />
-              <label for="disabled_restroom">장애인용 화장실</label>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 고용형태 및 근무조건 -->
-      <div class="form-container">
-        <div class="section-title">고용형태 및 근무조건</div>
-
-        <div class="form-group">
-          <label class="form-label">고용형태</label>
-          <select name="recruitment_type" class="form-select">
-            <option value="">선택하세요</option>
-            <option value="정규직">정규직</option>
-            <option value="계약직">계약직</option>
-            <option value="파트타임">파트타임</option>
-            <option value="아르바이트">아르바이트</option>
-            <option value="인턴">인턴</option>
-            <option value="프리랜서">프리랜서</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">근무 요일</label>
-          <div class="checkbox-group">
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_monday" id="monday" />
-              <label for="monday">월</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_tuesday" id="tuesday" />
-              <label for="tuesday">화</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_wednesday" id="wednesday" />
-              <label for="wednesday">수</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_thursday" id="thursday" />
-              <label for="thursday">목</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_friday" id="friday" />
-              <label for="friday">금</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_saturday" id="saturday" />
-              <label for="saturday">토</label>
-            </div>
-            <div class="checkbox-item">
-              <input type="checkbox" name="work_sunday" id="sunday" />
-              <label for="sunday">일</label>
-            </div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">일하는 시간</label>
-          <div class="time-group">
-            <input
-              type="time"
-              name="work_start_time"
-              class="form-input time-input"
-            />
-            <span>~</span>
-            <input
-              type="time"
-              name="work_end_time"
-              class="form-input time-input"
-            />
-          </div>
-          <div class="help-text">
-            근무 시간을 입력하지 않으면 '시간 협의'로 표시됩니다.
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">모집인원</label>
-          <input
-            type="number"
-            name="recruitment_count"
-            class="form-input"
-            placeholder="예: 2"
-            min="1"
-          />
-        </div>
-      </div>
-
-      <!-- 상세정보 -->
-      <div class="form-container">
-        <div class="section-title">상세정보</div>
-
-        <div class="form-group">
-          <label class="form-label"
-            >회사명 <span class="required">*</span></label
-          >
-          <input
-            type="text"
-            name="company"
-            class="form-input"
-            placeholder="예: (주)테크놀로지"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label"
-            >상세 설명 <span class="required">*</span></label
-          >
-          <textarea
-            name="description"
-            class="form-textarea"
-            placeholder="• 주요 업무 내용&#10;• 자격 요건&#10;• 우대 사항&#10;• 기타 안내사항"
-            required
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">근무지역</label>
-          <input
-            type="text"
-            name="region"
-            class="form-input"
-            placeholder="예: 서울시 강남구 테헤란로 123"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">연락처</label>
-          <input
-            type="tel"
-            name="contact_phone"
-            class="form-input"
-            placeholder="예: 02-1234-5678"
-          />
-        </div>
-      </div>
-
-      <!-- 모집기간 -->
-      <div class="form-container">
-        <div class="section-title">모집기간</div>
-
-        <div class="form-group">
-          <label class="form-label">모집 기간</label>
-          <div class="date-group">
-            <input
-              type="date"
-              name="recruitment_start_date"
-              class="form-input date-input"
-            />
-            <span>~</span>
-            <input
-              type="date"
-              name="recruitment_end_date"
-              class="form-input date-input"
-            />
-          </div>
-          <div class="help-text">
-            모집 기간을 설정하지 않으면 상시 모집으로 표시됩니다.
-          </div>
-        </div>
-      </div>
-
-      <!-- 제출 버튼 -->
-      <div class="submit-section">
-        <button type="submit" class="submit-btn">공고 등록하기</button>
-        <button type="button" class="cancel-btn" onclick="history.back()">
-          취소
+          </svg>
         </button>
-      </div>
-    </form>
+        <h1 class="text-xl font-bold text-gray-800">기업 공고 작성</h1>
+        <div class="w-8">
+          <!-- 오른쪽 공간 맞춤용 빈 div -->
+        </div>
+      </header>
+
+      <!-- 메인 컨텐츠 -->
+      <main class="p-4 bg-white pb-24">
+        <form
+          method="POST"
+          action="{{ url_for('company.create_company_job') }}"
+        >
+          <!-- 모집조건 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              모집조건
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >채용 제목 <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                name="title"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: 사무직 신입/경력 사원 모집"
+                required
+              />
+            </div>
+          </section>
+
+          <!-- 직무 내용 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              직무 내용
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >직무 분야 <span class="text-red-500">*</span></label
+              >
+              <div class="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  class="px-4 py-2 border-2 border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-blue-500 transition-colors"
+                  data-value="사무직"
+                  onclick="selectJobCategory(this)"
+                >
+                  사무직
+                </button>
+                <button
+                  type="button"
+                  class="px-4 py-2 border-2 border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-blue-500 transition-colors"
+                  data-value="생산/기술직"
+                  onclick="selectJobCategory(this)"
+                >
+                  생산/기술직
+                </button>
+                <button
+                  type="button"
+                  class="px-4 py-2 border-2 border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-blue-500 transition-colors"
+                  data-value="서비스직"
+                  onclick="selectJobCategory(this)"
+                >
+                  서비스직
+                </button>
+                <button
+                  type="button"
+                  class="px-4 py-2 border-2 border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-blue-500 transition-colors"
+                  data-value="기타"
+                  onclick="selectJobCategory(this)"
+                >
+                  직접입력
+                </button>
+              </div>
+              <input
+                type="hidden"
+                name="job_category"
+                id="job_category"
+                required
+              />
+              <div class="custom-input mt-3" id="custom_job_category">
+                <input
+                  type="text"
+                  name="job_category_custom"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="직무 분야를 직접 입력해주세요"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- 임금 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              임금
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >급여 범위 (만원 단위)</label
+              >
+              <div class="flex items-center gap-2">
+                <input
+                  type="number"
+                  name="salary_min"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
+                  placeholder="최소"
+                  min="0"
+                  max="10000"
+                />
+                <span class="text-gray-500">~</span>
+                <input
+                  type="number"
+                  name="salary_max"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center"
+                  placeholder="최대"
+                  min="0"
+                  max="10000"
+                />
+                <span class="text-gray-500">만원</span>
+              </div>
+              <div class="mt-3">
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="salary_negotiable"
+                    id="salary_negotiable"
+                    onchange="toggleSalaryNegotiable(this)"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium text-gray-700">협의</span>
+                </label>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">
+                협의를 선택하면 급여 범위는 무시됩니다.
+              </p>
+            </div>
+          </section>
+
+          <!-- 경력 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              경력
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >경력 요구사항</label
+              >
+              <div class="flex gap-2">
+                <button
+                  type="button"
+                  class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-blue-500 transition-colors"
+                  data-value="무관"
+                  onclick="selectExperience(this)"
+                >
+                  경력 무관
+                </button>
+                <button
+                  type="button"
+                  class="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-blue-500 transition-colors"
+                  data-value="경력직"
+                  onclick="selectExperience(this)"
+                >
+                  경력직
+                </button>
+              </div>
+              <input
+                type="hidden"
+                name="experience_required"
+                id="experience_required"
+              />
+            </div>
+          </section>
+
+          <!-- 복리후생 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              복리후생
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >제공 혜택</label
+              >
+              <div class="grid grid-cols-2 gap-2">
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="benefit_commute_bus"
+                    id="benefit_commute_bus"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">통근버스</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="benefit_lunch"
+                    id="benefit_lunch"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">중식제공</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="benefit_uniform"
+                    id="benefit_uniform"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">근무복 제공</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="benefit_health_checkup"
+                    id="benefit_health_checkup"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">정기 건강검진</span>
+                </label>
+              </div>
+              <div class="mt-4">
+                <label class="block text-sm font-semibold text-gray-700 mb-2"
+                  >기타 복리후생</label
+                >
+                <input
+                  type="text"
+                  name="benefit_other"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="예: 4대보험, 퇴직금, 성과급 등"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- 장애인용 복지시설 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              장애인용 복지시설
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >장애인 편의시설</label
+              >
+              <div class="grid grid-cols-2 gap-2">
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="disabled_parking"
+                    id="disabled_parking"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">장애인용 주차장</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="disabled_elevator"
+                    id="disabled_elevator"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">장애인용 승강기</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="disabled_ramp"
+                    id="disabled_ramp"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">건물 내부 경사로</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="disabled_restroom"
+                    id="disabled_restroom"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm">장애인용 화장실</span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- 고용형태 및 근무조건 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              고용형태 및 근무조건
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >고용형태</label
+              >
+              <select
+                name="recruitment_type"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+              >
+                <option value="">선택하세요</option>
+                <option value="정규직">정규직</option>
+                <option value="계약직">계약직</option>
+                <option value="파트타임">파트타임</option>
+                <option value="아르바이트">아르바이트</option>
+                <option value="인턴">인턴</option>
+                <option value="프리랜서">프리랜서</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >근무 요일</label
+              >
+              <div class="grid grid-cols-4 gap-2">
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_monday"
+                    id="monday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">월</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_tuesday"
+                    id="tuesday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">화</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_wednesday"
+                    id="wednesday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">수</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_thursday"
+                    id="thursday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">목</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_friday"
+                    id="friday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">금</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_saturday"
+                    id="saturday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">토</span>
+                </label>
+                <label
+                  class="flex items-center gap-2 p-3 border border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    name="work_sunday"
+                    id="sunday"
+                    class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <span class="text-sm font-medium">일</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >일하는 시간</label
+              >
+              <div class="flex items-center gap-2">
+                <input
+                  type="time"
+                  name="work_start_time"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <span class="text-gray-500">~</span>
+                <input
+                  type="time"
+                  name="work_end_time"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <p class="text-xs text-gray-500 mt-2">
+                근무 시간을 입력하지 않으면 '시간 협의'로 표시됩니다.
+              </p>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >모집인원</label
+              >
+              <input
+                type="number"
+                name="recruitment_count"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: 2"
+                min="1"
+              />
+            </div>
+          </section>
+
+          <!-- 상세정보 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              상세정보
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >회사명 <span class="text-red-500">*</span></label
+              >
+              <input
+                type="text"
+                name="company"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: (주)테크놀로지"
+                required
+              />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >상세 설명 <span class="text-red-500">*</span></label
+              >
+              <textarea
+                name="description"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-32 resize-none"
+                placeholder="• 주요 업무 내용&#10;• 자격 요건&#10;• 우대 사항&#10;• 기타 안내사항"
+                required
+              ></textarea>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >근무지역</label
+              >
+              <input
+                type="text"
+                name="region"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: 서울시 강남구 테헤란로 123"
+              />
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >연락처</label
+              >
+              <input
+                type="tel"
+                name="contact_phone"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: 02-1234-5678"
+              />
+            </div>
+          </section>
+
+          <!-- 모집기간 -->
+          <section class="mb-6">
+            <h4
+              class="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-blue-800"
+            >
+              모집기간
+            </h4>
+
+            <div class="mb-4">
+              <label class="block text-sm font-semibold text-gray-700 mb-2"
+                >모집 기간</label
+              >
+              <div class="flex items-center gap-2">
+                <input
+                  type="date"
+                  name="recruitment_start_date"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <span class="text-gray-500">~</span>
+                <input
+                  type="date"
+                  name="recruitment_end_date"
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <p class="text-xs text-gray-500 mt-2">
+                모집 기간을 설정하지 않으면 상시 모집으로 표시됩니다.
+              </p>
+            </div>
+          </section>
+
+          <!-- 제출 버튼 -->
+          <section class="flex gap-3">
+            <button
+              type="submit"
+              class="flex-1 bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+            >
+              공고 등록하기
+            </button>
+            <button
+              type="button"
+              class="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+              onclick="history.back()"
+            >
+              취소
+            </button>
+          </section>
+        </form>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="#"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
+    </div>
 
     <script>
       // 직무 분야 선택
       function selectJobCategory(button) {
         // 모든 버튼 비활성화
-        document.querySelectorAll(".option-btn[data-value]").forEach((btn) => {
-          btn.classList.remove("active");
-        });
+        document
+          .querySelectorAll(".flex.flex-wrap.gap-2 button[data-value]")
+          .forEach((btn) => {
+            btn.classList.remove(
+              "border-blue-500",
+              "bg-blue-500",
+              "text-white"
+            );
+            btn.classList.add("border-gray-300", "text-gray-700");
+          });
 
         // 선택된 버튼 활성화
-        button.classList.add("active");
+        button.classList.remove("border-gray-300", "text-gray-700");
+        button.classList.add("border-blue-500", "bg-blue-500", "text-white");
 
         const value = button.getAttribute("data-value");
         document.getElementById("job_category").value = value;
@@ -715,12 +728,14 @@
       // 경력 선택
       function selectExperience(button) {
         // 모든 경력 버튼 비활성화
-        button.parentElement.querySelectorAll(".option-btn").forEach((btn) => {
-          btn.classList.remove("active");
+        button.parentElement.querySelectorAll("button").forEach((btn) => {
+          btn.classList.remove("border-blue-500", "bg-blue-500", "text-white");
+          btn.classList.add("border-gray-300", "text-gray-700");
         });
 
         // 선택된 버튼 활성화
-        button.classList.add("active");
+        button.classList.remove("border-gray-300", "text-gray-700");
+        button.classList.add("border-blue-500", "bg-blue-500", "text-white");
 
         const value = button.getAttribute("data-value");
         document.getElementById("experience_required").value = value;
@@ -728,29 +743,35 @@
 
       // 임금 협의 토글
       function toggleSalaryNegotiable(checkbox) {
-        const salaryInputs = document.querySelectorAll(".salary-input");
+        const salaryInputs = document.querySelectorAll(
+          "input[name='salary_min'], input[name='salary_max']"
+        );
         if (checkbox.checked) {
           salaryInputs.forEach((input) => {
             input.disabled = true;
             input.value = "";
+            input.classList.add("bg-gray-100");
           });
         } else {
           salaryInputs.forEach((input) => {
             input.disabled = false;
+            input.classList.remove("bg-gray-100");
           });
         }
       }
 
       // 체크박스 스타일 업데이트
       document
-        .querySelectorAll('.checkbox-item input[type="checkbox"]')
+        .querySelectorAll('label input[type="checkbox"]')
         .forEach((checkbox) => {
           checkbox.addEventListener("change", function () {
-            const item = this.closest(".checkbox-item");
+            const label = this.closest("label");
             if (this.checked) {
-              item.classList.add("checked");
+              label.classList.add("border-blue-500", "bg-blue-50");
+              label.classList.remove("border-gray-300");
             } else {
-              item.classList.remove("checked");
+              label.classList.remove("border-blue-500", "bg-blue-50");
+              label.classList.add("border-gray-300");
             }
           });
         });
@@ -781,9 +802,10 @@
         }
 
         // 제출 버튼 비활성화 (중복 제출 방지)
-        const submitBtn = document.querySelector(".submit-btn");
+        const submitBtn = document.querySelector("button[type='submit']");
         submitBtn.disabled = true;
         submitBtn.textContent = "등록 중...";
+        submitBtn.classList.add("opacity-50", "cursor-not-allowed");
       });
 
       // 페이지 로드 시 오늘 날짜를 기본값으로 설정

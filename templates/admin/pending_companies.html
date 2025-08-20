@@ -1,78 +1,236 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-<meta charset="UTF-8">
-<title>기업회원 승인 대기 목록</title>
-<style>
-  table {border-collapse: collapse; width: 100%;}
-  th, td {border: 1px solid #ccc; padding: 8px; text-align: center;}
-  th {background-color: #f0f0f0;}
-  button {padding: 6px 12px; border: none; cursor: pointer;}
-  .approve {background: #4CAF50; color: white;}
-  .reject {background: #f44336; color: white;}
-  .back-link {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 8px 16px;
-    border-radius: 6px;
-    background: #eee;
-    color: #333;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background 0.2s;
-  }
-  .back-link:hover {
-    background: #d2e6fb;
-    color: #164ba5;
-  }
-</style>
-</head>
-<body>
-<h2>승인 대기 기업회원 목록</h2>
-<table>
-  <thead>
-    <tr>
-      <th>닉네임</th>
-      <th>이메일</th>
-      <th>가입일</th>
-      <th>승인 여부</th>
-      <th>사업자등록증</th>
-      <th>관리</th>
-    </tr>
-  </thead>
-  <tbody>
-  {% for user in users %}
-    <tr>
-      <td>{{ user.nickname }}</td>
-      <td>{{ user.email }}</td>
-      <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
-      <td>{{ '대기중' if not user.is_verified else '승인됨' }}</td>
-      <td>
-        {% if user.business_registration_file %}
-          <a href="{{ url_for('admin.download_business_file', user_id=user.id) }}"
-             download="{{ user.business_registration_original }}">
-              {{ user.business_registration_original }}
-          </a>
-        {% else %}
-          등록된 파일 없음
-        {% endif %}
-      </td>
-      <td>
-        <form method="post" action="{{ url_for('admin.approve_company', user_id=user.id) }}" style="display:inline;">
-          <button type="submit" class="approve">승인</button>
-        </form>
-        <form method="post" action="{{ url_for('admin.reject_company', user_id=user.id) }}" style="display:inline;">
-          <button type="submit" class="reject">거부</button>
-        </form>
-      </td>
-    </tr>
-  {% else %}
-    <tr>
-      <td colspan="6">승인 대기 기업회원이 없습니다.</td>
-    </tr>
-  {% endfor %}
-  </tbody>
-</table>
-<a href="{{ url_for('auth.main') }}" class="back-link">← 뒤로 나가기</a>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>기업회원 승인 관리 - 이음</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 바 -->
+      <header
+        class="sticky top-0 z-10 p-4 flex justify-between items-center bg-white shadow-sm"
+      >
+        <button class="p-2" onclick="history.back()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <h1 class="text-xl font-bold text-gray-800">기업회원 승인 관리</h1>
+        <div class="w-8">
+          <!-- 오른쪽 공간 맞춤용 빈 div -->
+        </div>
+      </header>
+
+      <!-- 메인 컨텐츠 -->
+      <main class="p-4 bg-white pb-24">
+        <!-- 기업회원 목록 -->
+        <section class="space-y-4">
+          {% if users %} {% for user in users %}
+          <div class="bg-white p-4 rounded-lg border shadow-sm">
+            <!-- 기업 정보 헤더 -->
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex items-start">
+                <div
+                  class="w-12 h-12 bg-blue-100 rounded-lg mr-3 flex items-center justify-center text-blue-600 font-bold text-lg flex-shrink-0"
+                >
+                  {{ user.nickname[0] if user.nickname else 'N' }}
+                </div>
+                <div>
+                  <h3 class="font-bold text-lg text-gray-900">
+                    {{ user.nickname }}
+                  </h3>
+                  <p class="text-sm text-gray-600">{{ user.email }}</p>
+                  <p class="text-xs text-gray-500 mt-1">
+                    {{ user.created_at.strftime('%Y년 %m월 %d일') }} 가입
+                  </p>
+                </div>
+              </div>
+              <div class="text-right">
+                <span
+                  class="inline-block px-3 py-1 text-xs font-semibold rounded-full {% if user.is_verified %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}"
+                >
+                  {{ '승인됨' if user.is_verified else '대기중' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- 사업자등록증 정보 -->
+            <div class="mb-4">
+              <h4 class="text-sm font-semibold text-gray-700 mb-2">
+                사업자등록증
+              </h4>
+              <div class="bg-gray-50 p-3 rounded-lg">
+                {% if user.business_registration_file %}
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-700 truncate mr-2">
+                    {{ user.business_registration_original }}
+                  </span>
+                  <a
+                    href="{{ url_for('admin.download_business_file', user_id=user.id) }}"
+                    download="{{ user.business_registration_original }}"
+                    class="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    다운로드
+                  </a>
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500">등록된 파일 없음</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- 관리 버튼 -->
+            <div class="flex gap-3">
+              <form
+                method="post"
+                action="{{ url_for('admin.approve_company', user_id=user.id) }}"
+                class="flex-1"
+              >
+                <button
+                  type="submit"
+                  class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                  onclick="return confirm('{{ user.nickname }}을(를) 승인하시겠습니까?')"
+                >
+                  승인하기
+                </button>
+              </form>
+              <form
+                method="post"
+                action="{{ url_for('admin.reject_company', user_id=user.id) }}"
+                class="flex-1"
+              >
+                <button
+                  type="submit"
+                  class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                  onclick="return confirm('{{ user.nickname }}을(를) 거부하시겠습니까?')"
+                >
+                  거부하기
+                </button>
+              </form>
+            </div>
+          </div>
+          {% endfor %} {% else %}
+          <div class="text-center py-10 text-gray-500">
+            <div
+              class="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-8 w-8 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h4a1 1 0 011 1v5m-6 0V9a1 1 0 011-1h4a1 1 0 011 1v2"
+                />
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold">승인 대기 기업회원이 없습니다</h3>
+            <p class="text-sm mt-2">
+              새로운 기업회원 가입을 기다리고 있습니다.
+            </p>
+          </div>
+          {% endif %}
+        </section>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="#"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home_filled.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
+    </div>
+  </body>
 </html>

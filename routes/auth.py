@@ -10,6 +10,8 @@ from werkzeug.utils import secure_filename #필요 없을지도모름 ?
 import uuid
 import bcrypt
 from flask import request, flash
+from services.job_service import JobService
+from services.application_service import ApplicationService
 
 # 인증 관련 라우트를 담당하는 블루프린트 생성
 auth_bp = Blueprint("auth", __name__)
@@ -151,7 +153,48 @@ def main():
     if not is_profile_complete(current_user):
         flash("프로필 정보를 완성해주세요.", "warning")
         return redirect(url_for("auth.onboarding"))
-    return render_template("main.html", user=current_user)
+    
+    # 기업 공고 데이터 가져오기 (최신순으로 최대 3개)
+    try:
+        jobs_pagination = JobService.get_all_jobs(page=1, per_page=10, sort_by='latest')
+        # 기업 회원이 작성한 공고만 필터링
+        company_jobs = [job for job in jobs_pagination.items if job.author.user_type == 1][:3]
+        people_jobs = [job for job in jobs_pagination.items if job.author.user_type == 0][:3]
+        
+        # 각 공고에 대한 지원 상태 확인
+        company_jobs_with_status = []
+        for job in company_jobs:
+            if current_user.user_type == 0:  # 일반 사용자인 경우만 지원 상태 확인
+                application_status = ApplicationService.check_application_status(current_user.id, job.id)
+            else:
+                application_status = {'applied': False, 'status': None}
+            
+            job_data = {
+                'job': job,
+                'application_status': application_status
+            }
+            company_jobs_with_status.append(job_data)
+
+        # 각 사람 이음 공고에 대한 지원 상태 확인
+        person_jobs_with_status = []
+        for job in people_jobs:
+            if current_user.user_type == 0 and current_user.id == job.author.id:  # 일반 사용자인 경우만 지원 상태 확인
+                application_status = ApplicationService.check_application_status(current_user.id, job.id)
+            else:
+                application_status = {'applied': False, 'status': None}
+            
+            job_data = {
+                'job': job,
+                'application_status': application_status
+            }
+            person_jobs_with_status.append(job_data)
+
+    except Exception as e:
+        print(f"Error getting company jobs: {e}")
+        company_jobs_with_status = []
+        person_jobs_with_status = []
+    
+    return render_template("main.html", user=current_user, company_jobs=company_jobs_with_status, people_jobs=person_jobs_with_status)
 
 # 로그인한 사용자의 프로필 페이지
 @auth_bp.route("/profile")

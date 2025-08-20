@@ -156,71 +156,98 @@
         <section class="mb-8">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">추천 기업 이음</h2>
-            <a href="#" class="text-sm text-gray-500">더보기 ></a>
+            <a
+              href="{{ url_for('company.company_list') }}"
+              class="text-sm text-gray-500"
+              >더보기 ></a
+            >
           </div>
           <div class="space-y-4">
-            <!-- 공고 카드 1 -->
-            <div class="bg-white p-4 rounded-lg border">
+            {% if company_jobs %} {% for job_data in company_jobs %} {% set job
+            = job_data.job %} {% set status = job_data.application_status %}
+            <div
+              class="bg-white p-4 rounded-lg border cursor-pointer"
+              onclick="location.href='{{ url_for('company.company_job_detail', job_id=job.id) }}'"
+            >
               <div class="flex items-start justify-between">
                 <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                  <div
+                    class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center text-gray-600 font-bold"
+                  >
+                    {{ job.company[0] if job.company else '기' }}
+                  </div>
                   <div>
-                    <p class="text-sm text-gray-600">민영주식 회사</p>
-                    <h3 class="font-bold text-lg">사무직 엑셀 고수 모집</h3>
-                    <p class="text-gray-800">월급 3,000,000원</p>
+                    <p class="text-sm text-gray-600">{{ job.company }}</p>
+                    <h3 class="font-bold text-lg">{{ job.title }}</h3>
+                    <p class="text-gray-800">{{ job.salary or '급여 협의' }}</p>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">~10/4 (금)</p>
+                <p class="text-xs text-gray-500">
+                  {{ job.created_at.strftime('~%m/%d') }}
+                </p>
               </div>
               <div class="flex items-center justify-between mt-4">
                 <div class="flex space-x-2">
+                  {% if job.recruitment_type %}
                   <span
                     class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
-                    >경력무관</span
                   >
+                    {{ job.recruitment_type }}
+                  </span>
+                  {% endif %} {% if job.work_period %}
                   <span
                     class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
-                    >사무직</span
                   >
+                    {{ job.work_period }}
+                  </span>
+                  {% endif %}
                 </div>
+                {% if current_user.user_type == 0 %} {% if status.applied %}
+                <button
+                  class="bg-green-500 text-white font-bold py-2 px-6 rounded-full"
+                  onclick="event.stopPropagation(); goToChat({{ job.id }})"
+                >
+                  채팅하기
+                </button>
+                {% else %}
                 <button
                   class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
+                  onclick="event.stopPropagation(); applyJob({{ job.id }})"
                 >
                   지원하기
                 </button>
-              </div>
-            </div>
-            <!-- 공고 카드 2 -->
-            <div class="bg-white p-4 rounded-lg border">
-              <div class="flex items-start justify-between">
-                <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                  <div>
-                    <p class="text-sm text-gray-600">민영주식 회사</p>
-                    <h3 class="font-bold text-lg">사무직 엑셀 고수 모집</h3>
-                    <p class="text-gray-800">월급 3,000,000원</p>
-                  </div>
-                </div>
-                <p class="text-xs text-gray-500">~10/4 (금)</p>
-              </div>
-              <div class="flex items-center justify-between mt-4">
-                <div class="flex space-x-2">
-                  <span
-                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
-                    >경력무관</span
-                  >
-                  <span
-                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
-                    >사무직</span
-                  >
-                </div>
+                {% endif %} {% elif current_user.user_type == 1 %} {% if
+                current_user.id == job.author_id %}
                 <button
-                  class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
+                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  disabled
                 >
-                  지원하기
+                  내 공고
                 </button>
+                {% else %}
+                <button
+                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  disabled
+                >
+                  타 기업 공고
+                </button>
+                {% endif %} {% else %}
+                <button
+                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  disabled
+                >
+                  관리자 계정
+                </button>
+                {% endif %}
               </div>
             </div>
+            {% endfor %} {% else %}
+            <div
+              class="bg-white p-4 rounded-lg border text-center text-gray-500"
+            >
+              <p>등록된 기업 공고가 없습니다.</p>
+            </div>
+            {% endif %}
           </div>
         </section>
 
@@ -228,51 +255,101 @@
         <section>
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold">실시간 사람 이음</h2>
-            <a href="#" class="text-sm text-gray-500">더보기 ></a>
+            <a
+              href="{{ url_for('jobs.job_list') }}"
+              class="text-sm text-gray-500"
+              >더보기 ></a
+            >
           </div>
           <div class="space-y-4">
-            <!-- 사람 카드 1 -->
-            <div class="bg-white p-4 rounded-lg border">
+            {% if people_jobs %} {% for job_data in people_jobs %} {% set job =
+            job_data.job %} {% set status = job_data.application_status %}
+            <div
+              class="bg-white p-4 rounded-lg border cursor-pointer"
+              onclick="location.href='{{ url_for('jobs.job_detail', job_id=job.id) }}'"
+            >
               <div class="flex items-start justify-between">
                 <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                  <div
+                    class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center text-gray-600 font-bold"
+                  >
+                    {{ job.author.nickname[0] if job.author.nickname else '사'
+                    }}
+                  </div>
                   <div>
-                    <p class="text-sm text-gray-600">아무게</p>
-                    <h3 class="font-bold text-lg">같이 놀사람 모집</h3>
-                    <p class="text-gray-800">50,000원</p>
+                    <p class="text-sm text-gray-600">
+                      {{ job.author.nickname }} ({{ job.company }})
+                    </p>
+                    <h3 class="font-bold text-lg">{{ job.title }}</h3>
+                    <p class="text-gray-800">{{ job.salary or '급여 협의' }}</p>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">방금</p>
+                <p class="text-xs text-gray-500">
+                  {{ job.created_at.strftime('~%m/%d') }}
+                </p>
               </div>
-              <div class="flex justify-end mt-4">
-                <button
-                  class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
-                >
-                  신청하기
-                </button>
-              </div>
-            </div>
-            <!-- 사람 카드 2 -->
-            <div class="bg-white p-4 rounded-lg border">
-              <div class="flex items-start justify-between">
-                <div class="flex items-start">
-                  <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
-                  <div>
-                    <p class="text-sm text-gray-600">아무게</p>
-                    <h3 class="font-bold text-lg">같이 놀사람 모집</h3>
-                    <p class="text-gray-800">50,000원</p>
-                  </div>
+              <div class="flex items-center justify-between mt-4">
+                <div class="flex space-x-2">
+                  {% if job.recruitment_type %}
+                  <span
+                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                  >
+                    {{ job.recruitment_type }}
+                  </span>
+                  {% endif %} {% if job.work_period %}
+                  <span
+                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                  >
+                    {{ job.work_period }}
+                  </span>
+                  {% endif %}
                 </div>
-                <p class="text-xs text-gray-500">방금</p>
-              </div>
-              <div class="flex justify-end mt-4">
+                {% if current_user.user_type == 0 %} {% if current_user.id ==
+                job.author_id %}
+                <button
+                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  disabled
+                >
+                  내 공고
+                </button>
+                {% elif status.applied %}
+                <button
+                  class="bg-green-500 text-white font-bold py-2 px-6 rounded-full"
+                  onclick="event.stopPropagation(); goToChat({{ job.id }})"
+                >
+                  채팅하기
+                </button>
+                {% else %}
                 <button
                   class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
+                  onclick="event.stopPropagation(); applyJob({{ job.id }})"
                 >
-                  신청하기
+                  지원하기
                 </button>
+                {% endif %} {% elif current_user.user_type == 1 %}
+                <button
+                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  disabled
+                >
+                  기업 계정
+                </button>
+                {% else %}
+                <button
+                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  disabled
+                >
+                  관리자 계정
+                </button>
+                {% endif %}
               </div>
             </div>
+            {% endfor %} {% else %}
+            <div
+              class="bg-white p-4 rounded-lg border text-center text-gray-500"
+            >
+              <p>등록된 사람 이음 공고가 없습니다.</p>
+            </div>
+            {% endif %}
           </div>
         </section>
       </main>
@@ -348,5 +425,56 @@
         </a>
       </footer>
     </div>
+    <script>
+      // 공고 지원하기 함수
+      async function applyJob(jobId) {
+        if (
+          !confirm(
+            "이 공고에 지원하시겠습니까?\n지원하면 자동으로 채팅방이 생성됩니다."
+          )
+        ) {
+          return;
+        }
+        try {
+          const response = await fetch(`/jobs/${jobId}/apply`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: "" }),
+          });
+          const data = await response.json();
+          if (data.success) {
+            alert(data.message);
+            if (data.chat_room_id && confirm("채팅방으로 이동하시겠습니까?")) {
+              window.location.href = `/chat/${data.chat_room_id}`;
+            } else {
+              location.reload();
+            }
+          } else {
+            alert(data.message || "지원 중 오류가 발생했습니다.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("지원 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 채팅방으로 이동하는 함수
+      async function goToChat(jobId) {
+        try {
+          const response = await fetch(`/chat/find-room/${jobId}`, {
+            method: "GET",
+          });
+          const data = await response.json();
+          if (data.success && data.room_id) {
+            window.location.href = `/chat/${data.room_id}`;
+          } else {
+            alert("채팅방을 찾을 수 없습니다.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("채팅방 이동 중 오류가 발생했습니다.");
+        }
+      }
+    </script>
   </body>
 </html>
