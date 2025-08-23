@@ -55,8 +55,7 @@ app.register_blueprint(admin_bp)
 app.register_blueprint(senior_resume_bp,url_prefix='/resume')
 
 # 초기 DB 설정
-with app.app_context():
-    db.create_all()
+
 
 if __name__ == '__main__':
     app.run(port=5002, debug=True)

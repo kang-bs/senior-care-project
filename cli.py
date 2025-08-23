@@ -3,8 +3,17 @@
 from flask import current_app
 from models import db, User
 import bcrypt
+import click
+from flask.cli import with_appcontext
 
 def register_cli(app):
+    @app.cli.command("db-init")
+    @with_appcontext
+    def db_init():
+        """Initializes the database and creates all tables."""
+        db.create_all()
+        click.echo("Database initialized and tables created.")
+
     @app.cli.command("create-admin")
     def create_admin():
         username = input("관리자 아이디: ")
