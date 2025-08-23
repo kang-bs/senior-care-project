@@ -13,14 +13,27 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
     # SQLAlchemy
-    # Try both MYSQL_URL and MYSQL_PUBLIC_URL environment variables
+    # Use Railway's MySQL service
     SQLALCHEMY_DATABASE_URI = os.getenv("MYSQL_URL") or os.getenv("MYSQL_PUBLIC_URL")
+    
     if not SQLALCHEMY_DATABASE_URI:
-        # Fallback to local development database if no environment variable is set
-        SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:Ckdhfma1406!@127.0.0.1:3306/senior_project"
+        # For local development, use environment variables or default values
+        db_user = os.getenv("DB_USER", "root")
+        db_password = os.getenv("DB_PASSWORD", "Ckdhfma1406!")
+        db_host = os.getenv("DB_HOST", "mysql.railway.internal")
+        db_port = os.getenv("DB_PORT", "3306")
+        db_name = os.getenv("DB_NAME", "railway")
+        
+        SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    
     # Ensure the URI uses the correct scheme for SQLAlchemy
     if SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('mysql://', 'mysql+pymysql://', 1)
+    
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_recycle': 3600,
+        'pool_pre_ping': True
+    }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Google OAuth 환경 변수 키 이름
