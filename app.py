@@ -21,50 +21,8 @@ app.config.from_object(Config)
 Session(app)
 db.init_app(app)
 
-# Railway 환경에서 데이터베이스 초기화
-def init_database():
-    try:
-        # 데이터베이스 연결 테스트
-        from sqlalchemy import text
-        result = db.session.execute(text("SELECT 1 as test"))
-        test_value = result.fetchone()
-        
-        if test_value and test_value[0] == 1:
-            print("✅ 데이터베이스 연결 성공!")
-            
-            # 테이블 존재 여부 확인
-            try:
-                # User 테이블이 존재하는지 확인
-                db.session.execute(text("SELECT COUNT(*) FROM users LIMIT 1"))
-                print("✅ 데이터베이스 테이블이 이미 존재합니다.")
-            except Exception as table_error:
-                print(f"⚠️ 테이블이 존재하지 않습니다: {table_error}")
-                print("🔄 데이터베이스 테이블을 생성합니다...")
-                
-                # 테이블 생성
-                db.create_all()
-                print("✅ 데이터베이스 테이블 생성 완료!")
-            
-            return True
-        else:
-            print("❌ 데이터베이스 연결 테스트 실패")
-            return False
-                
-    except Exception as e:
-        print(f"❌ 데이터베이스 초기화 실패: {e}")
-        try:
-            db_uri = app.config['SQLALCHEMY_DATABASE_URI']
-            print(f"데이터베이스 URI: {db_uri}")
-        except:
-            print("데이터베이스 URI: 설정되지 않음")
-        return False
-
-# Railway 환경에서 애플리케이션 시작 시 데이터베이스 초기화
-try:
-    with app.app_context():
-        init_database()
-except Exception as e:
-    print(f"⚠️ 데이터베이스 초기화 중 오류 발생: {e}")
+# Railway 환경에서는 데이터베이스 초기화를 지연시킴
+print("🚀 애플리케이션이 시작되었습니다. 데이터베이스는 첫 요청 시 초기화됩니다.")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -74,9 +32,24 @@ login_manager.login_view = "auth.home"
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# 데이터베이스 초기화 상태 추적
+db_initialized = False
+
+def ensure_db_initialized():
+    global db_initialized
+    if not db_initialized:
+        try:
+            # 테이블 생성 (이미 존재하면 무시됨)
+            db.create_all()
+            db_initialized = True
+            print("✅ 데이터베이스 테이블 초기화 완료")
+        except Exception as e:
+            print(f"⚠️ 데이터베이스 초기화 오류: {e}")
+
 # 루트 라우트 - 스플래시 페이지
 @app.route('/')
 def splash():
+    ensure_db_initialized()
     return render_template('splash.html')
 
 # 템플릿 필터 등록

@@ -42,13 +42,12 @@ class Config:
         except Exception as e:
             print(f"Database host: parsing failed - {e}")
     
-    # Railway 환경에 최적화된 간단한 데이터베이스 연결 설정
+    # Railway 환경에 최적화된 최소한의 데이터베이스 연결 설정
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,       # 연결 전 ping 테스트
-        'pool_recycle': -1,          # 연결 재생성 비활성화
-        'connect_args': {
-            'charset': 'utf8mb4'     # UTF8 문자셋만 설정
-        }
+        'pool_recycle': 3600,        # 1시간마다 연결 재생성
+        'pool_size': 1,              # 연결 풀 크기 1로 제한
+        'max_overflow': 0            # 추가 연결 생성 금지
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
