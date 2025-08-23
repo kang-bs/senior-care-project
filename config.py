@@ -13,10 +13,12 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
     # SQLAlchemy
-    # Use MYSQL_URL from Railway environment variables with fallback to local MySQL
-    SQLALCHEMY_DATABASE_URI = os.getenv("MYSQL_URL", "mysql+pymysql://root:Ckdhfma1406!@127.0.0.1:3306/senior_project")
+    # Use MYSQL_PUBLIC_URL from Railway environment variables
+    SQLALCHEMY_DATABASE_URI = os.getenv("MYSQL_PUBLIC_URL")
+    if not SQLALCHEMY_DATABASE_URI:
+        raise ValueError("MYSQL_PUBLIC_URL environment variable is not set")
     # Ensure the URI uses the correct scheme for SQLAlchemy
-    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
+    if SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
         SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('mysql://', 'mysql+pymysql://', 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
