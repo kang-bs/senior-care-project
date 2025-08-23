@@ -9,6 +9,7 @@ __pycache__/
 
 # 환경 변수 파일 (있는 경우)
 .env
+.env.local
 
 # IDE 관련 설정
 .idea/
