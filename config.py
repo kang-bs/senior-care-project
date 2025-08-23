@@ -1,8 +1,12 @@
 import os
 from dotenv import load_dotenv
 
-# .env 파일 자동 로드 (로컬 환경에서만 적용됨)
-load_dotenv()
+# Load environment variables
+# In development, load from .env.local, otherwise from .env
+if os.path.exists('.env.local'):
+    load_dotenv('.env.local')
+else:
+    load_dotenv()
 
 # 개발 환경일 경우 HTTP 허용
 if os.environ.get("FLASK_ENV") == "development":
@@ -13,29 +17,51 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
     # SQLAlchemy configuration
-    # For production (Railway)
-    RAILWAY_DB_URI = os.getenv("DATABASE_URL")   # <-- 여기서 DATABASE_URL 읽도록 수정
+    # Railway에서 제공하는 DATABASE_URL 사용 (이미 mysql+pymysql 형태로 설정됨)
+    RAILWAY_DB_URI = os.getenv("DATABASE_URL")
     
     # For local development
     LOCAL_DB_URI = "mysql+pymysql://root:comep1522w@localhost:3306/senior_house"
     
-    # Use Railway DB if available, otherwise fall back to local DB
+    # Railway DATABASE_URL 우선 사용, 없으면 로컬 DB 사용
     SQLALCHEMY_DATABASE_URI = RAILWAY_DB_URI if RAILWAY_DB_URI else LOCAL_DB_URI
     
-    # Print database info (for debugging, remove in production)
+    # Print database info (for debugging)
     print(f"Using database: {'Railway' if RAILWAY_DB_URI else 'Local'}")
     if SQLALCHEMY_DATABASE_URI:
-        print(f"Database host: {SQLALCHEMY_DATABASE_URI.split('@')[-1].split('/')[0]}")
-    else:
-        print("Database host: localhost")
+        try:
+            # URL에서 호스트 정보 추출
+            if '@' in SQLALCHEMY_DATABASE_URI:
+                host_part = SQLALCHEMY_DATABASE_URI.split('@')[1].split('/')[0]
+                print(f"Database host: {host_part}")
+            else:
+                print("Database host: localhost")
+        except Exception as e:
+            print(f"Database host: parsing failed - {e}")
     
-    # Ensure the URI uses the correct scheme for SQLAlchemy
-    if SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('mysql://', 'mysql+pymysql://', 1)
+    # Railway 최적화된 데이터베이스 연결 설정
+    connect_args = {
+        'connect_timeout': 60,       # MySQL 연결 타임아웃 60초
+        'read_timeout': 60,          # 읽기 타임아웃 60초
+        'write_timeout': 60,         # 쓰기 타임아웃 60초
+        'charset': 'utf8mb4'         # UTF8 문자셋
+    }
+    
+    # Railway 환경에서 SSL 설정 추가
+    if RAILWAY_DB_URI and 'ssl=true' in RAILWAY_DB_URI:
+        connect_args.update({
+            'ssl_disabled': False,   # SSL 활성화
+            'ssl_verify_cert': False, # 인증서 검증 비활성화 (Railway 환경)
+            'ssl_verify_identity': False
+        })
     
     SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_recycle': 3600,
-        'pool_pre_ping': True
+        'pool_recycle': 3600,        # 1시간마다 연결 재생성
+        'pool_pre_ping': True,       # 연결 전 ping 테스트
+        'pool_timeout': 30,          # 연결 대기 시간 30초
+        'max_overflow': 0,           # 추가 연결 생성 금지
+        'pool_size': 5,              # 연결 풀 크기
+        'connect_args': connect_args
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

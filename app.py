@@ -20,7 +20,26 @@ app.config.from_object(Config)
 
 Session(app)
 db.init_app(app)
-register_cli(app)  # ⬅ CLI 명령 등록
+
+# Railway 환경에서 데이터베이스 연결 테스트
+def test_db_connection():
+    try:
+        with app.app_context():
+            # SQLAlchemy 2.x 호환 방식으로 연결 테스트
+            from sqlalchemy import text
+            result = db.session.execute(text("SELECT 1 as test"))
+            test_value = result.fetchone()
+            if test_value and test_value[0] == 1:
+                print("✅ 데이터베이스 연결 성공!")
+                return True
+            else:
+                print("❌ 데이터베이스 연결 테스트 실패")
+                return False
+    except Exception as e:
+        print(f"❌ 데이터베이스 연결 실패: {e}")
+        # 연결 실패 시 상세 정보 출력
+        print(f"데이터베이스 URI: {app.config.get('SQLALCHEMY_DATABASE_URI', 'Not set')}")
+        return False
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -58,4 +77,6 @@ app.register_blueprint(senior_resume_bp,url_prefix='/resume')
 
 
 if __name__ == '__main__':
+    # 데이터베이스 연결 테스트
+    test_db_connection()
     app.run(port=5002, debug=True)
