@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-# .env 파일을 자동으로 로드
+# .env 파일 자동 로드 (로컬 환경에서만 적용됨)
 load_dotenv()
 
 # 개발 환경일 경우 HTTP 허용
@@ -12,19 +12,22 @@ class Config:
     # 기본 설정
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
-    # SQLAlchemy
-    # Use Railway's MySQL service
-    SQLALCHEMY_DATABASE_URI = os.getenv("MYSQL_URL") or os.getenv("MYSQL_PUBLIC_URL")
+    # SQLAlchemy configuration
+    # For production (Railway)
+    RAILWAY_DB_URI = os.getenv("DATABASE_URL")   # <-- 여기서 DATABASE_URL 읽도록 수정
     
-    if not SQLALCHEMY_DATABASE_URI:
-        # For local development, use environment variables or default values
-        db_user = os.getenv("DB_USER", "root")
-        db_password = os.getenv("DB_PASSWORD", "Ckdhfma1406!")
-        db_host = os.getenv("DB_HOST", "mysql.railway.internal")
-        db_port = os.getenv("DB_PORT", "3306")
-        db_name = os.getenv("DB_NAME", "railway")
-        
-        SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    # For local development
+    LOCAL_DB_URI = "mysql+pymysql://root:comep1522w@localhost:3306/senior_house"
+    
+    # Use Railway DB if available, otherwise fall back to local DB
+    SQLALCHEMY_DATABASE_URI = RAILWAY_DB_URI if RAILWAY_DB_URI else LOCAL_DB_URI
+    
+    # Print database info (for debugging, remove in production)
+    print(f"Using database: {'Railway' if RAILWAY_DB_URI else 'Local'}")
+    if SQLALCHEMY_DATABASE_URI:
+        print(f"Database host: {SQLALCHEMY_DATABASE_URI.split('@')[-1].split('/')[0]}")
+    else:
+        print("Database host: localhost")
     
     # Ensure the URI uses the correct scheme for SQLAlchemy
     if SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
@@ -36,20 +39,22 @@ class Config:
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Google OAuth 환경 변수 키 이름
+    # Google OAuth
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 
+    # Naver OAuth
     NAVER_CLIENT_ID = os.getenv("NAVER_CLIENT_ID")
     NAVER_CLIENT_SECRET = os.getenv("NAVER_CLIENT_SECRET")
     NAVER_REDIRECT_URI = os.getenv("NAVER_REDIRECT_URI")
 
-    # Kakao OAuth 환경 변수 키 이름
+    # Kakao OAuth
     KAKAO_CLIENT_ID = os.getenv("KAKAO_CLIENT_ID")
     KAKAO_CLIENT_SECRET = os.getenv("KAKAO_CLIENT_SECRET")
 
     # 세션 저장 방식
     SESSION_TYPE = os.getenv("SESSION_TYPE", "filesystem")
 
+    # 업로드 설정
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads")
     ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "pdf"}
