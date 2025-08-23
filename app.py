@@ -21,10 +21,6 @@ app.config.from_object(Config)
 Session(app)
 db.init_app(app)
 
-# Railway 환경에서 애플리케이션 시작 시 데이터베이스 초기화
-with app.app_context():
-    init_database()
-
 # Railway 환경에서 데이터베이스 초기화
 def init_database():
     try:
@@ -59,6 +55,13 @@ def init_database():
         print(f"❌ 데이터베이스 초기화 실패: {e}")
         print(f"데이터베이스 URI: {app.config.get('SQLALCHEMY_DATABASE_URI', 'Not set')}")
         return False
+
+# Railway 환경에서 애플리케이션 시작 시 데이터베이스 초기화
+try:
+    with app.app_context():
+        init_database()
+except Exception as e:
+    print(f"⚠️ 데이터베이스 초기화 중 오류 발생: {e}")
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -96,6 +99,6 @@ app.register_blueprint(senior_resume_bp,url_prefix='/resume')
 
 
 if __name__ == '__main__':
-    # 데이터베이스 연결 테스트
-    test_db_connection()
+    # 로컬 개발 환경에서 데이터베이스 연결 테스트
+    init_database()
     app.run(port=5002, debug=True)
