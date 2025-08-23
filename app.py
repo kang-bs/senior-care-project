@@ -24,36 +24,39 @@ db.init_app(app)
 # Railway 환경에서 데이터베이스 초기화
 def init_database():
     try:
-        with app.app_context():
-            # 데이터베이스 연결 테스트
-            from sqlalchemy import text
-            result = db.session.execute(text("SELECT 1 as test"))
-            test_value = result.fetchone()
+        # 데이터베이스 연결 테스트
+        from sqlalchemy import text
+        result = db.session.execute(text("SELECT 1 as test"))
+        test_value = result.fetchone()
+        
+        if test_value and test_value[0] == 1:
+            print("✅ 데이터베이스 연결 성공!")
             
-            if test_value and test_value[0] == 1:
-                print("✅ 데이터베이스 연결 성공!")
+            # 테이블 존재 여부 확인
+            try:
+                # User 테이블이 존재하는지 확인
+                db.session.execute(text("SELECT COUNT(*) FROM users LIMIT 1"))
+                print("✅ 데이터베이스 테이블이 이미 존재합니다.")
+            except Exception as table_error:
+                print(f"⚠️ 테이블이 존재하지 않습니다: {table_error}")
+                print("🔄 데이터베이스 테이블을 생성합니다...")
                 
-                # 테이블 존재 여부 확인
-                try:
-                    # User 테이블이 존재하는지 확인
-                    db.session.execute(text("SELECT COUNT(*) FROM users LIMIT 1"))
-                    print("✅ 데이터베이스 테이블이 이미 존재합니다.")
-                except Exception as table_error:
-                    print(f"⚠️ 테이블이 존재하지 않습니다: {table_error}")
-                    print("🔄 데이터베이스 테이블을 생성합니다...")
-                    
-                    # 테이블 생성
-                    db.create_all()
-                    print("✅ 데이터베이스 테이블 생성 완료!")
-                
-                return True
-            else:
-                print("❌ 데이터베이스 연결 테스트 실패")
-                return False
+                # 테이블 생성
+                db.create_all()
+                print("✅ 데이터베이스 테이블 생성 완료!")
+            
+            return True
+        else:
+            print("❌ 데이터베이스 연결 테스트 실패")
+            return False
                 
     except Exception as e:
         print(f"❌ 데이터베이스 초기화 실패: {e}")
-        print(f"데이터베이스 URI: {app.config.get('SQLALCHEMY_DATABASE_URI', 'Not set')}")
+        try:
+            db_uri = app.config['SQLALCHEMY_DATABASE_URI']
+            print(f"데이터베이스 URI: {db_uri}")
+        except:
+            print("데이터베이스 URI: 설정되지 않음")
         return False
 
 # Railway 환경에서 애플리케이션 시작 시 데이터베이스 초기화
