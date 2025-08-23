@@ -27,7 +27,10 @@ class Config:
     SQLALCHEMY_DATABASE_URI = RAILWAY_DB_URI if RAILWAY_DB_URI else LOCAL_DB_URI
     
     # Print database info (for debugging)
+    print(f"🔍 환경변수 DATABASE_URL: {RAILWAY_DB_URI}")
     print(f"Using database: {'Railway' if RAILWAY_DB_URI else 'Local'}")
+    print(f"Final SQLALCHEMY_DATABASE_URI: {SQLALCHEMY_DATABASE_URI}")
+    
     if SQLALCHEMY_DATABASE_URI:
         try:
             # URL에서 호스트 정보 추출
@@ -39,29 +42,13 @@ class Config:
         except Exception as e:
             print(f"Database host: parsing failed - {e}")
     
-    # Railway 최적화된 데이터베이스 연결 설정
-    connect_args = {
-        'connect_timeout': 60,       # MySQL 연결 타임아웃 60초
-        'read_timeout': 60,          # 읽기 타임아웃 60초
-        'write_timeout': 60,         # 쓰기 타임아웃 60초
-        'charset': 'utf8mb4'         # UTF8 문자셋
-    }
-    
-    # Railway 환경에서 SSL 설정 추가
-    if RAILWAY_DB_URI and 'ssl=true' in RAILWAY_DB_URI:
-        connect_args.update({
-            'ssl_disabled': False,   # SSL 활성화
-            'ssl_verify_cert': False, # 인증서 검증 비활성화 (Railway 환경)
-            'ssl_verify_identity': False
-        })
-    
+    # Railway 환경에 최적화된 간단한 데이터베이스 연결 설정
     SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_recycle': 3600,        # 1시간마다 연결 재생성
         'pool_pre_ping': True,       # 연결 전 ping 테스트
-        'pool_timeout': 30,          # 연결 대기 시간 30초
-        'max_overflow': 0,           # 추가 연결 생성 금지
-        'pool_size': 5,              # 연결 풀 크기
-        'connect_args': connect_args
+        'pool_recycle': -1,          # 연결 재생성 비활성화
+        'connect_args': {
+            'charset': 'utf8mb4'     # UTF8 문자셋만 설정
+        }
     }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
