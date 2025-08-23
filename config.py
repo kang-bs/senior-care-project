@@ -13,7 +13,11 @@ class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
     # SQLAlchemy
+    # Use DATABASE_URL from environment variables with fallback to local MySQL
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "mysql+pymysql://root:Ckdhfma1406!@127.0.0.1:3306/senior_project")
+    # Ensure the URI uses the correct scheme for SQLAlchemy
+    if SQLALCHEMY_DATABASE_URI and SQLALCHEMY_DATABASE_URI.startswith('mysql://'):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace('mysql://', 'mysql+pymysql://', 1)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Google OAuth 환경 변수 키 이름
