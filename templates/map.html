@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>지도와 현재 위치 표시</title>
+  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_key }}"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    #map {
+      width: 100vw;
+      height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+    var container = document.getElementById('map');
+    // 초기 위치 (서울 시청)
+    var options = {
+      center: new kakao.maps.LatLng(37.5665, 126.9780),
+      level: 5
+    };
+    var map = new kakao.maps.Map(container, options);
+
+    // 위치를 표시하는 함수
+    function displayMarker(position, message) {
+      var marker = new kakao.maps.Marker({
+        map: map,
+        position: position
+      });
+      var infowindow = new kakao.maps.InfoWindow({
+        content: message,
+        removable: true
+      });
+      infowindow.open(map, marker);
+      map.setCenter(position);
+    }
+
+    // HTML5 Geolocation API 사용 가능 여부 체크
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          var lat = position.coords.latitude;
+          var lon = position.coords.longitude;
+          var locPosition = new kakao.maps.LatLng(lat, lon);
+          displayMarker(locPosition, '<div style="padding:5px;">현재 위치입니다!</div>');
+        },
+        function(error) {
+          // 위치 정보 접근 실패 시 안내 및 기본 위치 표시
+          displayMarker(options.center, '<div style="padding:5px;">위치 정보를 사용할 수 없습니다.</div>');
+          console.error('Geolocation error:', error);
+        }
+      );
+    } else {
+      displayMarker(options.center, '<div style="padding:5px;">이 브라우저는 위치 정보를 지원하지 않습니다.</div>');
+    }
+  </script>
+</body>
+</html>
