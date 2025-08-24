@@ -107,7 +107,10 @@ def create_job():
             region = request.form.get("region", "").strip()
             contact_phone = request.form.get("contact_phone", "").strip()
             recruitment_count = request.form.get("recruitment_count", type=int)
-            
+
+            # 위도, 경도 폼 데이터
+            latitude = request.form.get("latitude", type=float)
+            longitude = request.form.get("longitude", type=float)
             # 근무 시간
             work_start_time_str = request.form.get("work_start_time", "")
             work_end_time_str = request.form.get("work_end_time", "")
@@ -147,6 +150,8 @@ def create_job():
                 work_period=work_period,
                 salary=salary,
                 region=region,
+                latitude=latitude,  # 여기에 추가
+                longitude=longitude,  # 여기에 추가
                 contact_phone=contact_phone,
                 recruitment_count=recruitment_count,
                 work_start_time=work_start_time,
@@ -217,7 +222,14 @@ def edit_job(job_id):
             job.region = request.form.get("region", "").strip()
             job.contact_phone = request.form.get("contact_phone", "").strip()
             job.recruitment_count = request.form.get("recruitment_count", type=int)
-            
+
+            latitude = request.form.get("latitude", type=float)
+            longitude = request.form.get("longitude", type=float)
+            if latitude is not None:
+                job.latitude = latitude
+            if longitude is not None:
+                job.longitude = longitude
+
             # 근무 시간 업데이트
             work_start_time_str = request.form.get("work_start_time", "")
             work_end_time_str = request.form.get("work_end_time", "")

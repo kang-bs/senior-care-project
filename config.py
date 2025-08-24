@@ -67,6 +67,8 @@ class Config:
     # Kakao 지도 환경변수 키이름
     KAKAO_MAP_API_KEY = os.getenv("KAKAO_MAP_API_KEY")
 
+    KAKAO_REST_API_KEY = os.getenv("KAKAO_REST_API_KEY")
+
     # 세션 저장 방식
     SESSION_TYPE = os.getenv("SESSION_TYPE", "filesystem")
 
