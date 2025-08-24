@@ -153,7 +153,7 @@ def main():
     if not is_profile_complete(current_user):
         flash("프로필 정보를 완성해주세요.", "warning")
         return redirect(url_for("auth.onboarding"))
-    
+
     # 기업 공고 데이터 가져오기 (최신순으로 최대 3개)
     try:
         jobs_pagination = JobService.get_all_jobs(page=1, per_page=10, sort_by='latest')

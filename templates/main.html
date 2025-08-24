@@ -358,18 +358,11 @@
       <footer
         class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
       >
-        <a
-          href="#"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
-        >
-          <div class="w-6 h-6 mb-1 flex items-center justify-center">
-            <img
-              src="{{ url_for('static', filename='images/footer/map.png') }}"
-              alt="지도"
-              class="max-w-full max-h-full object-contain"
-            />
-          </div>
-          <span class="text-xs">지도</span>
+        <a href="{{ url_for('map.show_map') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
+            <div class="w-6 h-6 mb-1 flex items-center justify-center">
+                <img src="{{ url_for('static', filename='images/footer/map.png') }}" alt="지도" class="max-w-full max-h-full object-contain" />
+            </div>
+            <span class="text-xs">지도</span>
         </a>
         <a
           href="{{ url_for('jobs.bookmark_list') }}"
