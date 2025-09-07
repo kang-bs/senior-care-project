@@ -78,48 +78,7 @@ def before_request():
 def splash():
     return render_template('splash.html')
 
-# Railway 데이터베이스 마이그레이션 엔드포인트
-@app.route('/migrate-db')
-def migrate_database():
-    """Railway 환경에서 데이터베이스 마이그레이션 실행"""
-    try:
-        # job_post 테이블에 latitude, longitude 컬럼 추가
-        connection = db.engine.raw_connection()
-        cursor = connection.cursor()
-        
-        # 컬럼 존재 여부 확인
-        cursor.execute("""
-            SELECT COLUMN_NAME 
-            FROM INFORMATION_SCHEMA.COLUMNS 
-            WHERE TABLE_NAME = 'job_post' 
-            AND COLUMN_NAME IN ('latitude', 'longitude')
-        """)
-        existing_columns = [row[0] for row in cursor.fetchall()]
-        
-        results = []
-        
-        # latitude 컬럼 추가
-        if 'latitude' not in existing_columns:
-            cursor.execute("ALTER TABLE job_post ADD COLUMN latitude FLOAT NULL")
-            results.append("✅ latitude 컬럼 추가 완료")
-        else:
-            results.append("ℹ️ latitude 컬럼이 이미 존재합니다")
-        
-        # longitude 컬럼 추가
-        if 'longitude' not in existing_columns:
-            cursor.execute("ALTER TABLE job_post ADD COLUMN longitude FLOAT NULL")
-            results.append("✅ longitude 컬럼 추가 완료")
-        else:
-            results.append("ℹ️ longitude 컬럼이 이미 존재합니다")
-        
-        connection.commit()
-        cursor.close()
-        connection.close()
-        
-        return f"<h1>데이터베이스 마이그레이션 완료</h1><ul>{''.join([f'<li>{r}</li>' for r in results])}</ul>"
-        
-    except Exception as e:
-        return f"<h1>마이그레이션 실패</h1><p>에러: {str(e)}</p>"
+
 
 # 템플릿 필터 등록
 app.jinja_env.filters['format_date'] = format_date
