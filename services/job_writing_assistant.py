@@ -60,17 +60,21 @@ class JobWritingAssistant:
             # 입력 데이터 검증
             validated_data = self._validate_input(job_data)
             
-            # 제목 생성
-            title = self._generate_title(validated_data)
+            # 공고 타입에 따른 다른 처리
+            job_type = validated_data.get('job_type', 'company')
             
-            # 핵심 요약 생성
-            summary = self._generate_summary(validated_data)
-            
-            # 상세 본문 생성
-            description = self._generate_detailed_description(validated_data)
-            
-            # 해시태그 생성
-            hashtags = self._generate_hashtags(validated_data)
+            if job_type == 'general':
+                # 일반 공고용 생성
+                title = self._generate_general_title(validated_data)
+                summary = self._generate_general_summary(validated_data)
+                description = self._generate_general_description(validated_data)
+                hashtags = self._generate_general_hashtags(validated_data)
+            else:
+                # 기업 공고용 생성 (기존)
+                title = self._generate_title(validated_data)
+                summary = self._generate_summary(validated_data)
+                description = self._generate_detailed_description(validated_data)
+                hashtags = self._generate_hashtags(validated_data)
             
             # 차별 표현 필터링
             filtered_content = self._apply_discrimination_filter({
@@ -317,6 +321,153 @@ class JobWritingAssistant:
                 filtered_content[key] = text
         
         return filtered_content
+
+    def _generate_general_title(self, job_data: Dict) -> str:
+        """일반 공고용 제목 생성 (더 간단하고 친근하게)"""
+        location = job_data.get('location', '').split()[0]  # 첫 번째 지역명만
+        title = job_data['title']
+        employment_type = job_data['employment_type']
+        
+        pay_info = job_data.get('pay', {})
+        pay_text = ""
+        if pay_info.get('amount') and pay_info.get('type') != 'negotiable':
+            pay_unit = self.pay_units.get(pay_info['type'], '')
+            amount = f"{pay_info['amount']:,}"
+            pay_text = f" ({pay_unit} {amount}원)"
+        
+        # 일반 공고는 더 친근한 형태
+        if location:
+            return f"{location} {title} {employment_type}{pay_text} 구합니다"
+        else:
+            return f"{title} {employment_type}{pay_text} 구합니다"
+
+    def _generate_general_summary(self, job_data: Dict) -> str:
+        """일반 공고용 핵심 요약 (더 친근하고 간단하게)"""
+        lines = []
+        
+        # 1줄: 업무 소개
+        duties = job_data['duties']
+        if len(duties) > 30:
+            duties = duties[:30] + "..."
+        lines.append(f"📝 {duties}")
+        
+        # 2줄: 근무 조건
+        schedule_parts = []
+        schedule = job_data.get('schedule', {})
+        if schedule.get('days'):
+            schedule_parts.append(schedule['days'])
+        if schedule.get('time'):
+            schedule_parts.append(schedule['time'])
+        
+        pay_info = job_data.get('pay', {})
+        if pay_info.get('amount'):
+            pay_unit = self.pay_units.get(pay_info['type'], '')
+            amount = f"{pay_info['amount']:,}"
+            schedule_parts.append(f"{pay_unit} {amount}원")
+        
+        if schedule_parts:
+            lines.append(f"⏰ {' / '.join(schedule_parts)}")
+        
+        # 3줄: 시니어 친화 메시지
+        if job_data.get('senior_friendly'):
+            if job_data.get('training_provided'):
+                lines.append("👨‍🏫 처음이셔도 괜찮습니다. 친절하게 알려드려요!")
+            elif job_data.get('easy_work'):
+                lines.append("😊 어렵지 않은 일이에요. 편안하게 일하실 수 있습니다.")
+            else:
+                lines.append("🤝 나이 상관없이 환영합니다!")
+        else:
+            lines.append("💪 성실하고 책임감 있는 분을 찾습니다.")
+        
+        return "\n".join(lines)
+
+    def _generate_general_description(self, job_data: Dict) -> str:
+        """일반 공고용 상세 설명 (더 친근하고 이해하기 쉽게)"""
+        sections = []
+        
+        # 어떤 일인가요?
+        sections.append(f"🔍 어떤 일인가요?\n{job_data['duties']}")
+        
+        # 근무 조건
+        conditions = []
+        conditions.append(f"고용형태: {job_data['employment_type']}")
+        conditions.append(f"근무지: {job_data['location']}")
+        
+        schedule = job_data.get('schedule', {})
+        if schedule.get('days'):
+            conditions.append(f"근무요일: {schedule['days']}")
+        if schedule.get('time'):
+            conditions.append(f"근무시간: {schedule['time']}")
+        
+        pay_info = job_data.get('pay', {})
+        if pay_info.get('amount'):
+            pay_unit = self.pay_units.get(pay_info['type'], '')
+            amount = f"{pay_info['amount']:,}"
+            conditions.append(f"급여: {pay_unit} {amount}원")
+        elif pay_info.get('type') == 'negotiable':
+            conditions.append("급여: 면접 시 협의")
+        
+        sections.append(f"📋 근무 조건\n" + "\n".join([f"• {cond}" for cond in conditions]))
+        
+        # 어떤 분을 찾나요?
+        if job_data.get('requirements'):
+            requirements = job_data['requirements']
+            # 시니어 친화적 표현 추가
+            if job_data.get('senior_friendly'):
+                requirements += "\n• 나이, 경력 상관없어요"
+            if job_data.get('training_provided'):
+                requirements += "\n• 처음이셔도 천천히 알려드립니다"
+            sections.append(f"👥 어떤 분을 찾나요?\n{requirements}")
+        
+        # 좋은 점
+        if job_data.get('benefits'):
+            benefits = job_data['benefits']
+            if job_data.get('flexible_time'):
+                benefits += "\n• 시간 조정 가능해요"
+            sections.append(f"✨ 좋은 점\n{benefits}")
+        
+        # 연락 방법
+        contact_method = job_data.get('contact_method', '플랫폼 내 지원')
+        sections.append(f"📞 연락 방법\n{contact_method}")
+        
+        return "\n\n".join(sections)
+
+    def _generate_general_hashtags(self, job_data: Dict) -> List[str]:
+        """일반 공고용 해시태그 (더 친근하고 검색하기 쉽게)"""
+        hashtags = []
+        
+        # 직무 관련
+        title_words = job_data['title'].split()
+        for word in title_words:
+            if len(word) > 1:
+                hashtags.append(f"#{word}")
+        
+        # 고용형태
+        hashtags.append(f"#{job_data['employment_type']}")
+        
+        # 지역
+        location_parts = job_data['location'].split()
+        for part in location_parts[:2]:
+            if len(part) > 1:
+                hashtags.append(f"#{part}")
+        
+        # 시니어 친화
+        if job_data.get('senior_friendly'):
+            hashtags.append("#시니어환영")
+            hashtags.append("#나이무관")
+        
+        if job_data.get('easy_work'):
+            hashtags.append("#쉬운일")
+        
+        if job_data.get('training_provided'):
+            hashtags.append("#교육제공")
+        
+        if job_data.get('flexible_time'):
+            hashtags.append("#시간조정가능")
+        
+        # 중복 제거 및 최대 6개로 제한
+        unique_hashtags = list(dict.fromkeys(hashtags))[:6]
+        return unique_hashtags
 
     def _generate_fallback_template(self, job_data: Dict) -> str:
         """AI 실패 시 기본 템플릿"""

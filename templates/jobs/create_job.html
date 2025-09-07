@@ -45,9 +45,17 @@
           </svg>
         </button>
         <h1 class="text-xl font-bold text-gray-800">공고 작성</h1>
-        <button
-          class="text-blue-600 font-bold p-2"
-          onclick="document.getElementById('jobForm').submit()"
+        <div class="flex items-center gap-2">
+          <a href="{{ url_for('job_assistant.general_job_assistant_page') }}" 
+             class="p-2 text-green-600 hover:text-green-800" 
+             title="AI 도우미">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </a>
+          <button
+            class="text-blue-600 font-bold p-2"
+            onclick="document.getElementById('jobForm').submit()"
         >
           저장
         </button>
@@ -319,17 +327,26 @@
           </div>
 
           <div>
-            <label
-              for="description"
-              class="block text-sm font-medium text-gray-700"
-              >상세 설명 <span class="text-red-500">*</span></label
-            >
+            <div class="flex justify-between items-center">
+              <label
+                for="description"
+                class="block text-sm font-medium text-gray-700"
+                >상세 설명 <span class="text-red-500">*</span></label
+              >
+              <button type="button" onclick="openAIAssistant()" 
+                      class="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 bg-transparent border-none cursor-pointer">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                AI 도우미
+              </button>
+            </div>
             <textarea
               name="description"
               id="description"
               rows="4"
               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요"
+              placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요&#10;&#10;💡 AI 도우미를 사용하면 시니어 친화적인 공고를 쉽게 작성할 수 있어요!"
               required
             ></textarea>
           </div>
@@ -508,6 +525,230 @@
             return;
           }
         });
+    </script>
+
+    <!-- AI 도우미 모달 -->
+    <div id="aiAssistantModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+      <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-lg max-w-md w-full max-h-screen overflow-y-auto">
+          <div class="p-4 border-b">
+            <div class="flex justify-between items-center">
+              <h3 class="text-lg font-bold text-gray-800">🤖 AI 상세 설명 생성</h3>
+              <button onclick="closeAIAssistant()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="p-4">
+            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+              <p class="text-sm text-blue-800">
+                <strong>💡 입력된 정보를 바탕으로 상세 설명을 생성합니다!</strong><br>
+                추가 정보를 입력하면 더 완성도 높은 공고를 만들 수 있어요.
+              </p>
+            </div>
+
+            <!-- 추가 정보 입력 폼 -->
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">주요 업무 (구체적으로)</label>
+                <textarea id="aiDuties" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" 
+                          placeholder="예: 고객 주문 받기, 음료 제조, 매장 청소"></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">어떤 분을 찾나요?</label>
+                <textarea id="aiRequirements" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" 
+                          placeholder="예: 친절하신 분, 책임감 있으신 분"></textarea>
+              </div>
+              
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">혜택 / 좋은 점</label>
+                <textarea id="aiBenefits" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm" 
+                          placeholder="예: 식사 제공, 교통비 지원, 자유로운 분위기"></textarea>
+              </div>
+
+              <!-- 시니어 친화 옵션 -->
+              <div class="border border-green-200 rounded-lg p-3 bg-green-50">
+                <h4 class="text-sm font-medium text-green-800 mb-2">🤝 시니어 친화 옵션</h4>
+                <div class="space-y-2">
+                  <label class="flex items-center">
+                    <input type="checkbox" id="aiSeniorFriendly" checked class="mr-2">
+                    <span class="text-sm">시니어 친화적으로 작성</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="aiEasyWork" class="mr-2">
+                    <span class="text-sm">쉬운 업무임을 강조</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="aiTrainingProvided" class="mr-2">
+                    <span class="text-sm">교육 제공</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex gap-2 mt-6">
+              <button onclick="closeAIAssistant()" 
+                      class="flex-1 px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                취소
+              </button>
+              <button onclick="generateAIDescription()" 
+                      class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                <span id="generateBtnText">🤖 AI로 생성하기</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // AI 도우미 모달 열기
+      function openAIAssistant() {
+        // 기본 폼 데이터 검증
+        const title = document.querySelector('input[name="title"]').value.trim();
+        const company = document.querySelector('input[name="company"]').value.trim();
+        
+        if (!title) {
+          alert('제목을 먼저 입력해주세요.');
+          return;
+        }
+        
+        if (!company) {
+          alert('담당자명을 먼저 입력해주세요.');
+          return;
+        }
+        
+        document.getElementById('aiAssistantModal').classList.remove('hidden');
+      }
+
+      // AI 도우미 모달 닫기
+      function closeAIAssistant() {
+        document.getElementById('aiAssistantModal').classList.add('hidden');
+      }
+
+      // AI 상세 설명 생성
+      async function generateAIDescription() {
+        const generateBtn = document.getElementById('generateBtnText');
+        generateBtn.innerHTML = '🔄 생성 중...';
+        
+        try {
+          // 기본 폼 데이터 수집
+          const formData = collectFormData();
+          
+          // 추가 정보 수집
+          formData.duties = document.getElementById('aiDuties').value.trim() || '업무 내용을 입력해주세요';
+          formData.requirements = document.getElementById('aiRequirements').value.trim();
+          formData.benefits = document.getElementById('aiBenefits').value.trim();
+          formData.senior_friendly = document.getElementById('aiSeniorFriendly').checked;
+          formData.easy_work = document.getElementById('aiEasyWork').checked;
+          formData.training_provided = document.getElementById('aiTrainingProvided').checked;
+          formData.job_type = 'general';
+
+          // 디버깅: 수집된 데이터 확인
+          console.log('수집된 폼 데이터:', formData);
+
+          const response = await fetch('/api/job-draft', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // 생성된 설명을 textarea에 입력
+            const descriptionTextarea = document.getElementById('description');
+            descriptionTextarea.value = result.content.description;
+            
+            // 모달 닫기
+            closeAIAssistant();
+            
+            // 성공 메시지
+            alert('✨ AI가 상세 설명을 생성했습니다! 필요에 따라 수정해주세요.');
+          } else {
+            alert('생성 실패: ' + result.error);
+          }
+        } catch (error) {
+          alert('서버 오류: ' + error.message);
+        } finally {
+          generateBtn.innerHTML = '🤖 AI로 생성하기';
+        }
+      }
+
+      // 폼 데이터 수집 함수
+      function collectFormData() {
+        const formData = {
+          title: document.querySelector('input[name="title"]').value.trim() || '일자리 공고',
+          company: document.querySelector('input[name="company"]').value.trim() || '회사명',
+          location: document.querySelector('input[name="region"]').value.trim() || '서울',
+        };
+
+        // 모집 형태
+        const recruitmentTypeBtn = document.querySelector('.btn-option.active[data-value]');
+        if (recruitmentTypeBtn) {
+          formData.employment_type = recruitmentTypeBtn.getAttribute('data-value');
+        } else {
+          // 선택된 버튼이 없으면 기본값 설정
+          formData.employment_type = '정규직';
+        }
+
+        // 근무 요일
+        const workDays = [];
+        const dayCheckboxes = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+        
+        dayCheckboxes.forEach((day, index) => {
+          const checkbox = document.querySelector(`input[name="work_${day}"]`);
+          if (checkbox && checkbox.checked) {
+            workDays.push(dayNames[index]);
+          }
+        });
+        
+        if (workDays.length > 0) {
+          formData.work_days = workDays.join('');
+        }
+
+        // 근무 시간
+        const startTime = document.querySelector('input[name="work_start_time"]').value;
+        const endTime = document.querySelector('input[name="work_end_time"]').value;
+        if (startTime && endTime) {
+          formData.work_time = `${startTime}~${endTime}`;
+        }
+
+        // 급여
+        const salary = document.querySelector('input[name="salary"]').value.trim();
+        if (salary) {
+          formData.salary = salary;
+        }
+
+        // 모집 인원
+        const recruitmentCount = document.querySelector('input[name="recruitment_count"]').value.trim();
+        if (recruitmentCount) {
+          formData.recruitment_count = recruitmentCount;
+        }
+
+        // 연락처
+        const contact = document.querySelector('input[name="contact_phone"]').value.trim();
+        if (contact) {
+          formData.contact_phone = contact;
+        }
+
+        return formData;
+      }
+
+      // 모달 외부 클릭 시 닫기
+      document.getElementById('aiAssistantModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeAIAssistant();
+        }
+      });
     </script>
   </body>
 </html>
