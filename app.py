@@ -15,6 +15,7 @@ from routes.resume import senior_resume_bp
 from utils.helpers import format_date, format_datetime, format_salary, get_work_days, calculate_time_ago
 from cli import register_cli  # ⬅ cli.py에서 만든 함수 import
 from routes.admin.admin import admin_bp
+from routes.map import map_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -71,10 +72,12 @@ app.register_blueprint(company_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(senior_resume_bp,url_prefix='/resume')
 
+app.register_blueprint(map_bp)
+
+
 # 초기 DB 설정
 
 
 if __name__ == '__main__':
     # 로컬 개발 환경에서 데이터베이스 연결 테스트
-    init_database()
     app.run(port=5002, debug=True)

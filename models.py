@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from sqlalchemy import Float
 
 db = SQLAlchemy()
 
@@ -79,6 +80,8 @@ class JobPost(db.Model):
     work_end_time = db.Column(db.Time, nullable=True)          # 근무 종료 시간
     recruitment_count = db.Column(db.Integer, nullable=True)   # 모집 인원
     region = db.Column(db.String(100), nullable=True)          # 근무 지역 (맵 연동)
+    latitude = db.Column(Float, nullable=True)  # 위도
+    longitude = db.Column(Float, nullable=True)  # 경도
     salary = db.Column(db.String(100), nullable=True)          # 급여
 
     # 근무 요일 (월화수목금토일)
@@ -246,9 +249,9 @@ class SeniorResume(db.Model):
     work_time_free_text = db.Column(db.String(200))    # 시간대 자유 작성 텍스트
     interested_jobs = db.Column(db.String(100))        # 예: '공공근로/환경정비,카페/식당 보조'
     interested_jobs_custom = db.Column(db.String(100)) # 직접 입력 관심 일 텍스트
-    career_status = db.Column(db.Boolean)               # True: 경력 있음, False: 신입
-    motivation = db.Column(db.Text)                      # 지원 동기
-    extra_requests = db.Column(db.Text)                  # 기타 요청사항
+    career_status = db.Column(db.Boolean)              # True: 경력 있음, False: 신입
+    motivation = db.Column(db.Text)                    # 지원 동기
+    extra_requests = db.Column(db.Text)                # 기타 요청사항
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
