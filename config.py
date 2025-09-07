@@ -42,13 +42,35 @@ class Config:
         except Exception as e:
             print(f"Database host: parsing failed - {e}")
     
-    # Railway 환경에 최적화된 최소한의 데이터베이스 연결 설정
-    SQLALCHEMY_ENGINE_OPTIONS = {
-        'pool_pre_ping': True,       # 연결 전 ping 테스트
-        'pool_recycle': 3600,        # 1시간마다 연결 재생성
-        'pool_size': 1,              # 연결 풀 크기 1로 제한
-        'max_overflow': 0            # 추가 연결 생성 금지
-    }
+    # Railway 환경 감지
+    IS_RAILWAY = os.getenv("RAILWAY_ENVIRONMENT") is not None
+    print(f"🚂 Railway 환경: {IS_RAILWAY}")
+    
+    # Railway 환경에 최적화된 데이터베이스 연결 설정
+    if IS_RAILWAY:
+        # Railway 환경: 안정적인 연결 설정
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'pool_pre_ping': True,           # 연결 전 ping 테스트
+            'pool_recycle': 300,             # 5분마다 연결 재생성
+            'pool_size': 5,                  # 연결 풀 크기
+            'max_overflow': 10,              # 추가 연결 허용
+            'pool_timeout': 30,              # 연결 대기 시간
+            'connect_args': {
+                'connect_timeout': 60,       # MySQL 연결 타임아웃
+                'read_timeout': 60,          # 읽기 타임아웃
+                'write_timeout': 60,         # 쓰기 타임아웃
+                'charset': 'utf8mb4',        # UTF8 문자셋
+                'autocommit': True           # 자동 커밋
+            }
+        }
+    else:
+        # 로컬 환경: 기본 설정
+        SQLALCHEMY_ENGINE_OPTIONS = {
+            'pool_pre_ping': True,
+            'pool_recycle': 3600,
+            'pool_size': 1,
+            'max_overflow': 0
+        }
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Google OAuth

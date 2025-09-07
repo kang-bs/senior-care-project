@@ -40,17 +40,42 @@ def ensure_db_initialized():
     global db_initialized
     if not db_initialized:
         try:
-            # 테이블 생성 (이미 존재하면 무시됨)
-            db.create_all()
-            db_initialized = True
-            print("✅ 데이터베이스 테이블 초기화 완료")
+            # 데이터베이스 연결 테스트
+            with app.app_context():
+                # 간단한 쿼리로 연결 테스트
+                db.engine.execute('SELECT 1')
+                # 테이블 생성 (이미 존재하면 무시됨)
+                db.create_all()
+                db_initialized = True
+                print("✅ 데이터베이스 연결 및 테이블 초기화 완료")
         except Exception as e:
             print(f"⚠️ 데이터베이스 초기화 오류: {e}")
+            # Railway 환경에서는 재시도
+            import time
+            time.sleep(2)
+            try:
+                with app.app_context():
+                    db.create_all()
+                    db_initialized = True
+                    print("✅ 데이터베이스 재시도 성공")
+            except Exception as retry_error:
+                print(f"❌ 데이터베이스 재시도 실패: {retry_error}")
+
+# 에러 핸들러 추가
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    print(f"500 에러 발생: {error}")
+    return "서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", 500
+
+@app.before_request
+def before_request():
+    """각 요청 전에 데이터베이스 연결 확인"""
+    ensure_db_initialized()
 
 # 루트 라우트 - 스플래시 페이지
 @app.route('/')
 def splash():
-    ensure_db_initialized()
     return render_template('splash.html')
 
 # 템플릿 필터 등록
