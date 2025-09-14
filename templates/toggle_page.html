@@ -3,36 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>이음 - 지도</title>
+    <title>이음 - 가을 모드 시니어 일자리</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_key }}"></script>
     <style>
       /* 사용자 정의 폰트 및 스타일 */
       body {
         font-family: "Noto Sans KR", sans-serif;
       }
       .laundry-gothic {
-        font-family: "LaundryGothic", "Noto Sans KR", sans-serif;
-      }
-      .custom-label {
-        color: white;
-        background-color: rgba(0,0,0,0.7);
-        padding: 2px 6px;
-        font-size: 12px;
-        border-radius: 3px;
-        white-space: nowrap;
-        user-select: none;
+        font-family: "LaundryGothic", "Noto Sans KR", sans-serif; /* 'LaundryGothic' 폰트가 없을 경우 Noto Sans KR로 대체 */
       }
       
-      /* 푸터에 safe area 적용 */
-      .footer-safe {
-        padding-bottom: env(safe-area-inset-bottom);
+      /* 가을 색상 정의 */
+      .autumn-text-primary {
+        color: #92400e;
       }
-
+      .autumn-text-secondary {
+        color: #b45309;
+      }
+      .autumn-bg-primary {
+        background-color: #92400e;
+      }
+      .autumn-bg-secondary {
+        background-color: #f97316;
+      }
+      .autumn-border {
+        border-color: #f97316;
+      }
+      .autumn-bg-light {
+        background-color: #fef3c7;
+      }
+      
       /* 얼굴 토글 스위치 스타일 */
       :root {
         --toggle-bg: #FFFFFF;
@@ -53,7 +58,7 @@
       .toggle-text {
         font-size: 1.5rem;
         font-weight: bold;
-        color: #1e3a8a;
+        color: #059669; /* 활성화된 상태 - 녹색 */
         transition: color 0.3s;
       }
 
@@ -62,20 +67,20 @@
       }
 
       /* 복잡한 토글 애니메이션 */
-      #face-toggle:checked + label .toggle-handle {
+      #autumn-face-toggle:checked + label .toggle-handle {
         transform: translateX(24px);
       }
 
-      #face-toggle:checked + label .roller {
+      #autumn-face-toggle:checked + label .roller {
         transform: rotate(360deg);
       }
       
-      #face-toggle:checked + label .face-front {
+      #autumn-face-toggle:checked + label .face-front {
         opacity: 0;
         transition: opacity 0.1s linear 0.5s;
       }
 
-      #face-toggle:checked + label .face-back {
+      #autumn-face-toggle:checked + label .face-back {
         opacity: 1;
         transition: opacity 0.1s linear 0.5s;
       }
@@ -117,10 +122,10 @@
       }
     </style>
   </head>
-  <body class="bg-gray-100">
+  <body class="bg-gradient-to-br from-amber-50 to-orange-100">
     <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
       <!-- 상단 고정 영역 -->
-      <div class="sticky top-0 z-20 bg-white shadow-sm">
+      <div class="sticky top-0 z-10 bg-gradient-to-r from-amber-100 to-orange-100 shadow-lg">
         <!-- 상단 바 -->
         <header class="p-4 flex justify-between items-center">
           <div class="flex items-center">
@@ -134,11 +139,11 @@
             <div class="toggle-container" id="toggleContainer">
               <span class="toggle-text" id="toggleText">이음</span>
               <div class="relative w-[50px] h-[26px]">
-                <input type="checkbox" id="face-toggle" class="hidden">
-                <label for="face-toggle" class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]" style="background-color: var(--toggle-bg);">
+                <input type="checkbox" id="autumn-face-toggle" class="hidden" checked>
+                <label for="autumn-face-toggle" class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]" style="background-color: var(--toggle-bg);">
                   <div class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out">
                     <div class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out">
-                      <!-- 앞면 (낮 모드) -->
+                      <!-- 앞면 (일반 모드) -->
                       <div class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear">
                         <div class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
                         <div class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
@@ -173,28 +178,62 @@
             </div>
           </div>
         </header>
+
+        <!-- 네비게이션 탭 -->
+        <nav class="flex border-b border-amber-300">
+          <a
+            href="#"
+            class="flex-1 text-center py-3 border-b-4 autumn-border autumn-text-primary font-bold"
+            >나의 이음</a
+          >
+          <a
+            href="{{ url_for('company.company_list') }}"
+            class="flex-1 text-center py-3 text-amber-700 hover:text-orange-600 transition-colors"
+            >기업 이음</a
+          >
+          <a
+            href="{{ url_for('jobs.job_list') }}"
+            class="flex-1 text-center py-3 text-amber-700 hover:text-orange-600 transition-colors"
+            >사람 이음</a
+          >
+        </nav>
       </div>
 
-      <!-- 지도 영역 -->
-      <main>
-        <div style="height: calc(100vh - 72px); height: calc(100dvh - 72px);">
-          <div id="map" style="width: 100%; height: 100%;"></div>
+      <!-- 메인 컨텐츠 -->
+      <main class="p-4 bg-gradient-to-b from-amber-50 to-white pb-24">
+        <!-- 가을 모드 환영 메시지 -->
+        <div class="text-center py-16">
+          <h1 class="text-3xl font-bold autumn-text-primary mb-4">🍂 가을 모드 활성화!</h1>
+          <p class="autumn-text-secondary mb-8">따뜻한 가을 감성으로 일자리를 찾아보세요</p>
+          
+          <!-- 가을 테마 카드 -->
+          <div class="bg-gradient-to-r from-amber-100 to-orange-100 p-6 rounded-xl border-2 autumn-border shadow-lg">
+            <div class="flex items-center justify-center mb-4">
+              <div class="w-16 h-16 autumn-bg-secondary rounded-full flex items-center justify-center shadow-lg">
+                <span class="text-2xl">🎃</span>
+              </div>
+            </div>
+            <h2 class="text-xl font-bold autumn-text-primary mb-4">얼굴 토글이 활성화되었습니다!</h2>
+            <p class="text-sm autumn-text-secondary mb-6">
+              토글 스위치를 다시 클릭하면 일반 모드로 돌아갑니다.
+            </p>
+          </div>
         </div>
       </main>
 
       <!-- 하단 네비게이션 -->
       <footer
-        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around footer-safe z-50"
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gradient-to-r from-amber-100 to-orange-100 border-t-2 autumn-border flex justify-around shadow-lg"
       >
-        <a href="{{ url_for('map.show_map') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900">
+        <a href="{{ url_for('map.show_map') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors">
             <div class="w-6 h-6 mb-1 flex items-center justify-center">
-                <img src="{{ url_for('static', filename='images/footer/map_filled.png') }}" alt="지도" class="max-w-full max-h-full object-contain" />
+                <img src="{{ url_for('static', filename='images/footer/map.png') }}" alt="지도" class="max-w-full max-h-full object-contain" />
             </div>
-            <span class="text-xs font-bold">지도</span>
+            <span class="text-xs">지도</span>
         </a>
         <a
           href="{{ url_for('jobs.bookmark_list') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
@@ -207,11 +246,11 @@
         </a>
         <a
           href="{{ url_for('auth.main') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+          class="flex-1 flex flex-col items-center justify-center p-2 autumn-text-primary font-bold"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
-              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              src="{{ url_for('static', filename='images/footer/home_filled.png') }}"
               alt="홈"
               class="max-w-full max-h-full object-contain"
             />
@@ -220,7 +259,7 @@
         </a>
         <a
           href="{{ url_for('chat.chat_list') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
@@ -233,7 +272,7 @@
         </a>
         <a
           href="{{ url_for('auth.profile') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
@@ -246,162 +285,55 @@
         </a>
       </footer>
     </div>
-  <script>
-    var container = document.getElementById('map');
-    var map;
-    var markers = [];
-    var overlays = [];
+    
+    <script>
+      // 얼굴 토글 스위치 상태 관리 (가을 페이지에서는 활성화 상태)
+      let isToggleActive = true;
 
-    function clearMarkersAndOverlays() {
-      markers.forEach(marker => marker.setMap(null));
-      markers = [];
-      overlays.forEach(overlay => overlay.setMap(null));
-      overlays = [];
-    }
-
-    // 기본 빨간 마커 생성
-    function createDefaultMarker(position, title) {
-      return new kakao.maps.Marker({
-        position: position,
-        map: map,
-        title: title
-      });
-    }
-
-    // 마커 위에 텍스트 라벨(커스텀 오버레이) 생성
-    function createLabelOverlay(position, text) {
-      var content = document.createElement('div');
-      content.className = 'custom-label';
-      content.innerText = text;
-
-      return new kakao.maps.CustomOverlay({
-        position: position,
-        content: content,
-        yAnchor: 1  // 마커 위쪽에 붙도록
-      });
-    }
-
-    // 전체 일자리 마커 + 라벨 출력
-    function loadAllJobs() {
-      fetch('/jobs_all')
-        .then(res => res.json())
-        .then(data => {
-          clearMarkersAndOverlays();
-
-          if (!data.jobs || data.jobs.length === 0) {
-            console.log('표시할 일자리가 없습니다.');
-            return;
-          }
-
-          data.jobs.forEach(job => {
-            const lat = parseFloat(job.lat);
-            const lng = parseFloat(job.lng);
-            if (isNaN(lat) || isNaN(lng)) return;
-
-            var position = new kakao.maps.LatLng(lat, lng);
-            var marker = createDefaultMarker(position, job.title);
-            var overlay = createLabelOverlay(position, '일자리');
-            overlay.setMap(map);
-
-            markers.push(marker);
-            overlays.push(overlay);
-
-            var infowindow = new kakao.maps.InfoWindow({
-              content: `<div style="padding:5px;">${job.title}</div>`
-            });
-            marker.addListener('click', () => infowindow.open(map, marker));
-          });
-        })
-        .catch(err => {
-          console.error('일자리 데이터 불러오기 실패:', err);
-          alert('일자리를 불러오는 중 오류가 발생했습니다.');
-        });
-    }
-
-    // 지도 초기화 및 내 위치 마커+라벨 표시
-    function initMap() {
-      var defaultPosition = new kakao.maps.LatLng(37.5665, 126.9780);
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          var userPosition = new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude);
-
-          map = new kakao.maps.Map(container, {
-            center: userPosition,
-            level: 7
-          });
-
-          var userMarker = createDefaultMarker(userPosition, '현재 위치');
-          var userLabel = createLabelOverlay(userPosition, '내 위치');
-          userLabel.setMap(map);
-
-          loadAllJobs();
-
-        }, function(error) {
-          console.error('위치 정보 오류:', error);
-
-          map = new kakao.maps.Map(container, {
-            center: defaultPosition,
-            level: 7
-          });
-
-          loadAllJobs();
-        });
-      } else {
-        map = new kakao.maps.Map(container, {
-          center: defaultPosition,
-          level: 7
-        });
-
-        loadAllJobs();
+      // 토글 스위치 기능
+      function updateAutumnToggleTheme() {
+        const toggle = document.getElementById('autumn-face-toggle');
+        const body = document.body;
+        const container = document.getElementById('toggleContainer');
+        const toggleText = document.getElementById('toggleText');
+        
+        if (toggle.checked) {
+          // 활성화 상태 유지 (이미 가을 모드)
+          body.classList.add('toggle-active');
+          container.classList.add('active');
+          toggleText.style.color = '#059669'; // 녹색
+          isToggleActive = true;
+        } else {
+          // 비활성화 - 일반 모드로 전환
+          body.classList.remove('toggle-active');
+          container.classList.remove('active');
+          toggleText.style.color = '#1e3a8a'; // 파란색
+          isToggleActive = false;
+          
+          // 1초 후에 메인 페이지로 이동 (애니메이션 완료 후)
+          setTimeout(() => {
+            window.location.href = '{{ url_for("auth.main") }}?reset_toggle=true';
+          }, 1000);
+        }
       }
-    }
 
-    initMap();
-
-    // 얼굴 토글 스위치 상태 관리
-    let isToggleActive = false;
-
-    // 토글 스위치 기능
-    function updateToggleTheme() {
-      const toggle = document.getElementById('face-toggle');
-      const body = document.body;
-      const container = document.getElementById('toggleContainer');
-      const toggleText = document.getElementById('toggleText');
-      
-      if (toggle.checked) {
+      // 페이지 로드 시 초기화
+      document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('autumn-face-toggle');
+        const body = document.body;
+        const container = document.getElementById('toggleContainer');
+        
+        // 활성화 상태로 시작 (체크박스를 checked로 설정했으므로)
         body.classList.add('toggle-active');
         container.classList.add('active');
         isToggleActive = true;
         
-        // 1초 후에 토글 페이지로 이동 (애니메이션 완료 후)
-        setTimeout(() => {
-          window.location.href = '/toggle-page';
-        }, 1000);
-      } else {
-        body.classList.remove('toggle-active');
-        container.classList.remove('active');
-        isToggleActive = false;
-      }
-    }
-
-    // 페이지 로드 시 초기화
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggle = document.getElementById('face-toggle');
-      const urlParams = new URLSearchParams(window.location.search);
-      
-      // reset_toggle 파라미터가 있으면 토글을 비활성화 상태로 설정
-      if (urlParams.get('reset_toggle') === 'true') {
-        toggle.checked = false;
-        updateToggleTheme();
-      }
-      
-      // 토글 변경 이벤트 리스너 추가
-      toggle.addEventListener('change', updateToggleTheme);
-      
-      // 초기 상태 설정
-      updateToggleTheme();
-    });
-  </script>
+        // 토글 변경 이벤트 리스너 추가
+        toggle.addEventListener('change', updateAutumnToggleTheme);
+        
+        // 초기 상태 설정
+        updateAutumnToggleTheme();
+      });
+    </script>
   </body>
 </html>
