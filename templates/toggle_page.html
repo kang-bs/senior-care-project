@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>이음 - 가을 모드 시니어 일자리</title>
+    <title>이음 - 초록 모드 시니어 일자리</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
@@ -17,36 +17,36 @@
       .laundry-gothic {
         font-family: "LaundryGothic", "Noto Sans KR", sans-serif; /* 'LaundryGothic' 폰트가 없을 경우 Noto Sans KR로 대체 */
       }
-      
-      /* 가을 색상 정의 */
+
+      /* 초록 색상 정의 */
       .autumn-text-primary {
-        color: #92400e;
+        color: #065f46;
       }
       .autumn-text-secondary {
-        color: #b45309;
+        color: #047857;
       }
       .autumn-bg-primary {
-        background-color: #92400e;
+        background-color: #065f46;
       }
       .autumn-bg-secondary {
-        background-color: #f97316;
+        background-color: #10b981;
       }
       .autumn-border {
-        border-color: #f97316;
+        border-color: #10b981;
       }
       .autumn-bg-light {
-        background-color: #fef3c7;
+        background-color: #d1fae5;
       }
-      
+
       /* 얼굴 토글 스위치 스타일 */
       :root {
-        --toggle-bg: #FFFFFF;
-        --face-color: #64748B;
+        --toggle-bg: #ffffff;
+        --face-color: #64748b;
       }
 
       body.toggle-active {
-        --toggle-bg: #C1E1C1;
-        --face-color: #4A5568;
+        --toggle-bg: #c1e1c1;
+        --face-color: #4a5568;
       }
 
       .toggle-container {
@@ -74,7 +74,7 @@
       #autumn-face-toggle:checked + label .roller {
         transform: rotate(360deg);
       }
-      
+
       #autumn-face-toggle:checked + label .face-front {
         opacity: 0;
         transition: opacity 0.1s linear 0.5s;
@@ -91,8 +91,12 @@
         height: 2px;
         top: 10px;
       }
-      .face-front .eye.left { left: 6px; }
-      .face-front .eye.right { right: 6px; }
+      .face-front .eye.left {
+        left: 6px;
+      }
+      .face-front .eye.right {
+        right: 6px;
+      }
 
       .face-front .mouth {
         width: 3.5px;
@@ -107,8 +111,12 @@
         height: 2.5px;
         top: 10px;
       }
-      .face-back .eye.left { left: 6.5px; }
-      .face-back .eye.right { right: 6.5px; }
+      .face-back .eye.left {
+        left: 6.5px;
+      }
+      .face-back .eye.right {
+        right: 6.5px;
+      }
 
       .face-back .mouth {
         width: 3.5px;
@@ -122,10 +130,12 @@
       }
     </style>
   </head>
-  <body class="bg-gradient-to-br from-amber-50 to-orange-100">
+  <body>
     <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
       <!-- 상단 고정 영역 -->
-      <div class="sticky top-0 z-10 bg-gradient-to-r from-amber-100 to-orange-100 shadow-lg">
+      <div
+        class="sticky top-0 z-10 bg-gradient-to-r from-green-100 to-emerald-100 shadow-lg"
+      >
         <!-- 상단 바 -->
         <header class="p-4 flex justify-between items-center">
           <div class="flex items-center">
@@ -139,21 +149,56 @@
             <div class="toggle-container" id="toggleContainer">
               <span class="toggle-text" id="toggleText">이음</span>
               <div class="relative w-[50px] h-[26px]">
-                <input type="checkbox" id="autumn-face-toggle" class="hidden" checked>
-                <label for="autumn-face-toggle" class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]" style="background-color: var(--toggle-bg);">
-                  <div class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out">
-                    <div class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out">
+                <input
+                  type="checkbox"
+                  id="autumn-face-toggle"
+                  class="hidden"
+                  checked
+                />
+                <label
+                  for="autumn-face-toggle"
+                  class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]"
+                  style="background-color: var(--toggle-bg)"
+                >
+                  <div
+                    class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out"
+                  >
+                    <div
+                      class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out"
+                    >
                       <!-- 앞면 (일반 모드) -->
-                      <div class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear">
-                        <div class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                        <div class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                        <div class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                      <div
+                        class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear"
+                      >
+                        <div
+                          class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
                       </div>
                       <!-- 뒷면 (밤 모드) -->
-                      <div class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear">
-                        <div class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
-                        <div class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
-                        <div class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                      <div
+                        class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear"
+                      >
+                        <div
+                          class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="background-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="background-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -180,7 +225,7 @@
         </header>
 
         <!-- 네비게이션 탭 -->
-        <nav class="flex border-b border-amber-300">
+        <nav class="flex border-b border-green-300">
           <a
             href="#"
             class="flex-1 text-center py-3 border-b-4 autumn-border autumn-text-primary font-bold"
@@ -188,52 +233,40 @@
           >
           <a
             href="{{ url_for('company.company_list') }}"
-            class="flex-1 text-center py-3 text-amber-700 hover:text-orange-600 transition-colors"
+            class="flex-1 text-center py-3 text-green-700 hover:text-emerald-600 transition-colors"
             >기업 이음</a
           >
           <a
             href="{{ url_for('jobs.job_list') }}"
-            class="flex-1 text-center py-3 text-amber-700 hover:text-orange-600 transition-colors"
+            class="flex-1 text-center py-3 text-green-700 hover:text-emerald-600 transition-colors"
             >사람 이음</a
           >
         </nav>
       </div>
 
       <!-- 메인 컨텐츠 -->
-      <main class="p-4 bg-gradient-to-b from-amber-50 to-white pb-24">
-        <!-- 가을 모드 환영 메시지 -->
-        <div class="text-center py-16">
-          <h1 class="text-3xl font-bold autumn-text-primary mb-4">🍂 가을 모드 활성화!</h1>
-          <p class="autumn-text-secondary mb-8">따뜻한 가을 감성으로 일자리를 찾아보세요</p>
-          
-          <!-- 가을 테마 카드 -->
-          <div class="bg-gradient-to-r from-amber-100 to-orange-100 p-6 rounded-xl border-2 autumn-border shadow-lg">
-            <div class="flex items-center justify-center mb-4">
-              <div class="w-16 h-16 autumn-bg-secondary rounded-full flex items-center justify-center shadow-lg">
-                <span class="text-2xl">🎃</span>
-              </div>
-            </div>
-            <h2 class="text-xl font-bold autumn-text-primary mb-4">얼굴 토글이 활성화되었습니다!</h2>
-            <p class="text-sm autumn-text-secondary mb-6">
-              토글 스위치를 다시 클릭하면 일반 모드로 돌아갑니다.
-            </p>
-          </div>
-        </div>
-      </main>
+      <main class="p-4 bg-gradient-to-b from-green-50 to-white pb-24"></main>
 
       <!-- 하단 네비게이션 -->
       <footer
-        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gradient-to-r from-amber-100 to-orange-100 border-t-2 autumn-border flex justify-around shadow-lg"
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gradient-to-r from-green-100 to-emerald-100 border-t-2 autumn-border flex justify-around shadow-lg"
       >
-        <a href="{{ url_for('map.show_map') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors">
-            <div class="w-6 h-6 mb-1 flex items-center justify-center">
-                <img src="{{ url_for('static', filename='images/footer/map.png') }}" alt="지도" class="max-w-full max-h-full object-contain" />
-            </div>
-            <span class="text-xs">지도</span>
+        <a
+          href="{{ url_for('map.show_map') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-green-700 hover:text-emerald-600 transition-colors"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
         </a>
         <a
           href="{{ url_for('jobs.bookmark_list') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-green-700 hover:text-emerald-600 transition-colors"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
@@ -259,7 +292,7 @@
         </a>
         <a
           href="{{ url_for('chat.chat_list') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-green-700 hover:text-emerald-600 transition-colors"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
@@ -272,7 +305,7 @@
         </a>
         <a
           href="{{ url_for('auth.profile') }}"
-          class="flex-1 flex flex-col items-center justify-center p-2 text-amber-700 hover:text-orange-600 transition-colors"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-green-700 hover:text-emerald-600 transition-colors"
         >
           <div class="w-6 h-6 mb-1 flex items-center justify-center">
             <img
@@ -285,52 +318,53 @@
         </a>
       </footer>
     </div>
-    
+
     <script>
-      // 얼굴 토글 스위치 상태 관리 (가을 페이지에서는 활성화 상태)
+      // 얼굴 토글 스위치 상태 관리 (초록 페이지에서는 활성화 상태)
       let isToggleActive = true;
 
       // 토글 스위치 기능
       function updateAutumnToggleTheme() {
-        const toggle = document.getElementById('autumn-face-toggle');
+        const toggle = document.getElementById("autumn-face-toggle");
         const body = document.body;
-        const container = document.getElementById('toggleContainer');
-        const toggleText = document.getElementById('toggleText');
-        
+        const container = document.getElementById("toggleContainer");
+        const toggleText = document.getElementById("toggleText");
+
         if (toggle.checked) {
-          // 활성화 상태 유지 (이미 가을 모드)
-          body.classList.add('toggle-active');
-          container.classList.add('active');
-          toggleText.style.color = '#059669'; // 녹색
+          // 활성화 상태 유지 (이미 초록 모드)
+          body.classList.add("toggle-active");
+          container.classList.add("active");
+          toggleText.style.color = "#059669"; // 녹색
           isToggleActive = true;
         } else {
           // 비활성화 - 일반 모드로 전환
-          body.classList.remove('toggle-active');
-          container.classList.remove('active');
-          toggleText.style.color = '#1e3a8a'; // 파란색
+          body.classList.remove("toggle-active");
+          container.classList.remove("active");
+          toggleText.style.color = "#1e3a8a"; // 파란색
           isToggleActive = false;
-          
+
           // 1초 후에 메인 페이지로 이동 (애니메이션 완료 후)
           setTimeout(() => {
-            window.location.href = '{{ url_for("auth.main") }}?reset_toggle=true';
+            window.location.href =
+              '{{ url_for("auth.main") }}?reset_toggle=true';
           }, 1000);
         }
       }
 
       // 페이지 로드 시 초기화
-      document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('autumn-face-toggle');
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.getElementById("autumn-face-toggle");
         const body = document.body;
-        const container = document.getElementById('toggleContainer');
-        
+        const container = document.getElementById("toggleContainer");
+
         // 활성화 상태로 시작 (체크박스를 checked로 설정했으므로)
-        body.classList.add('toggle-active');
-        container.classList.add('active');
+        body.classList.add("toggle-active");
+        container.classList.add("active");
         isToggleActive = true;
-        
+
         // 토글 변경 이벤트 리스너 추가
-        toggle.addEventListener('change', updateAutumnToggleTheme);
-        
+        toggle.addEventListener("change", updateAutumnToggleTheme);
+
         // 초기 상태 설정
         updateAutumnToggleTheme();
       });
