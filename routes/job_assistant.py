@@ -34,48 +34,9 @@ def general_job_assistant_page():
     if current_user.user_type not in [0, 1]:
         return f"접근 권한이 없습니다. 현재 사용자 타입: {current_user.user_type}", 403
     
-    return """
-    <!DOCTYPE html>
-    <html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AI 도우미 안내</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body>
-        <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h1 class="text-success mb-4">🤖 AI 도우미 안내</h1>
-                            <p class="lead">AI 도우미가 공고 작성 페이지에 통합되었습니다!</p>
-                            <div class="alert alert-info">
-                                <h5>📝 사용 방법</h5>
-                                <ol class="text-start">
-                                    <li>공고 작성 페이지에서 기본 정보를 입력하세요</li>
-                                    <li>"상세 설명" 위의 <strong class="text-success">AI 도우미</strong> 버튼을 클릭하세요</li>
-                                    <li>팝업에서 추가 정보를 입력하고 생성하세요</li>
-                                    <li>생성된 설명을 확인하고 필요시 수정하세요</li>
-                                </ol>
-                            </div>
-                            <div class="mt-4">
-                                <a href="/jobs/create" class="btn btn-success btn-lg me-3">
-                                    📝 일반 공고 작성하기
-                                </a>
-                                <a href="/company/create" class="btn btn-primary btn-lg">
-                                    🏢 기업 공고 작성하기
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-    """
+    # AI 도우미가 공고 작성 페이지에 통합되었으므로 리다이렉트
+    from flask import redirect, url_for
+    return redirect(url_for('jobs.create_job'))
 
 @job_assistant_bp.route("/api/job-draft", methods=["POST"])
 @login_required
@@ -101,7 +62,7 @@ def generate_job_draft():
                 "error": "요청 데이터가 없습니다."
             }), 400
         
-        # AI 글쓰기 도우미 실행
+        # 강화된 규칙 기반 AI 글쓰기 도우미 실행
         result = job_assistant.generate_job_description(job_data)
         
         if result['success']:
@@ -315,3 +276,44 @@ def get_job_keywords():
         "success": True,
         "keywords": keywords
     })
+
+@job_assistant_bp.route("/api/test-ai-assistant")
+@login_required
+def test_ai_assistant():
+    """
+    강화된 규칙 기반 AI 도우미 테스트
+    """
+    try:
+        # 테스트 데이터
+        test_data = {
+            "title": "카페 서빙",
+            "employment_type": "파트타임",
+            "location": "서울 강남구",
+            "duties": "손님 응대, 음료 제조, 간단한 정리",
+            "requirements": "친절하신 분, 성실하신 분",
+            "benefits": "식사 제공, 교통비 지원, 자유로운 분위기",
+            "senior_friendly": True,
+            "easy_work": True,
+            "training_provided": True,
+            "job_type": "general",
+            "pay": {
+                "type": "hourly",
+                "amount": 12000
+            }
+        }
+        
+        # 강화된 규칙 기반 시스템 테스트
+        result = job_assistant.generate_job_description(test_data)
+        
+        return jsonify({
+            "success": True,
+            "message": "강화된 규칙 기반 AI 도우미 테스트 성공!",
+            "system": "Enhanced Rule-Based AI",
+            "test_result": result
+        })
+            
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        })

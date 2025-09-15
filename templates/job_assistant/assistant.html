@@ -179,10 +179,10 @@
               </div>
             </div>
 
-            <!-- 옵션 -->
+            <!-- 추가 정보 -->
             <div class="card mb-3">
               <div class="card-header">
-                <h6>작성 옵션</h6>
+                <h6>추가 정보</h6>
               </div>
               <div class="card-body">
                 <div class="row">
@@ -191,21 +191,24 @@
                       <input
                         class="form-check-input"
                         type="checkbox"
-                        id="senior_friendly"
-                        checked
+                        id="training_provided"
                       />
-                      <label class="form-check-label" for="senior_friendly">
-                        시니어 친화적 작성
+                      <label class="form-check-label" for="training_provided">
+                        교육 제공
                       </label>
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">작성 톤</label>
-                    <select class="form-select" id="tone">
-                      <option value="친절">친절</option>
-                      <option value="담백">담백</option>
-                      <option value="활기">활기</option>
-                    </select>
+                    <div class="form-check">
+                      <input
+                        class="form-check-input"
+                        type="checkbox"
+                        id="flexible_time"
+                      />
+                      <label class="form-check-label" for="flexible_time">
+                        시간 조정 가능
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -398,8 +401,8 @@
       benefits: document.getElementById("benefits").value.trim(),
       apply: document.getElementById("apply").value.trim(),
       deadline: document.getElementById("deadline").value.trim(),
-      senior_friendly: document.getElementById("senior_friendly").checked,
-      tone: document.getElementById("tone").value,
+      training_provided: document.getElementById("training_provided").checked,
+      flexible_time: document.getElementById("flexible_time").checked,
     };
 
     // 근무 일정
@@ -601,8 +604,10 @@
         document.getElementById("requirements").value =
           template.requirements || "";
         document.getElementById("benefits").value = template.benefits || "";
-        document.getElementById("senior_friendly").checked =
-          template.senior_friendly || false;
+        document.getElementById("training_provided").checked =
+          template.training_provided || false;
+        document.getElementById("flexible_time").checked =
+          template.flexible_time || false;
 
         // 모달 닫기
         bootstrap.Modal.getInstance(

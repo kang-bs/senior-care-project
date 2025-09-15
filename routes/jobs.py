@@ -257,7 +257,10 @@ def edit_job(job_id):
             db.session.rollback()
             flash("공고 수정 중 오류가 발생했습니다.", "error")
     
-    return render_template("jobs/edit_job.html", job=job)
+    # Kakao Map API 키 가져오기
+    kakao_api_key = current_app.config.get("KAKAO_MAP_API_KEY")
+    
+    return render_template("jobs/edit_job.html", job=job, kakao_key=kakao_api_key)
 
 # 공고 삭제
 @jobs_bp.route("/jobs/<int:job_id>/delete", methods=["POST"])
