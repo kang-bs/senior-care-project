@@ -374,7 +374,7 @@
                 >상세 설명 <span class="text-red-500">*</span></label
               >
               <button type="button" onclick="openAIAssistant()" 
-                      class="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 bg-transparent border-none cursor-pointer">
+                      class="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 bg-transparent border-none cursor-pointer font-semibold">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
@@ -386,7 +386,7 @@
               id="description"
               rows="4"
               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요&#10;&#10;💡 AI 도우미를 사용하면 시니어 친화적인 공고를 쉽게 작성할 수 있어요!"
+              placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요&#10;&#10;AI 도우미를 사용하면 전문적인 공고를 쉽게 작성할 수 있습니다."
               required
             ></textarea>
           </div>
@@ -653,7 +653,7 @@
         <div class="bg-white rounded-lg max-w-md w-full max-h-screen overflow-y-auto">
           <div class="p-4 border-b">
             <div class="flex justify-between items-center">
-              <h3 class="text-lg font-bold text-gray-800">🤖 AI 상세 설명 생성</h3>
+              <h3 class="text-lg font-bold text-gray-800">AI 상세 설명 생성</h3>
               <button onclick="closeAIAssistant()" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -663,10 +663,13 @@
           </div>
           
           <div class="p-4">
-            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
-              <p class="text-sm text-blue-800">
-                <strong>💡 입력된 정보를 바탕으로 상세 설명을 생성합니다!</strong><br>
-                추가 정보를 입력하면 더 완성도 높은 공고를 만들 수 있어요.
+            <div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+              <p class="text-sm text-green-800">
+                <strong>AI 도우미가 전문적인 공고를 작성해드립니다</strong><br>
+                • 업무별 맞춤 표현 자동 생성<br>
+                • 깔끔하고 이해하기 쉬운 문체 적용<br>
+                • 구조화된 상세 설명<br>
+                • 모든 필수 정보가 포함된 완성도 높은 공고
               </p>
             </div>
 
@@ -690,21 +693,17 @@
                           placeholder="예: 식사 제공, 교통비 지원, 자유로운 분위기"></textarea>
               </div>
 
-              <!-- 시니어 친화 옵션 -->
-              <div class="border border-green-200 rounded-lg p-3 bg-green-50">
-                <h4 class="text-sm font-medium text-green-800 mb-2">🤝 시니어 친화 옵션</h4>
+              <!-- 추가 옵션 -->
+              <div class="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                <h4 class="text-sm font-medium text-gray-800 mb-2">추가 옵션</h4>
                 <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="checkbox" id="aiSeniorFriendly" checked class="mr-2">
-                    <span class="text-sm">시니어 친화적으로 작성</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="checkbox" id="aiEasyWork" class="mr-2">
-                    <span class="text-sm">쉬운 업무임을 강조</span>
-                  </label>
                   <label class="flex items-center">
                     <input type="checkbox" id="aiTrainingProvided" class="mr-2">
                     <span class="text-sm">교육 제공</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="aiFlexibleTime" class="mr-2">
+                    <span class="text-sm">시간 조정 가능</span>
                   </label>
                 </div>
               </div>
@@ -717,8 +716,8 @@
                 취소
               </button>
               <button onclick="generateAIDescription()" 
-                      class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                <span id="generateBtnText">🤖 AI로 생성하기</span>
+                      class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">
+                <span id="generateBtnText">AI로 상세 설명 생성하기</span>
               </button>
             </div>
           </div>
@@ -754,7 +753,7 @@
       // AI 상세 설명 생성
       async function generateAIDescription() {
         const generateBtn = document.getElementById('generateBtnText');
-        generateBtn.innerHTML = '🔄 생성 중...';
+        generateBtn.innerHTML = 'AI가 작성 중입니다...';
         
         try {
           // 기본 폼 데이터 수집
@@ -764,9 +763,8 @@
           formData.duties = document.getElementById('aiDuties').value.trim() || '업무 내용을 입력해주세요';
           formData.requirements = document.getElementById('aiRequirements').value.trim();
           formData.benefits = document.getElementById('aiBenefits').value.trim();
-          formData.senior_friendly = document.getElementById('aiSeniorFriendly').checked;
-          formData.easy_work = document.getElementById('aiEasyWork').checked;
           formData.training_provided = document.getElementById('aiTrainingProvided').checked;
+          formData.flexible_time = document.getElementById('aiFlexibleTime').checked;
           formData.job_type = 'general';
 
           // 디버깅: 수집된 데이터 확인
@@ -791,14 +789,14 @@
             closeAIAssistant();
             
             // 성공 메시지
-            alert('✨ AI가 상세 설명을 생성했습니다! 필요에 따라 수정해주세요.');
+            alert('AI가 전문적인 상세 설명을 생성했습니다.\n구조화된 내용을 확인하고 필요시 수정해주세요.');
           } else {
             alert('생성 실패: ' + result.error);
           }
         } catch (error) {
           alert('서버 오류: ' + error.message);
         } finally {
-          generateBtn.innerHTML = '🤖 AI로 생성하기';
+          generateBtn.innerHTML = 'AI로 상세 설명 생성하기';
         }
       }
 
