@@ -20,6 +20,29 @@
         background-color: #2563eb;
         color: white;
       }
+       /* --- 모달 및 지도 스타일 (수정됨) --- */
+      #addressModal {
+        display: none; /* 평소에는 숨김 */
+        position: fixed;
+        inset: 0; /* top, right, bottom, left: 0 */
+        background-color: rgba(0, 0, 0, 0.6); /* 반투명 배경 */
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+      #addressModal .modal-card {
+        width: 90vw;
+        max-width: 500px;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+      /* 지도 컨테이너 크기 지정 (필수) */
+      #addressMap {
+        width: 100%;
+        height: 400px;
+      }
     </style>
   </head>
   <body class="bg-gray-100">
@@ -255,50 +278,67 @@
             </div>
           </div>
 
-          <div>
-            <label for="salary" class="block text-sm font-medium text-gray-700"
-              >급여</label
-            >
-            <input
-              type="text"
-              name="salary"
-              id="salary"
-              class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="예: 시급 10,000원"
-            />
-          </div>
+            <div>
+                <label for="salary" class="block text-sm font-medium text-gray-700"
+                >급여</label
+                >
+                <input
+                        type="text"
+                        name="salary"
+                        id="salary"
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="예: 시급 10,000원"
+                />
+            </div>
 
-          <div>
-          <label for="region" class="block text-sm font-medium text-gray-700"
-          >근무 지역 <span class="text-red-500">*</span></label>
-           <div class="flex items-center gap-2">
-             <input
-               type="text"
-               name="region"
-               id="region"
-               readonly
-               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               placeholder="주소 검색 버튼을 눌러 선택하세요"
-               required
-             />
-             <button
-               type="button"
-               onclick="openAddressSearch()"
-               class="py-2 px-4 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"
-             >
-                 주소 검색
-             </button>
-           </div>
-          </div>
+            <!-- 근무 지역 -->
+            <div>
+                <label for="region" class="block text-sm font-medium text-gray-700">근무 지역 <span
+                        class="text-red-500">*</span></label>
+                <div class="flex items-center gap-2">
+                    <input type="text" name="region" id="region" readonly
+                           class="mt-1 block w-full bg-gray-100 rounded-md border border-gray-300 shadow-sm"
+                           placeholder="주소 검색 버튼으로 선택" required/>
+                    <button type="button" onclick="openAddressModal()"
+                            class="py-2 px-4 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 whitespace-nowrap">
+                        주소 검색
+                    </button>
+                </div>
+            </div>
 
-          <!-- 숨은 위도, 경도 필드 -->
-            <input type="hidden" id="latitude" name="latitude" />
-            <input type="hidden" id="longitude" name="longitude" />
 
-          <div>
-            <label
-              for="recruitment_count"
-              class="block text-sm font-medium text-gray-700"
+            <!-- 숨은 위도, 경도 필드 -->
+            <input type="hidden" id="latitude" name="latitude"/>
+            <input type="hidden" id="longitude" name="longitude"/>
+
+            <!-- 주소 선택 모달 -->
+            <div id="addressModal">
+                <div class="modal-card">
+                    <!-- 검색 UI 추가 -->
+                    <div class="p-3 border-b">
+                        <div class="flex gap-2">
+                            <input type="text" id="addressSearchKeyword" class="flex-grow border rounded px-2 py-1"
+                                   placeholder="주소나 장소명을 입력하세요">
+                            <button onclick="searchAddress()" class="bg-gray-200 px-3 rounded">검색</button>
+                        </div>
+                    </div>
+                    <div id="addressMap"></div>
+                    <div class="flex justify-end p-3 border-t border-gray-200">
+                        <button onclick="selectAddress()"
+                                class="bg-blue-600 hover:bg-blue-700 text-white py-1 px-3 rounded-md text-sm mr-2">이 위치로
+                            선택
+                        </button>
+                        <button onclick="closeAddressModal()"
+                                class="bg-gray-500 hover:bg-gray-600 text-white py-1 px-3 rounded-md text-sm">닫기
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label
+                        for="recruitment_count"
+                        class="block text-sm font-medium text-gray-700"
               >모집 인원</label
             >
             <input
@@ -334,7 +374,7 @@
                 >상세 설명 <span class="text-red-500">*</span></label
               >
               <button type="button" onclick="openAIAssistant()" 
-                      class="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 bg-transparent border-none cursor-pointer">
+                      class="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 bg-transparent border-none cursor-pointer font-semibold">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
@@ -346,7 +386,7 @@
               id="description"
               rows="4"
               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요&#10;&#10;💡 AI 도우미를 사용하면 시니어 친화적인 공고를 쉽게 작성할 수 있어요!"
+              placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요&#10;&#10;AI 도우미를 사용하면 전문적인 공고를 쉽게 작성할 수 있습니다."
               required
             ></textarea>
           </div>
@@ -464,42 +504,122 @@
         }
       }
 
-      // 주소 검색 팝업 대체용 prompt 사용
-      function openAddressSearch() {
-        const query = prompt("검색할 주소를 입력하세요:");
-        if (!query) {
-          alert("주소를 입력해주세요.");
-          return;
-        }
-        searchAddress(query);
-      }
+      // 모달/지도 상태
+      var addressModal = document.getElementById("addressModal");
+      var addressMap, addressMarker, selectedPosition;
+      var geocoder = new kakao.maps.services.Geocoder();
+      var ps = new kakao.maps.services.Places();
 
-      // 서버의 카카오 주소 검색 중계 API 호출
-      function searchAddress(query) {
-        fetch(`/api/address_search?query=${encodeURIComponent(query)}`)
-          .then((response) => {
-            if (!response.ok) throw new Error("서버 주소 검색 API 호출 실패");
-            return response.json();
-          })
-          .then((data) => {
-            if (data.documents && data.documents.length > 0) {
-              const location = data.documents[0];
-              document.getElementById("region").value = location.address_name || location.road_address?.address_name || query;
-              document.getElementById("latitude").value = location.y;
-              document.getElementById("longitude").value = location.x;
-              alert(`주소 검색 성공: ${document.getElementById("region").value} (${location.y}, ${location.x})`);
-            } else {
-              alert("검색 결과가 없습니다.");
-            }
-          })
-          .catch((error) => {
-            console.error(error);
-            alert("주소 검색 중 오류가 발생했습니다.");
+      // 주소로 검색하는 함수
+      function searchAddress() {
+          var keyword = document.getElementById('addressSearchKeyword').value;
+
+          if (!keyword.replace(/^\s*|\s*$/g, '')) {
+              alert('키워드를 입력해주세요!');
+              return false;
+          }
+
+          // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
+          ps.keywordSearch(keyword, function (data, status, pagination) {
+              if (status === kakao.maps.services.Status.OK) {
+                  // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+                  var bounds = new kakao.maps.LatLngBounds();
+
+                  for (var i = 0; i < data.length; i++) {
+                      bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+                  }
+
+                   addressMap.setBounds(bounds);
+
+                  // 첫 번째 검색 결과의 위치로 마커와 중심 좌표를 설정합니다.
+                  if (data.length > 0) {
+                      var firstItem = data[0];
+                      var moveLatLon = new kakao.maps.LatLng(firstItem.y, firstItem.x);
+
+                      addressMap.setCenter(moveLatLon);
+                      addressMarker.setPosition(moveLatLon);
+                      selectedPosition = moveLatLon;
+                  }
+              } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+                  alert('검색 결과가 존재하지 않습니다.');
+                  return;
+              } else if (status === kakao.maps.services.Status.ERROR) {
+                  alert('검색 결과 중 오류가 발생했습니다.');
+                  return;
+              }
           });
       }
 
+      // 지도 최초 1회 생성
+      function initAddressMapOnce() {
+          if (addressMap) return;
+          var mapContainer = document.getElementById("addressMap");
+          var mapOption = {
+              center: new kakao.maps.LatLng(37.566826, 126.9786567),
+              level: 3,
+          };
+          addressMap = new kakao.maps.Map(mapContainer, mapOption);
+
+          addressMarker = new kakao.maps.Marker({
+              position: addressMap.getCenter(),
+              map: addressMap,
+          });
+          selectedPosition = addressMap.getCenter();
+
+          // 지도 클릭 -> 좌표 선택 및 마커 이동
+          kakao.maps.event.addListener(addressMap, "click", function (mouseEvent) {
+              var latlng = mouseEvent.latLng;
+              addressMarker.setPosition(latlng);
+              selectedPosition = latlng;
+          });
+      }
+
+      // 모달 열기 -> 다음 프레임에 relayout + setCenter
+      function openAddressModal() {
+          addressModal.style.display = "flex";
+          initAddressMapOnce();
+          requestAnimationFrame(function () {
+              addressMap.relayout();
+              addressMap.setCenter(selectedPosition);
+          });
+      }
+
+      // 선택 완료: 좌표->주소 변환 후 폼 반영 (수정됨)
+      function selectAddress() {
+          if (!selectedPosition) {
+              alert("지도에서 위치를 먼저 클릭해주세요.");
+              return;
+          }
+          geocoder.coord2Address(
+              selectedPosition.getLng(),
+              selectedPosition.getLat(),
+              function (result, status) {
+                  if (status === kakao.maps.services.Status.OK) {
+                      // Geocoder 결과는 배열이므로 첫 번째(result[0]) 결과를 사용
+                      var roadAddr = result[0].road_address
+                          ? result[0].road_address.address_name
+                          : "";
+                      var jibunAddr = result[0].address
+                          ? result[0].address.address_name
+                          : "";
+
+                      document.getElementById("region").value = roadAddr || jibunAddr;
+                      document.getElementById("latitude").value = selectedPosition.getLat();
+                      document.getElementById("longitude").value = selectedPosition.getLng();
+                      closeAddressModal();
+                  } else {
+                      alert("주소 정보를 가져오는 데 실패했습니다.");
+                  }
+              }
+          );
+      }
+
+      function closeAddressModal() {
+          addressModal.style.display = "none";
+      }
+
       function selectWorkPeriod(button, value) {
-        document
+          document
           .querySelectorAll("#work_period_group .btn-option")
           .forEach((btn) => btn.classList.remove("active"));
         button.classList.add("active");
@@ -533,7 +653,7 @@
         <div class="bg-white rounded-lg max-w-md w-full max-h-screen overflow-y-auto">
           <div class="p-4 border-b">
             <div class="flex justify-between items-center">
-              <h3 class="text-lg font-bold text-gray-800">🤖 AI 상세 설명 생성</h3>
+              <h3 class="text-lg font-bold text-gray-800">AI 상세 설명 생성</h3>
               <button onclick="closeAIAssistant()" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -543,10 +663,13 @@
           </div>
           
           <div class="p-4">
-            <div class="mb-4 p-3 bg-blue-50 rounded-lg">
-              <p class="text-sm text-blue-800">
-                <strong>💡 입력된 정보를 바탕으로 상세 설명을 생성합니다!</strong><br>
-                추가 정보를 입력하면 더 완성도 높은 공고를 만들 수 있어요.
+            <div class="mb-4 p-3 bg-green-50 rounded-lg border border-green-200">
+              <p class="text-sm text-green-800">
+                <strong>AI 도우미가 전문적인 공고를 작성해드립니다</strong><br>
+                • 업무별 맞춤 표현 자동 생성<br>
+                • 깔끔하고 이해하기 쉬운 문체 적용<br>
+                • 구조화된 상세 설명<br>
+                • 모든 필수 정보가 포함된 완성도 높은 공고
               </p>
             </div>
 
@@ -570,21 +693,17 @@
                           placeholder="예: 식사 제공, 교통비 지원, 자유로운 분위기"></textarea>
               </div>
 
-              <!-- 시니어 친화 옵션 -->
-              <div class="border border-green-200 rounded-lg p-3 bg-green-50">
-                <h4 class="text-sm font-medium text-green-800 mb-2">🤝 시니어 친화 옵션</h4>
+              <!-- 추가 옵션 -->
+              <div class="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                <h4 class="text-sm font-medium text-gray-800 mb-2">추가 옵션</h4>
                 <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="checkbox" id="aiSeniorFriendly" checked class="mr-2">
-                    <span class="text-sm">시니어 친화적으로 작성</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="checkbox" id="aiEasyWork" class="mr-2">
-                    <span class="text-sm">쉬운 업무임을 강조</span>
-                  </label>
                   <label class="flex items-center">
                     <input type="checkbox" id="aiTrainingProvided" class="mr-2">
                     <span class="text-sm">교육 제공</span>
+                  </label>
+                  <label class="flex items-center">
+                    <input type="checkbox" id="aiFlexibleTime" class="mr-2">
+                    <span class="text-sm">시간 조정 가능</span>
                   </label>
                 </div>
               </div>
@@ -597,8 +716,8 @@
                 취소
               </button>
               <button onclick="generateAIDescription()" 
-                      class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                <span id="generateBtnText">🤖 AI로 생성하기</span>
+                      class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 font-semibold">
+                <span id="generateBtnText">AI로 상세 설명 생성하기</span>
               </button>
             </div>
           </div>
@@ -634,7 +753,7 @@
       // AI 상세 설명 생성
       async function generateAIDescription() {
         const generateBtn = document.getElementById('generateBtnText');
-        generateBtn.innerHTML = '🔄 생성 중...';
+        generateBtn.innerHTML = 'AI가 작성 중입니다...';
         
         try {
           // 기본 폼 데이터 수집
@@ -644,9 +763,8 @@
           formData.duties = document.getElementById('aiDuties').value.trim() || '업무 내용을 입력해주세요';
           formData.requirements = document.getElementById('aiRequirements').value.trim();
           formData.benefits = document.getElementById('aiBenefits').value.trim();
-          formData.senior_friendly = document.getElementById('aiSeniorFriendly').checked;
-          formData.easy_work = document.getElementById('aiEasyWork').checked;
           formData.training_provided = document.getElementById('aiTrainingProvided').checked;
+          formData.flexible_time = document.getElementById('aiFlexibleTime').checked;
           formData.job_type = 'general';
 
           // 디버깅: 수집된 데이터 확인
@@ -671,14 +789,14 @@
             closeAIAssistant();
             
             // 성공 메시지
-            alert('✨ AI가 상세 설명을 생성했습니다! 필요에 따라 수정해주세요.');
+            alert('AI가 전문적인 상세 설명을 생성했습니다.\n구조화된 내용을 확인하고 필요시 수정해주세요.');
           } else {
             alert('생성 실패: ' + result.error);
           }
         } catch (error) {
           alert('서버 오류: ' + error.message);
         } finally {
-          generateBtn.innerHTML = '🤖 AI로 생성하기';
+          generateBtn.innerHTML = 'AI로 상세 설명 생성하기';
         }
       }
 
