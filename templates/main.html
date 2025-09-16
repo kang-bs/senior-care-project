@@ -17,10 +17,92 @@
       .laundry-gothic {
         font-family: "LaundryGothic", "Noto Sans KR", sans-serif; /* 'LaundryGothic' 폰트가 없을 경우 Noto Sans KR로 대체 */
       }
+      /* 얼굴 토글 스위치 스타일 */
+      :root {
+        --toggle-bg: #FFFFFF;
+        --face-color: #64748B;
+      }
+
+      body.toggle-active {
+        --toggle-bg: #C1E1C1;
+        --face-color: #4A5568;
+      }
+
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .toggle-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1e3a8a;
+        transition: color 0.3s;
+      }
+
+      .toggle-container.active .toggle-text {
+        color: #059669;
+      }
+
+      /* 복잡한 토글 애니메이션 */
+      #face-toggle:checked + label .toggle-handle {
+        transform: translateX(24px);
+      }
+
+      #face-toggle:checked + label .roller {
+        transform: rotate(360deg);
+      }
+      
+      #face-toggle:checked + label .face-front {
+        opacity: 0;
+        transition: opacity 0.1s linear 0.5s;
+      }
+
+      #face-toggle:checked + label .face-back {
+        opacity: 1;
+        transition: opacity 0.1s linear 0.5s;
+      }
+
+      /* 얼굴 표정 세부사항 */
+      .face-front .eye {
+        width: 3px;
+        height: 2px;
+        top: 10px;
+      }
+      .face-front .eye.left { left: 6px; }
+      .face-front .eye.right { right: 6px; }
+
+      .face-front .mouth {
+        width: 3.5px;
+        height: 3px;
+        bottom: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .face-back .eye {
+        width: 2.5px;
+        height: 2.5px;
+        top: 10px;
+      }
+      .face-back .eye.left { left: 6.5px; }
+      .face-back .eye.right { right: 6.5px; }
+
+      .face-back .mouth {
+        width: 3.5px;
+        height: 3px;
+        bottom: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-bottom: 1px solid var(--face-color);
+        border-radius: 50%;
+        position: absolute;
+      }
     </style>
   </head>
   <body class="bg-gray-100">
-    <div class="max-w-sm mx-auto bg-white shadow-lg">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
       <!-- 상단 고정 영역 -->
       <div class="sticky top-0 z-10 bg-white shadow-sm">
         <!-- 상단 바 -->
@@ -33,7 +115,30 @@
                 class="max-w-full max-h-full object-contain"
               />
             </div>
-            <span class="text-2xl font-bold text-blue-900">이음</span>
+            <div class="toggle-container" id="toggleContainer">
+              <span class="toggle-text" id="toggleText">이음</span>
+              <div class="relative w-[50px] h-[26px]">
+                <input type="checkbox" id="face-toggle" class="hidden">
+                <label for="face-toggle" class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]" style="background-color: var(--toggle-bg);">
+                  <div class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out">
+                    <div class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out">
+                      <!-- 앞면 (낮 모드) -->
+                      <div class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear">
+                        <div class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                        <div class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                        <div class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                      </div>
+                      <!-- 뒷면 (밤 모드) -->
+                      <div class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear">
+                        <div class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
+                        <div class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
+                        <div class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
           </div>
           <div class="flex items-center space-x-4">
             <div class="w-6 h-6 flex items-center justify-center">
@@ -468,6 +573,50 @@
           alert("채팅방 이동 중 오류가 발생했습니다.");
         }
       }
+
+      // 얼굴 토글 스위치 상태 관리
+      let isToggleActive = false;
+
+      // 토글 스위치 기능
+      function updateToggleTheme() {
+        const toggle = document.getElementById('face-toggle');
+        const body = document.body;
+        const container = document.getElementById('toggleContainer');
+        const toggleText = document.getElementById('toggleText');
+        
+        if (toggle.checked) {
+          body.classList.add('toggle-active');
+          container.classList.add('active');
+          isToggleActive = true;
+          
+          // 1초 후에 토글 페이지로 이동 (애니메이션 완료 후)
+          setTimeout(() => {
+            window.location.href = '/toggle-page';
+          }, 1000);
+        } else {
+          body.classList.remove('toggle-active');
+          container.classList.remove('active');
+          isToggleActive = false;
+        }
+      }
+
+      // 페이지 로드 시 초기화
+      document.addEventListener('DOMContentLoaded', function() {
+        const toggle = document.getElementById('face-toggle');
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // reset_toggle 파라미터가 있으면 토글을 비활성화 상태로 설정
+        if (urlParams.get('reset_toggle') === 'true') {
+          toggle.checked = false;
+          updateToggleTheme();
+        }
+        
+        // 토글 변경 이벤트 리스너 추가
+        toggle.addEventListener('change', updateToggleTheme);
+        
+        // 초기 상태 설정
+        updateToggleTheme();
+      });
     </script>
   </body>
 </html>
