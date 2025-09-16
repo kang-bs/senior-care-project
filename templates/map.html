@@ -57,6 +57,30 @@
         cursor: pointer;
       }
 
+      .info-window button:hover {
+        background-color: #e6c200;
+      }
+
+      /* 현재 위치 마커 애니메이션 */
+      .current-location-marker {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.7;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
       /* 얼굴 토글 스위치 스타일 */
       :root {
         --toggle-bg: #ffffff;
@@ -238,7 +262,7 @@
       </div>
 
       <!-- 메인 컨텐츠: 지도 -->
-      <main class="bg-white" style="height: calc(100vh - 140px)">
+      <main class="bg-white" style="height: calc(100vh - 129px)">
         <div id="map" aria-label="일자리 지도"></div>
       </main>
 
@@ -321,6 +345,7 @@
       // 상태
       let map = null;
       const markers = [];
+      let currentLocationMarker = null; // 현재 위치 마커
       const infoWindow = new kakao.maps.InfoWindow({ removable: true }); // 단일 재사용
 
       // 유틸: 안전 숫자 변환
@@ -335,6 +360,74 @@
       // 마커 생성
       function createMarker(position, title) {
         return new kakao.maps.Marker({ position, map, title: title ?? "" });
+      }
+
+      // 현재 위치 마커 생성
+      function createCurrentLocationMarker(position) {
+        // 현재 위치 마커용 커스텀 이미지 생성 (더 눈에 띄는 디자인)
+        const imageSrc =
+          "data:image/svg+xml;base64," +
+          btoa(`
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" fill="#4285f4" fill-opacity="0.3"/>
+            <circle cx="16" cy="16" r="10" fill="#4285f4" fill-opacity="0.5"/>
+            <circle cx="16" cy="16" r="6" fill="#4285f4"/>
+            <circle cx="16" cy="16" r="3" fill="white"/>
+            <circle cx="16" cy="16" r="1.5" fill="#4285f4"/>
+          </svg>
+        `);
+        const imageSize = new kakao.maps.Size(32, 32);
+        const imageOption = { offset: new kakao.maps.Point(16, 16) };
+        const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          imageSize,
+          imageOption
+        );
+
+        return new kakao.maps.Marker({
+          position,
+          map,
+          title: "📍 내 현재 위치",
+          image: markerImage,
+        });
+      }
+
+      // 현재 위치 마커 업데이트 (정확도 정보 포함)
+      function updateCurrentLocation(position, accuracy = null) {
+        if (currentLocationMarker) {
+          currentLocationMarker.setMap(null);
+        }
+        currentLocationMarker = createCurrentLocationMarker(position);
+
+        // 현재 위치 마커 클릭 시 인포윈도우 (정확도 정보 포함)
+        kakao.maps.event.addListener(currentLocationMarker, "click", () => {
+          const accuracyText = accuracy
+            ? `정확도: ${Math.round(accuracy)}m`
+            : "정확도: 측정 중...";
+          const statusColor =
+            accuracy < 50 ? "#4CAF50" : accuracy < 100 ? "#FF9800" : "#F44336";
+
+          const content = `
+            <div class="info-window">
+              <div class="title">📍 내 현재 위치</div>
+              <div class="details">현재 있는 위치입니다</div>
+              <div class="details" style="color: ${statusColor}; font-weight: 600;">
+                ${accuracyText}
+              </div>
+              <div class="details" style="font-size: 11px; color: #888; margin-top: 4px;">
+                ${
+                  accuracy < 50
+                    ? "🟢 매우 정확"
+                    : accuracy < 100
+                    ? "🟡 보통 정확"
+                    : "🔴 정확도 낮음"
+                }
+              </div>
+            </div>
+          `;
+          infoWindow.setContent(content);
+          infoWindow.open(map, currentLocationMarker);
+        });
       }
 
       // 네비게이션 호출(모바일: 카카오내비, PC: 카카오맵 길찾기)
@@ -352,7 +445,7 @@
       }
       window.navigateTo = navigateTo; // 인포윈도우 버튼에서 호출
 
-      // 기존 마커 제거
+      // 기존 마커 제거 (현재 위치 마커는 유지)
       function clearMarkers() {
         for (const m of markers) m.setMap(null);
         markers.length = 0;
@@ -420,33 +513,188 @@
       }
 
       // 지도 생성 공통
-      function createMapAndLoad(center) {
+      function createMapAndLoad(center, userLocation = null, accuracy = null) {
         map = new kakao.maps.Map(container, { center, level: 7 });
         loadAllJobs(); // 생성 직후 로드
+
+        // 사용자 위치가 있다면 현재 위치 마커 표시
+        if (userLocation) {
+          updateCurrentLocation(userLocation, accuracy);
+          startLocationTracking(); // 위치 추적 시작
+        }
+      }
+
+      // 위치 추적 시작 (더 정확한 설정)
+      function startLocationTracking() {
+        if (!navigator.geolocation) {
+          console.warn("브라우저가 위치 서비스를 지원하지 않습니다.");
+          return;
+        }
+
+        // 권한 상태 확인
+        if (navigator.permissions) {
+          navigator.permissions
+            .query({ name: "geolocation" })
+            .then((result) => {
+              console.log("위치 권한 상태:", result.state);
+            });
+        }
+
+        // watchPosition으로 실시간 위치 추적 (더 정확함)
+        const watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const accuracy = pos.coords.accuracy; // 정확도 미터 단위
+            const speed = pos.coords.speed; // 속도 (m/s)
+            const timestamp = new Date(pos.timestamp);
+
+            console.log(
+              `위치 업데이트: 정확도 ${Math.round(
+                accuracy
+              )}m, 시간 ${timestamp.toLocaleTimeString()}`
+            );
+            if (speed !== null) {
+              console.log(`이동 속도: ${Math.round(speed * 3.6)}km/h`);
+            }
+
+            // 정확도가 너무 낮으면 업데이트 하지 않음 (1000m 이상)
+            if (accuracy > 1000) {
+              console.warn("위치 정확도가 낮아 업데이트를 건너뜁니다.");
+              return;
+            }
+
+            const position = new kakao.maps.LatLng(
+              pos.coords.latitude,
+              pos.coords.longitude
+            );
+            updateCurrentLocation(position, accuracy); // 정확도 정보 전달
+
+            // 정확도가 좋거나 처음 위치를 받았을 때 지도 중심 이동
+            if ((accuracy < 200 && map) || !currentLocationMarker) {
+              map.setCenter(position);
+            }
+          },
+          (err) => {
+            console.error("위치 추적 오류:", err);
+            let errorMsg = "";
+            switch (err.code) {
+              case err.PERMISSION_DENIED:
+                errorMsg =
+                  "위치 액세스가 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.";
+                break;
+              case err.POSITION_UNAVAILABLE:
+                errorMsg = "위치 정보를 사용할 수 없습니다.";
+                break;
+              case err.TIMEOUT:
+                errorMsg = "위치 정보 요청 시간이 초과되었습니다.";
+                break;
+            }
+            console.warn(errorMsg);
+          },
+          {
+            enableHighAccuracy: true, // 고정밀도 GPS 사용
+            timeout: 10000, // 10초 타임아웃
+            maximumAge: 1000, // 1초 이내의 캐시된 위치 사용
+          }
+        );
+
+        // 페이지 언로드 시 위치 추적 중단
+        window.addEventListener("beforeunload", () => {
+          navigator.geolocation.clearWatch(watchId);
+        });
+      }
+
+      // 위치 권한 요청 및 초기화
+      async function requestLocationPermission() {
+        if (!navigator.geolocation) {
+          console.warn("브라우저가 위치 서비스를 지원하지 않습니다.");
+          return false;
+        }
+
+        // 권한 API를 지원하는 브라우저에서 권한 상태 확인
+        if (navigator.permissions) {
+          try {
+            const permission = await navigator.permissions.query({
+              name: "geolocation",
+            });
+            console.log("현재 위치 권한 상태:", permission.state);
+
+            if (permission.state === "denied") {
+              alert(
+                "위치 서비스가 차단되어 있습니다.\n브라우저 주소창 왼쪽의 자물쇠 아이콘을 클릭하여 위치 권한을 허용해주세요."
+              );
+              return false;
+            }
+          } catch (e) {
+            console.log("권한 API 지원하지 않음");
+          }
+        }
+
+        return true;
       }
 
       // 초기화: 현재 위치 성공 시 그 좌표로, 실패 시 폴백
-      function initMap() {
+      async function initMap() {
         const fallback = new kakao.maps.LatLng(37.5665, 126.978); // 서울 시청
 
-        if (!navigator.geolocation) {
+        // 위치 권한 확인
+        const hasLocationPermission = await requestLocationPermission();
+        if (!hasLocationPermission) {
           createMapAndLoad(fallback);
           return;
         }
 
+        // 사용자에게 위치 권한 요청 안내
+        console.log("정확한 위치 정보를 위해 위치 권한을 허용해주세요.");
+
         navigator.geolocation.getCurrentPosition(
           (pos) => {
+            const accuracy = pos.coords.accuracy;
+            console.log(`초기 위치 정확도: ${accuracy}m`);
+            console.log(
+              `위도: ${pos.coords.latitude}, 경도: ${pos.coords.longitude}`
+            );
+
             const center = new kakao.maps.LatLng(
               pos.coords.latitude,
               pos.coords.longitude
             );
-            createMapAndLoad(center);
+            createMapAndLoad(center, center, accuracy); // 현재 위치와 정확도 정보 전달
+
+            // 정확도 알림
+            if (accuracy > 100) {
+              console.warn(
+                `위치 정확도가 낮습니다 (${accuracy}m). WiFi나 GPS를 활성화하면 더 정확한 위치를 얻을 수 있습니다.`
+              );
+            }
           },
           (err) => {
-            console.warn("위치 정보 오류:", err);
+            console.error("초기 위치 정보 오류:", err);
+            let errorMsg =
+              "위치 정보를 가져올 수 없어 서울 시청으로 설정합니다.";
+
+            switch (err.code) {
+              case err.PERMISSION_DENIED:
+                errorMsg =
+                  "위치 액세스가 거부되었습니다. 브라우저 설정에서 위치 권한을 허용하고 페이지를 새로고침해주세요.";
+                alert(errorMsg);
+                break;
+              case err.POSITION_UNAVAILABLE:
+                errorMsg =
+                  "위치 정보를 사용할 수 없습니다. GPS나 WiFi를 확인해주세요.";
+                break;
+              case err.TIMEOUT:
+                errorMsg =
+                  "위치 정보 요청 시간이 초과되었습니다. 네트워크 연결을 확인해주세요.";
+                break;
+            }
+            console.warn(errorMsg);
             createMapAndLoad(fallback);
           },
-          { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+          {
+            enableHighAccuracy: true, // 고정밀도 GPS 사용
+            timeout: 15000, // 15초 타임아웃 (초기화는 더 길게)
+            maximumAge: 0, // 캐시 사용 안함 (최신 위치 필요)
+          }
         );
       }
 
