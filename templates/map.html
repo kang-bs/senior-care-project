@@ -1,421 +1,749 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>이음 - 지도</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
-    rel="stylesheet"
-  />
-  <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_key }}"></script>
-  <style>
-    /* 사용자 정의 폰트 및 스타일 */
-    body {
-      font-family: "Noto Sans KR", sans-serif;
-    }
-    .laundry-gothic {
-      font-family: "LaundryGothic", "Noto Sans KR", sans-serif;
-    }
-    .custom-label {
-      color: white;
-      background-color: rgba(0,0,0,0.7);
-      padding: 2px 6px;
-      font-size: 12px;
-      border-radius: 3px;
-      white-space: nowrap;
-      user-select: none;
-    }
-    
-    /* 푸터에 safe area 적용 */
-    .footer-safe {
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-
-    /* 얼굴 토글 스위치 스타일 */
-    :root {
-      --toggle-bg: #FFFFFF;
-      --face-color: #64748B;
-    }
-
-    body.toggle-active {
-      --toggle-bg: #C1E1C1;
-      --face-color: #4A5568;
-    }
-
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .toggle-text {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #1e3a8a;
-      transition: color 0.3s;
-    }
-
-    .toggle-container.active .toggle-text {
-      color: #059669;
-    }
-
-    /* 복잡한 토글 애니메이션 */
-    #face-toggle:checked + label .toggle-handle {
-      transform: translateX(24px);
-    }
-
-    #face-toggle:checked + label .roller {
-      transform: rotate(360deg);
-    }
-    
-    #face-toggle:checked + label .face-front {
-      opacity: 0;
-      transition: opacity 0.1s linear 0.5s;
-    }
-
-    #face-toggle:checked + label .face-back {
-      opacity: 1;
-      transition: opacity 0.1s linear 0.5s;
-    }
-
-    /* 얼굴 표정 세부사항 */
-    .face-front .eye {
-      width: 3px;
-      height: 2px;
-      top: 10px;
-    }
-    .face-front .eye.left { left: 6px; }
-    .face-front .eye.right { right: 6px; }
-
-    .face-front .mouth {
-      width: 3.5px;
-      height: 3px;
-      bottom: 7px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .face-back .eye {
-      width: 2.5px;
-      height: 2.5px;
-      top: 10px;
-    }
-    .face-back .eye.left { left: 6.5px; }
-    .face-back .eye.right { right: 6.5px; }
-
-    .face-back .mouth {
-      width: 3.5px;
-      height: 3px;
-      bottom: 7px;
-      left: 50%;
-      transform: translateX(-50%);
-      border-bottom: 1px solid var(--face-color);
-      border-radius: 50%;
-      position: absolute;
-    }
-  </style>
-</head>
-<body class="bg-gray-100">
-  <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
-        <div class="sticky top-0 z-20 bg-white shadow-sm">
-            <header class="p-4 flex justify-between items-center">
-        <div class="flex items-center">
-          <div class="w-8 h-8 mr-2 flex items-center justify-center">
-            <img
-              src="{{ url_for('static', filename='images/header/logo.png') }}"
-              alt="로고"
-              class="max-w-full max-h-full object-contain"
-            />
-          </div>
-          <div class="toggle-container" id="toggleContainer">
-            <span class="toggle-text" id="toggleText">이음</span>
-            <div class="relative w-[50px] h-[26px]">
-              <input type="checkbox" id="face-toggle" class="hidden">
-              <label for="face-toggle" class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]" style="background-color: var(--toggle-bg);">
-                <div class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out">
-                  <div class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out">
-                                        <div class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear">
-                      <div class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                      <div class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                      <div class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                    </div>
-                                        <div class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear">
-                      <div class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
-                      <div class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
-                      <div class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                    </div>
-                  </div>
-                </div>
-              </label>
-            </div>
-          </div>
-        </div>
-        <div class="flex items-center space-x-4">
-          <div class="w-6 h-6 flex items-center justify-center">
-            <img
-              src="{{ url_for('static', filename='images/header/mic.png') }}"
-              alt="마이크"
-              class="max-w-full max-h-full object-contain"
-            />
-          </div>
-          <div class="w-6 h-6 flex items-center justify-center">
-            <img
-              src="{{ url_for('static', filename='images/header/search.png') }}"
-              alt="검색"
-              class="max-w-full max-h-full object-contain"
-            />
-          </div>
-        </div>
-      </header>
-    </div>
-
-        <main>
-      <div style="height: calc(100vh - 72px); height: calc(100dvh - 72px);">
-        <div id="map" style="width: 100%; height: 100%;"></div>
-      </div>
-    </main>
-
-        <footer
-      class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around footer-safe z-50"
-    >
-      <a href="{{ url_for('map.show_map') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900">
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-            <img src="{{ url_for('static', filename='images/footer/map_filled.png') }}" alt="지도" class="max-w-full max-h-full object-contain" />
-        </div>
-        <span class="text-xs font-bold">지도</span>
-      </a>
-      <a
-        href="{{ url_for('jobs.bookmark_list') }}"
-        class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
-      >
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img
-            src="{{ url_for('static', filename='images/footer/favorite.png') }}"
-            alt="찜"
-            class="max-w-full max-h-full object-contain"
-          />
-        </div>
-        <span class="text-xs">찜</span>
-      </a>
-      <a
-        href="{{ url_for('auth.main') }}"
-        class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
-      >
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img
-            src="{{ url_for('static', filename='images/footer/home.png') }}"
-            alt="홈"
-            class="max-w-full max-h-full object-contain"
-          />
-        </div>
-        <span class="text-xs">홈</span>
-      </a>
-      <a
-        href="{{ url_for('chat.chat_list') }}"
-        class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
-      >
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img
-            src="{{ url_for('static', filename='images/footer/chatting.png') }}"
-            alt="채팅"
-            class="max-w-full max-h-full object-contain"
-          />
-        </div>
-        <span class="text-xs">채팅</span>
-      </a>
-      <a
-        href="{{ url_for('auth.profile') }}"
-        class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
-      >
-        <div class="w-6 h-6 mb-1 flex items-center justify-center">
-          <img
-            src="{{ url_for('static', filename='images/footer/profile.png') }}"
-            alt="내정보"
-            class="max-w-full max-h-full object-contain"
-          />
-        </div>
-        <span class="text-xs">내정보</span>
-      </a>
-    </footer>
-  </div>
-  <script>
-    // DOM
-    const container = document.getElementById('map');
-
-    // 상태
-    let map = null;
-    const markers = [];
-    const infoWindow = new kakao.maps.InfoWindow({ removable: true }); // 단일 재사용 [1][2]
-
-    // 유틸: 안전 숫자 변환
-    const toNumber = (v) => {
-      const n = Number(v);
-      return Number.isFinite(n) ? n : NaN;
-    };
-
-    // 유틸: 인포윈도우 내부 onclick 파라미터에 넣을 문자열 이스케이프
-    const escapeForAttr = (s) => String(s ?? '').replace(/'/g, "\\'");
-
-    // 마커 생성
-    function createMarker(position, title) {
-      return new kakao.maps.Marker({ position, map, title: title ?? '' });
-    }
-
-    // 네비게이션 호출(모바일: 카카오내비, PC: 카카오맵 길찾기)
-    function navigateTo(lat, lng, name) {
-      const safeName = encodeURIComponent(name ?? '');
-      const isMobile = /Mobi/i.test(navigator.userAgent);
-
-      if (isMobile) {
-        const url = `kakaonavi-sdk://navigate?destination=${safeName}&x=${lng}&y=${lat}&coord_type=wgs84`;
-        window.location.href = url;
-      } else {
-        const url = `https://map.kakao.com/link/to/${safeName},${lat},${lng}`;
-        window.open(url, '_blank', 'noopener,noreferrer');
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이음 - 지도</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey={{ kakao_key }}"></script>
+    <style>
+      /* 사용자 정의 폰트 및 스타일 */
+      body {
+        font-family: "Noto Sans KR", sans-serif;
       }
-    }
-    window.navigateTo = navigateTo; // 인포윈도우 버튼에서 호출
+      .laundry-gothic {
+        font-family: "LaundryGothic", "Noto Sans KR", sans-serif; /* 'LaundryGothic' 폰트가 없을 경우 Noto Sans KR로 대체 */
+      }
 
-    // 기존 마커 제거
-    function clearMarkers() {
-      for (const m of markers) m.setMap(null);
-      markers.length = 0;
-    }
+      /* 지도 관련 스타일 */
+      #map {
+        width: 100%;
+        height: 100%;
+      }
 
-    // 인포윈도우 템플릿
-    function buildInfoContent(job) {
-      const title = job.title ?? '';
-      const company = job.company || '정보 없음';
-      const salary = (typeof job.salary === 'number')
-        ? job.salary.toLocaleString('ko-KR') + '원'
-        : (job.salary || '협의');
+      .info-window {
+        padding: 10px;
+        width: 220px;
+        text-align: left;
+        line-height: 1.5;
+      }
 
-      const lat = toNumber(job.lat);
-      const lng = toNumber(job.lng);
+      .info-window .title {
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
 
-      return `
+      .info-window .details {
+        font-size: 12px;
+        color: #555;
+      }
+
+      .info-window button {
+        display: block;
+        width: 100%;
+        margin-top: 8px;
+        padding: 6px 0;
+        background-color: #ffd600;
+        color: #3c1e1e;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .info-window button:hover {
+        background-color: #e6c200;
+      }
+
+      /* 현재 위치 마커 애니메이션 */
+      .current-location-marker {
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 0.7;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      /* 얼굴 토글 스위치 스타일 */
+      :root {
+        --toggle-bg: #ffffff;
+        --face-color: #64748b;
+      }
+
+      body.toggle-active {
+        --toggle-bg: #c1e1c1;
+        --face-color: #4a5568;
+      }
+
+      .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .toggle-text {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #1e3a8a;
+        transition: color 0.3s;
+      }
+
+      .toggle-container.active .toggle-text {
+        color: #059669;
+      }
+
+      /* 복잡한 토글 애니메이션 */
+      #face-toggle:checked + label .toggle-handle {
+        transform: translateX(24px);
+      }
+
+      #face-toggle:checked + label .roller {
+        transform: rotate(360deg);
+      }
+
+      #face-toggle:checked + label .face-front {
+        opacity: 0;
+        transition: opacity 0.1s linear 0.5s;
+      }
+
+      #face-toggle:checked + label .face-back {
+        opacity: 1;
+        transition: opacity 0.1s linear 0.5s;
+      }
+
+      /* 얼굴 표정 세부사항 */
+      .face-front .eye {
+        width: 3px;
+        height: 2px;
+        top: 10px;
+      }
+      .face-front .eye.left {
+        left: 6px;
+      }
+      .face-front .eye.right {
+        right: 6px;
+      }
+
+      .face-front .mouth {
+        width: 3.5px;
+        height: 3px;
+        bottom: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .face-back .eye {
+        width: 2.5px;
+        height: 2.5px;
+        top: 10px;
+      }
+      .face-back .eye.left {
+        left: 6.5px;
+      }
+      .face-back .eye.right {
+        right: 6.5px;
+      }
+
+      .face-back .mouth {
+        width: 3.5px;
+        height: 3px;
+        bottom: 7px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-bottom: 1px solid var(--face-color);
+        border-radius: 50%;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+      <!-- 상단 고정 영역 -->
+      <div class="sticky top-0 z-10 bg-white shadow-sm">
+        <!-- 상단 바 -->
+        <header class="p-4 flex justify-between items-center">
+          <div class="flex items-center">
+            <div class="w-8 h-8 mr-2 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/logo.png') }}"
+                alt="로고"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div class="toggle-container" id="toggleContainer">
+              <span class="toggle-text" id="toggleText">이음</span>
+              <div class="relative w-[50px] h-[26px]">
+                <input type="checkbox" id="face-toggle" class="hidden" />
+                <label
+                  for="face-toggle"
+                  class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]"
+                  style="background-color: var(--toggle-bg)"
+                >
+                  <div
+                    class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out"
+                  >
+                    <div
+                      class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out"
+                    >
+                      <!-- 앞면 (낮 모드) -->
+                      <div
+                        class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear"
+                      >
+                        <div
+                          class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                      </div>
+                      <!-- 뒷면 (밤 모드) -->
+                      <div
+                        class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear"
+                      >
+                        <div
+                          class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="background-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="background-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="w-6 h-6 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/mic.png') }}"
+                alt="마이크"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+            <div class="w-6 h-6 flex items-center justify-center">
+              <img
+                src="{{ url_for('static', filename='images/header/search.png') }}"
+                alt="검색"
+                class="max-w-full max-h-full object-contain"
+              />
+            </div>
+          </div>
+        </header>
+      </div>
+
+      <!-- 메인 컨텐츠: 지도 -->
+      <main class="bg-white" style="height: calc(100vh - 129px)">
+        <div id="map" aria-label="일자리 지도"></div>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+      >
+        <a
+          href="{{ url_for('map.show_map') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-blue-900"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map_filled.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs font-bold">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
+    </div>
+
+    <script>
+      // DOM
+      const container = document.getElementById("map");
+
+      // 상태
+      let map = null;
+      const markers = [];
+      let currentLocationMarker = null; // 현재 위치 마커
+      const infoWindow = new kakao.maps.InfoWindow({ removable: true }); // 단일 재사용
+
+      // 유틸: 안전 숫자 변환
+      const toNumber = (v) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : NaN;
+      };
+
+      // 유틸: 인포윈도우 내부 onclick 파라미터에 넣을 문자열 이스케이프
+      const escapeForAttr = (s) => String(s ?? "").replace(/'/g, "\\'");
+
+      // 마커 생성
+      function createMarker(position, title) {
+        return new kakao.maps.Marker({ position, map, title: title ?? "" });
+      }
+
+      // 현재 위치 마커 생성
+      function createCurrentLocationMarker(position) {
+        // 현재 위치 마커용 커스텀 이미지 생성 (더 눈에 띄는 디자인)
+        const imageSrc =
+          "data:image/svg+xml;base64," +
+          btoa(`
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="16" cy="16" r="14" fill="#4285f4" fill-opacity="0.3"/>
+            <circle cx="16" cy="16" r="10" fill="#4285f4" fill-opacity="0.5"/>
+            <circle cx="16" cy="16" r="6" fill="#4285f4"/>
+            <circle cx="16" cy="16" r="3" fill="white"/>
+            <circle cx="16" cy="16" r="1.5" fill="#4285f4"/>
+          </svg>
+        `);
+        const imageSize = new kakao.maps.Size(32, 32);
+        const imageOption = { offset: new kakao.maps.Point(16, 16) };
+        const markerImage = new kakao.maps.MarkerImage(
+          imageSrc,
+          imageSize,
+          imageOption
+        );
+
+        return new kakao.maps.Marker({
+          position,
+          map,
+          title: "📍 내 현재 위치",
+          image: markerImage,
+        });
+      }
+
+      // 현재 위치 마커 업데이트 (정확도 정보 포함)
+      function updateCurrentLocation(position, accuracy = null) {
+        if (currentLocationMarker) {
+          currentLocationMarker.setMap(null);
+        }
+        currentLocationMarker = createCurrentLocationMarker(position);
+
+        // 현재 위치 마커 클릭 시 인포윈도우 (정확도 정보 포함)
+        kakao.maps.event.addListener(currentLocationMarker, "click", () => {
+          const accuracyText = accuracy
+            ? `정확도: ${Math.round(accuracy)}m`
+            : "정확도: 측정 중...";
+          const statusColor =
+            accuracy < 50 ? "#4CAF50" : accuracy < 100 ? "#FF9800" : "#F44336";
+
+          const content = `
+            <div class="info-window">
+              <div class="title">📍 내 현재 위치</div>
+              <div class="details">현재 있는 위치입니다</div>
+              <div class="details" style="color: ${statusColor}; font-weight: 600;">
+                ${accuracyText}
+              </div>
+              <div class="details" style="font-size: 11px; color: #888; margin-top: 4px;">
+                ${
+                  accuracy < 50
+                    ? "🟢 매우 정확"
+                    : accuracy < 100
+                    ? "🟡 보통 정확"
+                    : "🔴 정확도 낮음"
+                }
+              </div>
+            </div>
+          `;
+          infoWindow.setContent(content);
+          infoWindow.open(map, currentLocationMarker);
+        });
+      }
+
+      // 네비게이션 호출(모바일: 카카오내비, PC: 카카오맵 길찾기)
+      function navigateTo(lat, lng, name) {
+        const safeName = encodeURIComponent(name ?? "");
+        const isMobile = /Mobi/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          const url = `kakaonavi-sdk://navigate?destination=${safeName}&x=${lng}&y=${lat}&coord_type=wgs84`;
+          window.location.href = url;
+        } else {
+          const url = `https://map.kakao.com/link/to/${safeName},${lat},${lng}`;
+          window.open(url, "_blank", "noopener,noreferrer");
+        }
+      }
+      window.navigateTo = navigateTo; // 인포윈도우 버튼에서 호출
+
+      // 기존 마커 제거 (현재 위치 마커는 유지)
+      function clearMarkers() {
+        for (const m of markers) m.setMap(null);
+        markers.length = 0;
+      }
+
+      // 인포윈도우 템플릿
+      function buildInfoContent(job) {
+        const title = job.title ?? "";
+        const company = job.company || "정보 없음";
+        const salary =
+          typeof job.salary === "number"
+            ? job.salary.toLocaleString("ko-KR") + "원"
+            : job.salary || "협의";
+
+        const lat = toNumber(job.lat);
+        const lng = toNumber(job.lng);
+
+        return `
         <div class="info-window">
           <div class="title">${title}</div>
           <div class="details">회사명: ${company}</div>
           <div class="details">급여: ${salary}</div>
-          <button onclick="navigateTo(${lat}, ${lng}, '${escapeForAttr(title)}')">길찾기</button>
+          <button onclick="navigateTo(${lat}, ${lng}, '${escapeForAttr(
+          title
+        )}')">길찾기</button>
         </div>
       `;
-    }
+      }
 
-    // 데이터 로드 및 마커 렌더링
-    async function loadAllJobs() {
-      try {
-        const res = await fetch('/jobs_all', { credentials: 'same-origin' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+      // 데이터 로드 및 마커 렌더링
+      async function loadAllJobs() {
+        try {
+          const res = await fetch("/jobs_all", { credentials: "same-origin" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
 
-        clearMarkers();
-        infoWindow.close();
+          clearMarkers();
+          infoWindow.close();
 
-        const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
-        if (jobs.length === 0) {
-          console.log('표시할 일자리가 없습니다.');
+          const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+          if (jobs.length === 0) {
+            console.log("표시할 일자리가 없습니다.");
+            return;
+          }
+
+          for (const job of jobs) {
+            const lat = toNumber(job.lat);
+            const lng = toNumber(job.lng);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+
+            const pos = new kakao.maps.LatLng(lat, lng);
+            const marker = createMarker(pos, job.title);
+
+            kakao.maps.event.addListener(marker, "click", () => {
+              infoWindow.setContent(buildInfoContent(job));
+              infoWindow.open(map, marker);
+            });
+
+            markers.push(marker);
+          }
+        } catch (err) {
+          console.error("일자리 데이터 불러오기 실패:", err);
+          alert("일자리를 불러오는 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 지도 생성 공통
+      function createMapAndLoad(center, userLocation = null, accuracy = null) {
+        map = new kakao.maps.Map(container, { center, level: 7 });
+        loadAllJobs(); // 생성 직후 로드
+
+        // 사용자 위치가 있다면 현재 위치 마커 표시
+        if (userLocation) {
+          updateCurrentLocation(userLocation, accuracy);
+          startLocationTracking(); // 위치 추적 시작
+        }
+      }
+
+      // 위치 추적 시작 (더 정확한 설정)
+      function startLocationTracking() {
+        if (!navigator.geolocation) {
+          console.warn("브라우저가 위치 서비스를 지원하지 않습니다.");
           return;
         }
 
-        for (const job of jobs) {
-          const lat = toNumber(job.lat);
-          const lng = toNumber(job.lng);
-          if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
-
-          const pos = new kakao.maps.LatLng(lat, lng);
-          const marker = createMarker(pos, job.title);
-
-          kakao.maps.event.addListener(marker, 'click', () => {
-            infoWindow.setContent(buildInfoContent(job));
-            infoWindow.open(map, marker);
-          });
-
-          markers.push(marker);
+        // 권한 상태 확인
+        if (navigator.permissions) {
+          navigator.permissions
+            .query({ name: "geolocation" })
+            .then((result) => {
+              console.log("위치 권한 상태:", result.state);
+            });
         }
-      } catch (err) {
-        console.error('일자리 데이터 불러오기 실패:', err);
-        alert('일자리를 불러오는 중 오류가 발생했습니다.');
+
+        // watchPosition으로 실시간 위치 추적 (더 정확함)
+        const watchId = navigator.geolocation.watchPosition(
+          (pos) => {
+            const accuracy = pos.coords.accuracy; // 정확도 미터 단위
+            const speed = pos.coords.speed; // 속도 (m/s)
+            const timestamp = new Date(pos.timestamp);
+
+            console.log(
+              `위치 업데이트: 정확도 ${Math.round(
+                accuracy
+              )}m, 시간 ${timestamp.toLocaleTimeString()}`
+            );
+            if (speed !== null) {
+              console.log(`이동 속도: ${Math.round(speed * 3.6)}km/h`);
+            }
+
+            // 정확도가 너무 낮으면 업데이트 하지 않음 (1000m 이상)
+            if (accuracy > 1000) {
+              console.warn("위치 정확도가 낮아 업데이트를 건너뜁니다.");
+              return;
+            }
+
+            const position = new kakao.maps.LatLng(
+              pos.coords.latitude,
+              pos.coords.longitude
+            );
+            updateCurrentLocation(position, accuracy); // 정확도 정보 전달
+
+            // 정확도가 좋거나 처음 위치를 받았을 때 지도 중심 이동
+            if ((accuracy < 200 && map) || !currentLocationMarker) {
+              map.setCenter(position);
+            }
+          },
+          (err) => {
+            console.error("위치 추적 오류:", err);
+            let errorMsg = "";
+            switch (err.code) {
+              case err.PERMISSION_DENIED:
+                errorMsg =
+                  "위치 액세스가 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해주세요.";
+                break;
+              case err.POSITION_UNAVAILABLE:
+                errorMsg = "위치 정보를 사용할 수 없습니다.";
+                break;
+              case err.TIMEOUT:
+                errorMsg = "위치 정보 요청 시간이 초과되었습니다.";
+                break;
+            }
+            console.warn(errorMsg);
+          },
+          {
+            enableHighAccuracy: true, // 고정밀도 GPS 사용
+            timeout: 10000, // 10초 타임아웃
+            maximumAge: 1000, // 1초 이내의 캐시된 위치 사용
+          }
+        );
+
+        // 페이지 언로드 시 위치 추적 중단
+        window.addEventListener("beforeunload", () => {
+          navigator.geolocation.clearWatch(watchId);
+        });
       }
-    }
 
-    // 지도 생성 공통
-    function createMapAndLoad(center) {
-      map = new kakao.maps.Map(container, { center, level: 7 });
-      loadAllJobs(); // 생성 직후 로드 [1]
-    }
+      // 위치 권한 요청 및 초기화
+      async function requestLocationPermission() {
+        if (!navigator.geolocation) {
+          console.warn("브라우저가 위치 서비스를 지원하지 않습니다.");
+          return false;
+        }
 
-    // 초기화: 현재 위치 성공 시 그 좌표로, 실패 시 폴백
-    function initMap() {
-      const fallback = new kakao.maps.LatLng(37.5665, 126.9780); // 서울 시청
+        // 권한 API를 지원하는 브라우저에서 권한 상태 확인
+        if (navigator.permissions) {
+          try {
+            const permission = await navigator.permissions.query({
+              name: "geolocation",
+            });
+            console.log("현재 위치 권한 상태:", permission.state);
 
-      if (!navigator.geolocation) {
-        createMapAndLoad(fallback);
-        return;
+            if (permission.state === "denied") {
+              alert(
+                "위치 서비스가 차단되어 있습니다.\n브라우저 주소창 왼쪽의 자물쇠 아이콘을 클릭하여 위치 권한을 허용해주세요."
+              );
+              return false;
+            }
+          } catch (e) {
+            console.log("권한 API 지원하지 않음");
+          }
+        }
+
+        return true;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const center = new kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
-          createMapAndLoad(center);
-        },
-        (err) => {
-          console.warn('위치 정보 오류:', err);
+      // 초기화: 현재 위치 성공 시 그 좌표로, 실패 시 폴백
+      async function initMap() {
+        const fallback = new kakao.maps.LatLng(37.5665, 126.978); // 서울 시청
+
+        // 위치 권한 확인
+        const hasLocationPermission = await requestLocationPermission();
+        if (!hasLocationPermission) {
           createMapAndLoad(fallback);
-        },
-        { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
-      );
-    }
+          return;
+        }
 
-    // 부트스트랩
-    initMap();
+        // 사용자에게 위치 권한 요청 안내
+        console.log("정확한 위치 정보를 위해 위치 권한을 허용해주세요.");
 
-    // 얼굴 토글 스위치 상태 관리
-    let isToggleActive = false;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const accuracy = pos.coords.accuracy;
+            console.log(`초기 위치 정확도: ${accuracy}m`);
+            console.log(
+              `위도: ${pos.coords.latitude}, 경도: ${pos.coords.longitude}`
+            );
 
-    // 토글 스위치 기능
-    function updateToggleTheme() {
-      const toggle = document.getElementById('face-toggle');
-      const body = document.body;
-      const container = document.getElementById('toggleContainer');
-      const toggleText = document.getElementById('toggleText');
-      
-      if (toggle.checked) {
-        body.classList.add('toggle-active');
-        container.classList.add('active');
-        isToggleActive = true;
-        
-        // 1초 후에 토글 페이지로 이동 (애니메이션 완료 후)
-        setTimeout(() => {
-          window.location.href = '/toggle-page';
-        }, 1000);
-      } else {
-        body.classList.remove('toggle-active');
-        container.classList.remove('active');
-        isToggleActive = false;
+            const center = new kakao.maps.LatLng(
+              pos.coords.latitude,
+              pos.coords.longitude
+            );
+            createMapAndLoad(center, center, accuracy); // 현재 위치와 정확도 정보 전달
+
+            // 정확도 알림
+            if (accuracy > 100) {
+              console.warn(
+                `위치 정확도가 낮습니다 (${accuracy}m). WiFi나 GPS를 활성화하면 더 정확한 위치를 얻을 수 있습니다.`
+              );
+            }
+          },
+          (err) => {
+            console.error("초기 위치 정보 오류:", err);
+            let errorMsg =
+              "위치 정보를 가져올 수 없어 서울 시청으로 설정합니다.";
+
+            switch (err.code) {
+              case err.PERMISSION_DENIED:
+                errorMsg =
+                  "위치 액세스가 거부되었습니다. 브라우저 설정에서 위치 권한을 허용하고 페이지를 새로고침해주세요.";
+                alert(errorMsg);
+                break;
+              case err.POSITION_UNAVAILABLE:
+                errorMsg =
+                  "위치 정보를 사용할 수 없습니다. GPS나 WiFi를 확인해주세요.";
+                break;
+              case err.TIMEOUT:
+                errorMsg =
+                  "위치 정보 요청 시간이 초과되었습니다. 네트워크 연결을 확인해주세요.";
+                break;
+            }
+            console.warn(errorMsg);
+            createMapAndLoad(fallback);
+          },
+          {
+            enableHighAccuracy: true, // 고정밀도 GPS 사용
+            timeout: 15000, // 15초 타임아웃 (초기화는 더 길게)
+            maximumAge: 0, // 캐시 사용 안함 (최신 위치 필요)
+          }
+        );
       }
-    }
 
-    // 페이지 로드 시 초기화
-    document.addEventListener('DOMContentLoaded', function() {
-      const toggle = document.getElementById('face-toggle');
-      const urlParams = new URLSearchParams(window.location.search);
-      
-      // reset_toggle 파라미터가 있으면 토글을 비활성화 상태로 설정
-      if (urlParams.get('reset_toggle') === 'true') {
-        toggle.checked = false;
+      // 부트스트랩
+      initMap();
+
+      // 얼굴 토글 스위치 상태 관리
+      let isToggleActive = false;
+
+      // 토글 스위치 기능
+      function updateToggleTheme() {
+        const toggle = document.getElementById("face-toggle");
+        const body = document.body;
+        const container = document.getElementById("toggleContainer");
+        const toggleText = document.getElementById("toggleText");
+
+        if (toggle.checked) {
+          body.classList.add("toggle-active");
+          container.classList.add("active");
+          isToggleActive = true;
+
+          // 1초 후에 토글 페이지로 이동 (애니메이션 완료 후)
+          setTimeout(() => {
+            window.location.href = "/toggle-page";
+          }, 1000);
+        } else {
+          body.classList.remove("toggle-active");
+          container.classList.remove("active");
+          isToggleActive = false;
+        }
+      }
+
+      // 페이지 로드 시 초기화
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.getElementById("face-toggle");
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // reset_toggle 파라미터가 있으면 토글을 비활성화 상태로 설정
+        if (urlParams.get("reset_toggle") === "true") {
+          toggle.checked = false;
+          updateToggleTheme();
+        }
+
+        // 토글 변경 이벤트 리스너 추가
+        toggle.addEventListener("change", updateToggleTheme);
+
+        // 초기 상태 설정
         updateToggleTheme();
-      }
-      
-      // 토글 변경 이벤트 리스너 추가
-      toggle.addEventListener('change', updateToggleTheme);
-      
-      // 초기 상태 설정
-      updateToggleTheme();
-    });
-  </script>
+      });
+    </script>
   </body>
 </html>
