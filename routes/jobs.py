@@ -55,15 +55,18 @@ def job_list():
     
     # URL 쿼리 파라미터에서 검색 및 필터 조건 추출
     query = request.args.get('q', '')  # 검색어
-    region = request.args.get('region', '')  # 지역 필터
     recruitment_type = request.args.get('recruitment_type', '')  # 모집형태 필터
     work_period = request.args.get('work_period', '')  # 근무기간 필터
     sort_by = request.args.get('sort', 'latest')  # 정렬 기준
     
     # 필터 조건을 딕셔너리로 구성
     filters = {}
-    if region:
-        filters['region'] = region
+    if request.args.get('region1'):
+        filters['region_1depth_name'] = request.args.get('region1')
+    if request.args.get('region2'):
+        filters['region_2depth_name'] = request.args.get('region2')
+    if request.args.get('region3'):
+        filters['region_3depth_name'] = request.args.get('region3')
     if recruitment_type:
         filters['recruitment_type'] = recruitment_type
     if work_period:
@@ -85,11 +88,15 @@ def job_list():
             'application_status': application_status
         }
         jobs_with_status.append(job_data)
-    
-    return render_template("jobs/job_list.html", 
-                         jobs_with_status=jobs_with_status, 
-                         current_region=region,
-                         current_sort=sort_by)
+
+    current_filters = filters.copy()
+    current_filters['q'] = query
+    current_filters['sort'] = sort_by
+
+    return render_template("jobs/job_list.html",
+                           jobs_with_status=jobs_with_status,
+                           current_filters=current_filters
+                           )
 
 # 공고 작성 페이지
 @jobs_bp.route("/jobs/create", methods=["GET", "POST"])
@@ -108,6 +115,11 @@ def create_job():
             region = request.form.get("region", "").strip()
             contact_phone = request.form.get("contact_phone", "").strip()
             recruitment_count = request.form.get("recruitment_count", type=int)
+
+            # --- 행정구역 정보 추가로 받기 ---
+            region_1depth_name = request.form.get("region_1depth_name")
+            region_2depth_name = request.form.get("region_2depth_name")
+            region_3depth_name = request.form.get("region_3depth_name")
 
             # 위도, 경도 폼 데이터
             latitude = request.form.get("latitude", type=float)
@@ -164,6 +176,10 @@ def create_job():
                 work_friday=work_friday,
                 work_saturday=work_saturday,
                 work_sunday=work_sunday,
+                # --- 추가된 행정구역 필드 저장 ---
+                region_1depth_name=region_1depth_name,
+                region_2depth_name=region_2depth_name,
+                region_3depth_name=region_3depth_name,
                 author_id=current_user.id
             )
             
@@ -223,6 +239,11 @@ def edit_job(job_id):
             job.region = request.form.get("region", "").strip()
             job.contact_phone = request.form.get("contact_phone", "").strip()
             job.recruitment_count = request.form.get("recruitment_count", type=int)
+
+            # --- 행정구역 정보 추가로 받기 ---
+            job.region_1depth_name = request.form.get("region_1depth_name")
+            job.region_2depth_name = request.form.get("region_2depth_name")
+            job.region_3depth_name = request.form.get("region_3depth_name")
 
             latitude = request.form.get("latitude", type=float)
             longitude = request.form.get("longitude", type=float)

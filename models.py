@@ -84,6 +84,11 @@ class JobPost(db.Model):
     longitude = db.Column(Float, nullable=True)  # 경도
     salary = db.Column(db.String(100), nullable=True)          # 급여
 
+    # 행정구역 정보를 분리하여 저장할 필드 추가
+    region_1depth_name = db.Column(db.String(50), index=True)  # 시/도 (예: '서울')
+    region_2depth_name = db.Column(db.String(50), index=True)  # 시/군/구 (예: '강남구')
+    region_3depth_name = db.Column(db.String(50), index=True)  # 읍/면/동 (예: '역삼동')
+
     # 근무 요일 (월화수목금토일)
     work_monday = db.Column(db.Boolean, default=False)         # 월요일
     work_tuesday = db.Column(db.Boolean, default=False)        # 화요일
