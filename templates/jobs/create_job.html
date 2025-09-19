@@ -82,6 +82,7 @@
         >
           저장
         </button>
+        </div>
       </header>
 
       <!-- 메인 컨텐츠 -->
@@ -310,6 +311,10 @@
             <!-- 숨은 위도, 경도 필드 -->
             <input type="hidden" id="latitude" name="latitude"/>
             <input type="hidden" id="longitude" name="longitude"/>
+
+            <input type="hidden" id="region_1depth_name" name="region_1depth_name"/>
+            <input type="hidden" id="region_2depth_name" name="region_2depth_name"/>
+            <input type="hidden" id="region_3depth_name" name="region_3depth_name"/>
 
             <!-- 주소 선택 모달 -->
             <div id="addressModal">
@@ -585,33 +590,52 @@
       }
 
       // 선택 완료: 좌표->주소 변환 후 폼 반영 (수정됨)
-      function selectAddress() {
+      async function selectAddress() {
           if (!selectedPosition) {
               alert("지도에서 위치를 먼저 클릭해주세요.");
               return;
           }
-          geocoder.coord2Address(
-              selectedPosition.getLng(),
-              selectedPosition.getLat(),
-              function (result, status) {
-                  if (status === kakao.maps.services.Status.OK) {
-                      // Geocoder 결과는 배열이므로 첫 번째(result[0]) 결과를 사용
-                      var roadAddr = result[0].road_address
-                          ? result[0].road_address.address_name
-                          : "";
-                      var jibunAddr = result[0].address
-                          ? result[0].address.address_name
-                          : "";
 
-                      document.getElementById("region").value = roadAddr || jibunAddr;
-                      document.getElementById("latitude").value = selectedPosition.getLat();
-                      document.getElementById("longitude").value = selectedPosition.getLng();
-                      closeAddressModal();
-                  } else {
-                      alert("주소 정보를 가져오는 데 실패했습니다.");
-                  }
-              }
-          );
+          const lat = selectedPosition.getLat();
+          const lng = selectedPosition.getLng();
+
+          document.getElementById("latitude").value = lat;
+          document.getElementById("longitude").value = lng;
+
+          try {
+              const getAddress = new Promise((resolve, reject) => {
+                  geocoder.coord2Address(lng, lat, (result, status) => {
+                      (status === kakao.maps.services.Status.OK) ? resolve(result) : reject(new Error("주소 변환 실패"));
+                  });
+              });
+
+              const getRegion = new Promise((resolve, reject) => {
+                  geocoder.coord2RegionCode(lng, lat, (result, status) => {
+                      (status === kakao.maps.services.Status.OK) ? resolve(result) : reject(new Error("지역 코드 변환 실패"));
+                  });
+              });
+
+              const [addrResult, regionResult] = await Promise.all([getAddress, getRegion]);
+
+              // 도로명/지번 주소 설정 (화면 표시용)
+              const roadAddr = addrResult[0].road_address?.address_name || "";
+              const jibunAddr = addrResult[0].address?.address_name || "";
+              document.getElementById("region").value = roadAddr || jibunAddr;
+
+              // [핵심 수정] 법정동(B) 정보 설정 (DB 저장 및 필터링용)
+              const legalRegion = regionResult.find(r => r.region_type === 'B') || regionResult[0]; // 'H' -> 'B'로 변경
+
+              // 필드명도 b_ 로 변경하여 법정동임을 명시하는 것을 권장
+              document.getElementById('region_1depth_name').value = legalRegion.region_1depth_name;
+              document.getElementById('region_2depth_name').value = legalRegion.region_2depth_name;
+              document.getElementById('region_3depth_name').value = legalRegion.region_3depth_name;
+
+          } catch (error) {
+              console.error("주소 변환 중 오류 발생:", error);
+              alert("주소 정보를 가져오는 데 실패했습니다.");
+          } finally {
+              closeAddressModal();
+          }
       }
 
       function closeAddressModal() {
@@ -620,10 +644,10 @@
 
       function selectWorkPeriod(button, value) {
           document
-          .querySelectorAll("#work_period_group .btn-option")
-          .forEach((btn) => btn.classList.remove("active"));
-        button.classList.add("active");
-        document.getElementById("work_period").value = value;
+              .querySelectorAll("#work_period_group .btn-option")
+              .forEach((btn) => btn.classList.remove("active"));
+          button.classList.add("active");
+          document.getElementById("work_period").value = value;
       }
 
       document

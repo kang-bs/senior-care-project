@@ -134,10 +134,14 @@ class JobService:
             )
         
         if filters:
-            if filters.get('region'):
-                jobs_query = jobs_query.filter(
-                    JobPost.region.contains(filters['region'])
-                )
+            # [핵심 수정] 계층적 지역 필터링 (정확한 일치 검색)
+            if filters.get('region_1depth_name'):
+                jobs_query = jobs_query.filter(JobPost.region_1depth_name == filters['region_1depth_name'])
+            if filters.get('region_2depth_name'):
+                jobs_query = jobs_query.filter(JobPost.region_2depth_name == filters['region_2depth_name'])
+            if filters.get('region_3depth_name'):
+                jobs_query = jobs_query.filter(JobPost.region_3depth_name == filters['region_3depth_name'])
+
             if filters.get('recruitment_type'):
                 jobs_query = jobs_query.filter(
                     JobPost.recruitment_type == filters['recruitment_type']
