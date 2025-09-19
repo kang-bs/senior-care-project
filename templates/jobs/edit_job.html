@@ -93,7 +93,7 @@
             class="text-blue-600 font-bold p-2"
             onclick="document.getElementById('jobForm').submit()"
           >
-            수정 완료
+            수정
           </button>
         </div>
       </header>
@@ -341,14 +341,14 @@
               <input
                 type="time"
                 name="work_start_time"
-                value="{% if job.work_start_time %}{{ job.work_start_time.strftime('%H:%M') }}{% endif %}"
+                value="{{ job.work_start_time.strftime('%H:%M') if job.work_start_time else '' }}"
                 class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
               <span>~</span>
               <input
                 type="time"
                 name="work_end_time"
-                value="{% if job.work_end_time %}{{ job.work_end_time.strftime('%H:%M') }}{% endif %}"
+                value="{{ job.work_end_time.strftime('%H:%M') if job.work_end_time else '' }}"
                 class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
             </div>
@@ -408,9 +408,30 @@
             value="{{ job.longitude or '' }}"
           />
 
+          <!-- 숨은 지역 정보 필드 -->
+          <input
+            type="hidden"
+            id="region_1depth_name"
+            name="region_1depth_name"
+            value="{{ job.region_1depth_name or '' }}"
+          />
+          <input
+            type="hidden"
+            id="region_2depth_name"
+            name="region_2depth_name"
+            value="{{ job.region_2depth_name or '' }}"
+          />
+          <input
+            type="hidden"
+            id="region_3depth_name"
+            name="region_3depth_name"
+            value="{{ job.region_3depth_name or '' }}"
+          />
+
           <!-- 주소 선택 모달 -->
           <div id="addressModal">
             <div class="modal-card">
+              <!-- 검색 UI 추가 -->
               <div class="p-3 border-b">
                 <div class="flex gap-2">
                   <input
@@ -510,7 +531,7 @@
             <textarea
               name="description"
               id="description"
-              rows="6"
+              rows="4"
               class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               placeholder="업무 내용, 자격 요건 등을 자세히 작성해주세요&#10;&#10;AI 도우미를 사용하면 전문적인 공고를 쉽게 작성할 수 있습니다."
               required
@@ -531,7 +552,7 @@
               type="submit"
               class="flex-1 w-full justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-800 hover:bg-blue-900"
             >
-              수정 완료
+              수정하기
             </button>
           </div>
         </form>
@@ -758,15 +779,7 @@
         }
       }
 
-      function selectWorkPeriod(button, value) {
-        document
-          .querySelectorAll("#work_period_group .btn-option")
-          .forEach((btn) => btn.classList.remove("active"));
-        button.classList.add("active");
-        document.getElementById("work_period").value = value;
-      }
-
-      // 지도 관련 변수
+      // 모달/지도 상태
       var addressModal = document.getElementById("addressModal");
       var addressMap, addressMarker, selectedPosition;
       var geocoder = new kakao.maps.services.Geocoder();
@@ -781,8 +794,10 @@
           return false;
         }
 
+        // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
         ps.keywordSearch(keyword, function (data, status, pagination) {
           if (status === kakao.maps.services.Status.OK) {
+            // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
             var bounds = new kakao.maps.LatLngBounds();
 
             for (var i = 0; i < data.length; i++) {
@@ -791,6 +806,7 @@
 
             addressMap.setBounds(bounds);
 
+            // 첫 번째 검색 결과의 위치로 마커와 중심 좌표를 설정합니다.
             if (data.length > 0) {
               var firstItem = data[0];
               var moveLatLon = new kakao.maps.LatLng(firstItem.y, firstItem.x);
@@ -813,15 +829,8 @@
       function initAddressMapOnce() {
         if (addressMap) return;
         var mapContainer = document.getElementById("addressMap");
-
-        // 기존 위치가 있으면 해당 위치로, 없으면 기본 위치로
-        var lat =
-          parseFloat(document.getElementById("latitude").value) || 37.566826;
-        var lng =
-          parseFloat(document.getElementById("longitude").value) || 126.9786567;
-
         var mapOption = {
-          center: new kakao.maps.LatLng(lat, lng),
+          center: new kakao.maps.LatLng(37.566826, 126.9786567),
           level: 3,
         };
         addressMap = new kakao.maps.Map(mapContainer, mapOption);
@@ -832,6 +841,7 @@
         });
         selectedPosition = addressMap.getCenter();
 
+        // 지도 클릭 -> 좌표 선택 및 마커 이동
         kakao.maps.event.addListener(
           addressMap,
           "click",
@@ -843,6 +853,7 @@
         );
       }
 
+      // 모달 열기 -> 다음 프레임에 relayout + setCenter
       function openAddressModal() {
         addressModal.style.display = "flex";
         initAddressMapOnce();
@@ -852,42 +863,99 @@
         });
       }
 
-      function selectAddress() {
+      // 선택 완료: 좌표->주소 변환 후 폼 반영
+      async function selectAddress() {
         if (!selectedPosition) {
           alert("지도에서 위치를 먼저 클릭해주세요.");
           return;
         }
-        geocoder.coord2Address(
-          selectedPosition.getLng(),
-          selectedPosition.getLat(),
-          function (result, status) {
-            if (status === kakao.maps.services.Status.OK) {
-              var roadAddr = result[0].road_address
-                ? result[0].road_address.address_name
-                : "";
-              var jibunAddr = result[0].address
-                ? result[0].address.address_name
-                : "";
 
-              document.getElementById("region").value = roadAddr || jibunAddr;
-              document.getElementById("latitude").value =
-                selectedPosition.getLat();
-              document.getElementById("longitude").value =
-                selectedPosition.getLng();
-              closeAddressModal();
-            } else {
-              alert("주소 정보를 가져오는 데 실패했습니다.");
-            }
-          }
-        );
+        const lat = selectedPosition.getLat();
+        const lng = selectedPosition.getLng();
+
+        document.getElementById("latitude").value = lat;
+        document.getElementById("longitude").value = lng;
+
+        try {
+          const getAddress = new Promise((resolve, reject) => {
+            geocoder.coord2Address(lng, lat, (result, status) => {
+              status === kakao.maps.services.Status.OK
+                ? resolve(result)
+                : reject(new Error("주소 변환 실패"));
+            });
+          });
+
+          const getRegion = new Promise((resolve, reject) => {
+            geocoder.coord2RegionCode(lng, lat, (result, status) => {
+              status === kakao.maps.services.Status.OK
+                ? resolve(result)
+                : reject(new Error("지역 코드 변환 실패"));
+            });
+          });
+
+          const [addrResult, regionResult] = await Promise.all([
+            getAddress,
+            getRegion,
+          ]);
+
+          // 도로명/지번 주소 설정 (화면 표시용)
+          const roadAddr = addrResult[0].road_address?.address_name || "";
+          const jibunAddr = addrResult[0].address?.address_name || "";
+          document.getElementById("region").value = roadAddr || jibunAddr;
+
+          // 법정동(B) 정보 설정 (DB 저장 및 필터링용)
+          const legalRegion =
+            regionResult.find((r) => r.region_type === "B") || regionResult[0];
+
+          document.getElementById("region_1depth_name").value =
+            legalRegion.region_1depth_name;
+          document.getElementById("region_2depth_name").value =
+            legalRegion.region_2depth_name;
+          document.getElementById("region_3depth_name").value =
+            legalRegion.region_3depth_name;
+        } catch (error) {
+          console.error("주소 변환 중 오류 발생:", error);
+          alert("주소 정보를 가져오는 데 실패했습니다.");
+        } finally {
+          closeAddressModal();
+        }
       }
 
       function closeAddressModal() {
         addressModal.style.display = "none";
       }
 
+      function selectWorkPeriod(button, value) {
+        document
+          .querySelectorAll("#work_period_group .btn-option")
+          .forEach((btn) => btn.classList.remove("active"));
+        button.classList.add("active");
+        document.getElementById("work_period").value = value;
+      }
+
+      document
+        .getElementById("jobForm")
+        .addEventListener("submit", function (e) {
+          const recruitmentType =
+            document.getElementById("recruitment_type").value;
+          const workPeriod = document.getElementById("work_period").value;
+
+          if (!recruitmentType) {
+            alert("모집 형태를 선택해주세요.");
+            e.preventDefault();
+            return;
+          }
+
+          if (recruitmentType === "일용직" && !workPeriod) {
+            alert("근무 기간을 선택해주세요.");
+            e.preventDefault();
+            return;
+          }
+        });
+
       // AI 도우미 모달 열기
       function openAIAssistant() {
+        // 기본 폼 데이터 검증
         const title = document
           .querySelector('input[name="title"]')
           .value.trim();
@@ -919,8 +987,10 @@
         generateBtn.innerHTML = "AI가 작성 중입니다...";
 
         try {
+          // 기본 폼 데이터 수집
           const formData = collectFormData();
 
+          // 추가 정보 수집
           formData.duties =
             document.getElementById("aiDuties").value.trim() ||
             "업무 내용을 입력해주세요";
@@ -947,11 +1017,14 @@
           const result = await response.json();
 
           if (result.success) {
+            // 생성된 설명을 textarea에 입력
             const descriptionTextarea = document.getElementById("description");
             descriptionTextarea.value = result.content.description;
 
+            // 모달 닫기
             closeAIAssistant();
 
+            // 성공 메시지
             alert(
               "AI가 전문적인 상세 설명을 생성했습니다.\n구조화된 내용을 확인하고 필요시 수정해주세요."
             );
@@ -979,6 +1052,7 @@
             "서울",
         };
 
+        // 모집 형태
         const recruitmentTypeBtn = document.querySelector(
           ".btn-option.active[data-value]"
         );
@@ -989,6 +1063,7 @@
           formData.employment_type = "정규직";
         }
 
+        // 근무 요일
         const workDays = [];
         const dayCheckboxes = [
           "monday",
@@ -1012,6 +1087,7 @@
           formData.work_days = workDays.join("");
         }
 
+        // 근무 시간
         const startTime = document.querySelector(
           'input[name="work_start_time"]'
         ).value;
@@ -1022,25 +1098,12 @@
           formData.work_time = `${startTime}~${endTime}`;
         }
 
+        // 급여
         const salary = document
           .querySelector('input[name="salary"]')
           .value.trim();
         if (salary) {
           formData.salary = salary;
-        }
-
-        const recruitmentCount = document
-          .querySelector('input[name="recruitment_count"]')
-          .value.trim();
-        if (recruitmentCount) {
-          formData.recruitment_count = recruitmentCount;
-        }
-
-        const contact = document
-          .querySelector('input[name="contact_phone"]')
-          .value.trim();
-        if (contact) {
-          formData.contact_phone = contact;
         }
 
         return formData;
@@ -1052,27 +1115,6 @@
         .addEventListener("click", function (e) {
           if (e.target === this) {
             closeAIAssistant();
-          }
-        });
-
-      // 폼 제출 검증
-      document
-        .getElementById("jobForm")
-        .addEventListener("submit", function (e) {
-          const recruitmentType =
-            document.getElementById("recruitment_type").value;
-          const workPeriod = document.getElementById("work_period").value;
-
-          if (!recruitmentType) {
-            alert("모집 형태를 선택해주세요.");
-            e.preventDefault();
-            return;
-          }
-
-          if (recruitmentType === "일용직" && !workPeriod) {
-            alert("근무 기간을 선택해주세요.");
-            e.preventDefault();
-            return;
           }
         });
     </script>

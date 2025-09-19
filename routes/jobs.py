@@ -26,59 +26,66 @@ from datetime import datetime, time
 # 공고 관련 블루프린트 생성
 jobs_bp = Blueprint("jobs", __name__)
 
+
 @jobs_bp.route("/jobs")
 @login_required
 def job_list():
     """
     공고 목록 페이지
     ===============
-    
+
     기능:
     - 전체 공고 목록 조회
     - 검색어로 공고 검색 (제목, 회사명, 설명 검색)
     - 지역, 모집형태, 근무기간으로 필터링
     - 페이지네이션 지원 (기본 20개씩)
-    
+
     URL: GET /jobs
     템플릿: jobs/job_list.html
-    
+
     쿼리 파라미터:
     - q: 검색어 (선택)
     - region: 지역 필터 (선택)
     - recruitment_type: 모집형태 필터 (선택)
     - work_period: 근무기간 필터 (선택)
-    
+
     반환값:
     - jobs: 공고 목록
     - current_region: 현재 선택된 지역
     """
-    
+
     # URL 쿼리 파라미터에서 검색 및 필터 조건 추출
     query = request.args.get('q', '')  # 검색어
     recruitment_type = request.args.get('recruitment_type', '')  # 모집형태 필터
     work_period = request.args.get('work_period', '')  # 근무기간 필터
     sort_by = request.args.get('sort', 'latest')  # 정렬 기준
-    
-    # 필터 조건을 딕셔너리로 구성
+
+    # 필터 조건을 딕셔너리로 구성 (정확 일치용)
     filters = {}
-    if request.args.get('region1'):
-        filters['region_1depth_name'] = request.args.get('region1')
-    if request.args.get('region2'):
-        filters['region_2depth_name'] = request.args.get('region2')
-    if request.args.get('region3'):
-        filters['region_3depth_name'] = request.args.get('region3')
     if recruitment_type:
         filters['recruitment_type'] = recruitment_type
     if work_period:
         filters['work_period'] = work_period
-    
+
+    # LIKE 검색 조건 (부분 일치용)
+    conditions = []
+    if request.args.get('region1'):
+        region1 = request.args.get('region1')
+        conditions.append(JobPost.region_1depth_name.like(f"{region1}%"))
+    if request.args.get('region2'):
+        region2 = request.args.get('region2')
+        conditions.append(JobPost.region_2depth_name.like(f"{region2}%"))
+    if request.args.get('region3'):
+        region3 = request.args.get('region3')
+        conditions.append(JobPost.region_3depth_name.like(f"{region3}%"))
+
     # 검색어나 필터가 있으면 검색 실행, 없으면 전체 목록 조회
-    if query or filters:
-        jobs = JobService.search_jobs(query, filters, sort_by)
+    if query or filters or conditions:
+        jobs = JobService.search_jobs(query, filters, conditions, sort_by)
     else:
         jobs_pagination = JobService.get_all_jobs(page=1, per_page=20, sort_by=sort_by)
         jobs = jobs_pagination.items
-    
+
     # 각 공고의 지원 상태 확인
     jobs_with_status = []
     for job in jobs:
@@ -97,6 +104,7 @@ def job_list():
                            jobs_with_status=jobs_with_status,
                            current_filters=current_filters
                            )
+
 
 # 공고 작성 페이지
 @jobs_bp.route("/jobs/create", methods=["GET", "POST"])

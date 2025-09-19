@@ -72,7 +72,7 @@ def company_list():
     
     # 기업 회원들이 작성한 공고만 조회
     if query or filters:
-        all_jobs = JobService.search_jobs(query, filters, sort_by)
+        all_jobs = JobService.search_jobs(query, filters, None, sort_by)
         # 기업 회원이 작성한 공고만 필터링
         jobs = [job for job in all_jobs if job.author.user_type == 1]
     else:

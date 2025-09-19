@@ -115,13 +115,14 @@ class JobService:
         ).first() is not None
     
     @staticmethod
-    def search_jobs(query, filters=None, sort_by='latest'):
+    def search_jobs(query, filters=None, conditions=None, sort_by='latest'):
         """
         공고 검색
         
         Args:
             query: 검색어
-            filters: 필터 조건
+            filters: 필터 조건 (정확 일치)
+            conditions: 추가 검색 조건 (LIKE 검색 등)
             sort_by: 정렬 기준 ('latest', 'popular', 'views')
         """
         jobs_query = JobPost.query
@@ -150,6 +151,11 @@ class JobService:
                 jobs_query = jobs_query.filter(
                     JobPost.work_period == filters['work_period']
                 )
+        
+        # 추가 조건 적용 (LIKE 검색 등)
+        if conditions:
+            for condition in conditions:
+                jobs_query = jobs_query.filter(condition)
         
         # 정렬 적용
         if sort_by == 'latest':
