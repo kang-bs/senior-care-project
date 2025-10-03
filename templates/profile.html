@@ -16,11 +16,11 @@
     </style>
   </head>
   <body class="bg-gray-100">
-    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen">
+    <div class="w-full bg-white shadow-lg min-h-screen">
       <!-- 상단 고정 영역 -->
       <div class="sticky top-0 z-10 bg-white shadow-sm">
         <!-- 상단 바 -->
-        <header class="p-4 flex justify-between items-center">
+        <header class="px-4 py-3 sm:px-6 flex justify-between items-center">
           <div class="flex items-center">
             <div class="w-8 h-8 mr-2 flex items-center justify-center">
               <img
@@ -68,7 +68,7 @@
         </nav>
       </div>
       <!-- 메인 컨텐츠: 프로필 카드 -->
-      <main class="p-4 bg-white pb-24">
+      <main class="px-4 py-4 sm:px-6 bg-white pb-24">
         <div class="bg-white rounded-2xl shadow p-6 max-w-md mx-auto">
           <!-- 프로필 상단 -->
           <div class="flex items-center mb-4">
@@ -130,7 +130,7 @@
       </main>
 
       <!-- 로그아웃 버튼 -->
-      <div class="max-w-sm mx-auto px-4 pb-4 bg-white">
+      <div class="w-full px-4 pb-4 bg-white">
         <a
           href="{{ url_for('auth.logout') }}"
           class="flex items-center justify-center w-full bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-lg transition-colors"
@@ -155,7 +155,7 @@
 
       <!-- 하단 네비게이션 -->
       <footer
-        class="fixed bottom-0 left-0 right-0 max-w-sm mx-auto bg-gray-50 border-t flex justify-around"
+        class="fixed bottom-0 left-0 right-0 w-full bg-gray-50 border-t flex justify-around"
       >
         <a
           href="{{ url_for('map.show_map') }}"
