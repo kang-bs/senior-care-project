@@ -21,10 +21,10 @@
     </style>
   </head>
   <body class="bg-gray-100">
-    <div class="max-w-sm mx-auto bg-white shadow-lg min-h-screen flex flex-col">
+    <div class="w-full bg-white shadow-lg min-h-screen flex flex-col">
       <!-- 채팅방 헤더 -->
       <div class="sticky top-0 z-10 bg-white shadow-sm border-b">
-        <header class="p-4 flex justify-between items-center">
+        <header class="px-4 py-3 sm:px-6 flex justify-between items-center">
           <div class="flex items-center">
             <button
               onclick="goToChatList()"
@@ -63,7 +63,7 @@
       </div>
 
       <!-- 메시지 목록 -->
-      <div class="flex-1 overflow-y-auto p-4 chat-messages" id="chatMessages">
+      <div class="flex-1 overflow-y-auto px-4 py-4 sm:px-6 chat-messages" id="chatMessages">
         {% for message in messages %}
         <div
           class="message {% if message.sender_id == current_user.id %}own{% endif %} {% if message.message_type == 'system' %}system{% endif %}"
