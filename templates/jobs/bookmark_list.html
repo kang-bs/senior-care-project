@@ -77,9 +77,79 @@
       </div>
 
       <!-- 메인 컨텐츠 -->
-      <main class="px-4 py-4 sm:px-6 bg-white pb-24">
-        <!-- 페이지 제목 -->
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">찜 목록</h1>
+      <main class="px-4 pt-4 sm:px-6 bg-white pb-24">
+        <!-- 위치 정보 -->
+        <section class="mb-6">
+          <div
+            class="flex items-center justify-between text-gray-700 h-12 px-4 rounded-full"
+            style="background: #eef1f9"
+          >
+            <div class="flex items-center">
+              <svg
+                class="w-5 h-5 mr-2 text-blue-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="text-lg font-medium">경상북도 경산시 조영동</span>
+            </div>
+            <svg
+              class="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </div>
+        </section>
+
+        <!-- 카테고리 탭 -->
+        <div class="relative -mx-4 sm:-mx-6 mb-6">
+          <nav class="flex relative px-4 sm:px-6">
+            <button
+              onclick="changeBookmarkCategory('company')"
+              class="bookmark-tab flex-1 text-center font-bold transition-colors relative"
+              style="
+                border-top-left-radius: 20px;
+                border-top-right-radius: 20px;
+                padding-top: 12px;
+                padding-bottom: 16px;
+              "
+              data-category="company"
+            >
+              기업 이음
+            </button>
+            <button
+              onclick="changeBookmarkCategory('people')"
+              class="bookmark-tab flex-1 text-center font-bold transition-colors relative"
+              style="
+                border-top-left-radius: 20px;
+                border-top-right-radius: 20px;
+                padding-top: 12px;
+                padding-bottom: 16px;
+              "
+              data-category="people"
+            >
+              사람 이음
+            </button>
+          </nav>
+          <!-- 파란색 선 (항상 표시) -->
+          <div
+            class="absolute bottom-0 left-0 right-0 h-1 bg-blue-900"
+            style="z-index: 0"
+          ></div>
+        </div>
 
         <!-- 정렬 섹션 -->
         {% if jobs_with_status %}
@@ -143,56 +213,76 @@
             class="bg-white p-4 rounded-lg border cursor-pointer"
             onclick="location.href='{{ url_for('jobs.job_detail', job_id=job.id) }}'"
           >
-            <div class="flex items-start justify-between">
+            <!-- 첫 번째 줄: 프로필 아이콘 - 회사명 - 마감 기한 -->
+            <div class="flex items-start justify-between mb-1">
               <div class="flex items-start">
                 <div
                   class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex-shrink-0"
                 ></div>
-                <div>
-                  <p class="text-sm text-gray-600">{{ job.company }} 담당자</p>
-                  <h3 class="font-bold text-lg">{{ job.title }}</h3>
-                  <p class="text-blue-800 font-semibold">
-                    {% if job.salary %}{{ job.salary }}{% else %}급여 협의{%
-                    endif %}
-                  </p>
-                </div>
+                <p class="text-sm text-gray-600 mt-2">
+                  {% if job.author.user_type == 1 %}
+                    {{ job.company }}
+                  {% else %}
+                    {{ job.author.nickname or '익명' }}
+                  {% endif %}
+                </p>
               </div>
+              <p class="text-xs text-gray-400">
+                {% if job.deadline %}~{{ job.deadline.strftime('%m/%d (%a)') }}{% else %}-10/4 (금){% endif %}
+              </p>
             </div>
-            <div class="flex items-center justify-between mt-4">
+
+            <!-- 두 번째 줄: 공고 제목 - 즐겨찾기 아이콘 -->
+            <div class="flex items-start justify-between mb-1">
+              <h3 class="font-bold text-lg flex-1">{{ job.title }}</h3>
+              <button class="ml-2" onclick="event.stopPropagation();">
+                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- 세 번째 줄: 급여 -->
+            <p class="text-blue-900 font-bold text-base mb-2">
+              {% if job.salary %}월급 {{ job.salary }}{% else %}급여 협의{% endif %}
+            </p>
+
+            <!-- 네 번째 줄: 카테고리 - 지원하기 버튼 -->
+            <div class="flex items-center justify-between">
               <div class="flex space-x-2">
                 {% if job.recruitment_type %}<span
                   class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
                   >{{ job.recruitment_type }}</span
-                >{% endif %} {% if job.work_period %}<span
+                >{% endif %}
+                {% if job.work_period %}<span
                   class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
                   >{{ job.work_period }}</span
                 >{% endif %}
               </div>
               {% if current_user.id == job.author_id %}
               <button
-                class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                class="bg-gray-400 text-white font-bold py-2 px-4 rounded-full text-sm cursor-not-allowed"
                 disabled
+                onclick="event.stopPropagation();"
               >
                 내 공고
               </button>
               {% elif status.applied %}
               <button
-                class="bg-green-500 text-white font-bold py-2 px-6 rounded-full"
+                class="bg-green-500 text-white font-bold py-2 px-4 rounded-full text-sm"
                 onclick="event.stopPropagation(); goToChat({{ job.id }})"
               >
                 채팅하기
               </button>
               {% else %}
               <button
-                class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
+                class="text-white font-bold py-2 px-4 rounded-full text-sm"
+                style="background-color: #023591"
                 onclick="event.stopPropagation(); applyJob({{ job.id }})"
               >
                 지원하기
               </button>
               {% endif %}
-            </div>
-            <div class="text-center text-xs text-gray-500 mt-3">
-              조회 {{ job.view_count }} | 찜 {{ job.bookmark_count }}
             </div>
           </div>
           {% endfor %} {% else %}
@@ -282,6 +372,41 @@
     </div>
 
     <script>
+      let currentCategory = "people"; // 기본값: 사람 이음
+
+      // 페이지 로드시 초기 카테고리 활성화
+      document.addEventListener("DOMContentLoaded", function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get("category") || "people";
+        currentCategory = category;
+        updateActiveTab(category);
+      });
+
+      function updateActiveTab(category) {
+        const tabs = document.querySelectorAll(".bookmark-tab");
+
+        tabs.forEach((tab, index) => {
+          if (tab.dataset.category === category) {
+            tab.classList.add("bg-blue-900", "text-white");
+            tab.classList.remove("bg-gray-200", "text-gray-500");
+            // 선택된 탭은 하단 패딩을 4px 더 줘서 파란색 선을 덮음
+            tab.style.paddingBottom = "16px";
+          } else {
+            tab.classList.add("bg-gray-200", "text-gray-500");
+            tab.classList.remove("bg-blue-900", "text-white");
+            // 선택되지 않은 탭은 하단 패딩을 줄여서 파란색 선이 보이게 함
+            tab.style.paddingBottom = "12px";
+          }
+        });
+      }
+
+      function changeBookmarkCategory(category) {
+        currentCategory = category;
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set("category", category);
+        window.location.href = currentUrl.toString();
+      }
+
       // 공고 지원하기 함수
       async function applyJob(jobId) {
         if (
