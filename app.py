@@ -11,7 +11,7 @@ from routes.areas import areas_bp
 from routes.jobs import jobs_bp
 from routes.chat import chat_bp
 from routes.company import company_bp
-from routes.resume import senior_resume_bp
+from routes.resume import resumes_bp
 from routes.job_assistant import job_assistant_bp
 from utils.helpers import format_date, format_datetime, format_salary, get_work_days, calculate_time_ago
 from cli import register_cli  # ⬅ cli.py에서 만든 함수 import
@@ -104,7 +104,7 @@ app.register_blueprint(jobs_bp)
 app.register_blueprint(chat_bp)
 app.register_blueprint(company_bp)
 app.register_blueprint(admin_bp)
-app.register_blueprint(senior_resume_bp,url_prefix='/resume')
+app.register_blueprint(resumes_bp,url_prefix='/')
 app.register_blueprint(job_assistant_bp)
 app.register_blueprint(news_bp)
 app.register_blueprint(map_bp)

@@ -16,6 +16,11 @@ class Config:
     # 기본 설정
     SECRET_KEY = os.getenv("SECRET_KEY", "your-default-secret-key")
 
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_S3_BUCKET_NAME = os.environ.get("AWS_S3_BUCKET_NAME")
+    AWS_S3_REGION = os.environ.get("AWS_S3_REGION")
+
     # SQLAlchemy configuration
     # Railway에서 제공하는 DATABASE_URL 사용 (이미 mysql+pymysql 형태로 설정됨)
     RAILWAY_DB_URI = os.getenv("DATABASE_URL")
