@@ -1,8 +1,42 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import Float
+import enum
 
 db = SQLAlchemy()
+
+class WorkType(enum.Enum):
+    LONG_TERM = "장기"
+    SHORT_TERM = "단기"
+    PART_TIME = "파트타임"
+
+class Category(enum.Enum):
+    SAFETY_MANAGEMENT = "안전·관리"
+    SERVICE_STORE = "서비스·매장"
+    LIVING_CARE = "생활·돌봄 지원"
+    DRIVING_DELIVERY = "운전·배송"
+    SOCIAL_PUBLIC = "사회·공공"
+    ETC = "기타"
+
+class Strength(enum.Enum):
+    SINCERE = "성실한"
+    RESPONSIBLE = "책임감 있는"
+    METICULOUS = "꼼꼼한"
+    ACHIEVEMENT_ORIENTED = "성취지향적인"
+    PROACTIVE = "적극적인"
+    CHALLENGING = "도전적인"
+    PASSIONATE = "열정적인"
+    DRIVING_FORCE = "추진력 있는"
+    SOCIABLE = "친화력 좋은"
+    COMMUNICATIVE = "소통력 있는"
+    CREATIVE = "창의적인"
+    FLEXIBLE = "유연한"
+    ANALYTICAL = "분석적인"
+    STRATEGIC = "전략적인"
+    ADAPTIVE = "적응력 좋은"
+    CALM = "차분한"
+    PRACTICAL = "실무중심적인"
+    POSITIVE = "긍정적인"
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -235,13 +269,19 @@ class ChatMessage(db.Model):
         return f"<ChatMessage id={self.id} room_id={self.room_id} sender_id={self.sender_id}>"
 
 
-class SeniorResume(db.Model):
-    __tablename__ = 'senior_resume'
+class Resume(db.Model):
+    __tablename__ = 'resume'
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # User 테이블 FK
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, unique=True)
 
-    # 근무 요일별 Boolean 필드
+    # --- 공개 여부 ---
+    is_public = db.Column(db.Boolean, default=False, nullable=False)
+
+    # --- 희망 근무 조건 ---
+    desired_categories = db.Column(db.String(255), nullable=True)
+    desired_work_type = db.Column(db.Enum(WorkType), nullable=True)
+
     work_monday = db.Column(db.Boolean, default=False)
     work_tuesday = db.Column(db.Boolean, default=False)
     work_wednesday = db.Column(db.Boolean, default=False)
@@ -250,19 +290,42 @@ class SeniorResume(db.Model):
     work_saturday = db.Column(db.Boolean, default=False)
     work_sunday = db.Column(db.Boolean, default=False)
 
-    work_time = db.Column(db.String(100))              # 예: '오전,저녁(6시 이후),시간 관계 X'
-    work_time_free_text = db.Column(db.String(200))    # 시간대 자유 작성 텍스트
-    interested_jobs = db.Column(db.String(100))        # 예: '공공근로/환경정비,카페/식당 보조'
-    interested_jobs_custom = db.Column(db.String(100)) # 직접 입력 관심 일 텍스트
-    career_status = db.Column(db.Boolean)              # True: 경력 있음, False: 신입
-    motivation = db.Column(db.Text)                    # 지원 동기
-    extra_requests = db.Column(db.Text)                # 기타 요청사항
+    desired_start_time = db.Column(db.Time, nullable=True)
+    desired_end_time = db.Column(db.Time, nullable=True)
+    # --- '시간 협의 가능' 필드 (체크박스)---
+    is_time_negotiable = db.Column(db.Boolean, default=False, nullable=False)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    # --- 경력, 자기소개 ---
+    experience = db.Column(db.Text, nullable=True)
+    self_introduction = db.Column(db.Text, nullable=True)
 
-    # User 관계 - user.senior_resumes로 접근 가능
-    user = db.relationship('User', backref=db.backref('senior_resumes', lazy=True))
+    # --- 개인 특성 ---
+    strengths = db.Column(db.Text, nullable=True)
+    commute_time = db.Column(db.Integer, nullable=True)
+
+    # --- 신체 관련 필드 ---
+    walkable_minutes = db.Column(db.Integer, nullable=True)  # 쉬지 않고 걸을 수 있는 시간 (분 단위)
+    physical_notes = db.Column(db.Text, nullable=True)  # 신체적 특징
+
+    # --- 관계 설정 ---
+    user = db.relationship('User', backref=db.backref('resume', uselist=False))
+
+    # Certificate 모델과의 1:N 관계 설정
+    certificates = db.relationship('Certificate', backref='resume', lazy=True, cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<SeniorResume id={self.id} user_id={self.user_id}>"
+        return f'<Resume {self.id} for User {self.user_id}>'
+
+
+class Certificate(db.Model):
+    __tablename__ = 'certificate'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)
+
+    # Resume 모델과의 관계를 위한 외래 키
+    resume_id = db.Column(db.Integer, db.ForeignKey('resume.id'), nullable=False)
+
+    def __repr__(self):
+        return f'<Certificate {self.name}>'
