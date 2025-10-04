@@ -379,29 +379,39 @@ def bookmark_list():
     """
     사용자 찜 목록 페이지
     ===================
-    
+
     기능:
     - 현재 로그인한 사용자의 찜한 공고 목록 조회
+    - 카테고리별 필터링 (사람 이음 / 기업 이음)
     - 찜한 순서대로 정렬 (최신순)
     - 찜 해제 기능 포함
-    
+
     URL: GET /bookmarks
     템플릿: jobs/bookmark_list.html
-    
+
     반환값:
     - jobs: 사용자가 찜한 공고 목록
-    
+
     주의사항:
     - 로그인이 필요한 페이지
     - 찜 목록이 비어있을 경우 빈 상태 메시지 표시
     """
-    
-    # 정렬 기준 추출
+
+    # 정렬 기준 및 카테고리 추출
     sort_by = request.args.get('sort', 'latest')
-    
+    category = request.args.get('category', 'people')  # people(사람 이음) 또는 company(기업 이음)
+
     # JobService를 통해 현재 사용자의 찜 목록 조회
     jobs = JobService.get_user_bookmarks(current_user.id)
-    
+
+    # 카테고리별 필터링
+    if category == 'company':
+        # 기업 이음: user_type이 1인 작성자의 공고
+        jobs = [job for job in jobs if job.author.user_type == 1]
+    else:  # people
+        # 사람 이음: user_type이 0인 작성자의 공고
+        jobs = [job for job in jobs if job.author.user_type == 0]
+
     # 정렬 적용
     if sort_by == 'popular':
         jobs.sort(key=lambda x: x.bookmark_count + x.application_count, reverse=True)
@@ -409,7 +419,7 @@ def bookmark_list():
         jobs.sort(key=lambda x: x.view_count, reverse=True)
     else:  # latest
         jobs.sort(key=lambda x: x.created_at, reverse=True)
-    
+
     # 각 공고의 지원 상태 확인
     jobs_with_status = []
     for job in jobs:
@@ -419,10 +429,11 @@ def bookmark_list():
             'application_status': application_status
         }
         jobs_with_status.append(job_data)
-    
-    return render_template("jobs/bookmark_list.html", 
+
+    return render_template("jobs/bookmark_list.html",
                          jobs_with_status=jobs_with_status,
-                         current_sort=sort_by)
+                         current_sort=sort_by,
+                         current_category=category)
 
 @jobs_bp.route("/jobs/<int:job_id>/apply", methods=["POST"])
 @login_required
