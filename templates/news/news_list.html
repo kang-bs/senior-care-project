@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이음 뉴스 - 최근 시니어 일자리 뉴스</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="w-full bg-white shadow-lg min-h-screen max-w-md mx-auto">
+      <!-- 상단 헤더 -->
+      <header class="bg-white border-b px-4 py-4">
+        <div class="flex items-center">
+          <button onclick="history.back()" class="mr-4">
+            <svg
+              class="w-6 h-6 text-gray-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+          <div class="flex items-center">
+            <div
+              class="w-6 h-6 bg-green-500 rounded mr-2 flex items-center justify-center"
+            >
+              <svg
+                class="w-4 h-4 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800">
+              최근 시니어 일자리 뉴스
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      <!-- 뉴스 목록 -->
+      <main class="px-4 py-4 pb-24">
+        <!-- 검색 결과 정보 -->
+        {% if query %}
+        <div class="mb-4 text-sm text-gray-600">
+          <span class="font-medium">"{{ query }}"</span> 검색 결과 {% if total
+          %}(총 {{ total }}건){% endif %}
+        </div>
+        {% endif %}
+
+        <div class="space-y-6">
+          {% for news in news_list %}
+          <article
+            class="bg-white rounded-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
+            onclick="location.href='{{ news.link }}'"
+          >
+            <div class="p-4">
+              <div class="flex justify-between items-start">
+                <div class="flex-1 pr-4">
+                  <h2
+                    class="text-lg font-bold text-gray-900 mb-2 leading-tight"
+                  >
+                    {{ news.title }}
+                  </h2>
+                  <p class="text-sm text-gray-600 mb-2 line-clamp-2">
+                    {{ news.description }}
+                  </p>
+                  <p class="text-sm text-gray-500 mb-3">{{ news.pub_date }}</p>
+                  <div
+                    class="flex items-center text-blue-600 text-sm font-medium"
+                  >
+                    <span>더 읽기</span>
+                    <svg
+                      class="w-4 h-4 ml-1"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <div
+                  class="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden"
+                >
+                  {% set news_index = loop.index0 % 4 %} {% if news_index == 0
+                  %}
+                  <div
+                    class="w-full h-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center"
+                  >
+                    <div class="text-white text-xs text-center">
+                      <div class="font-bold">뉴스</div>
+                      <div>기사</div>
+                    </div>
+                  </div>
+                  {% elif news_index == 1 %}
+                  <div
+                    class="w-full h-full bg-gray-100 flex items-center justify-center"
+                  >
+                    <svg
+                      class="w-8 h-8 text-gray-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0
+                      00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  {% elif news_index == 2 %}
+                  <div
+                    class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center"
+                  >
+                    <div class="text-white text-xs text-center">
+                      <div class="font-bold">시니어</div>
+                      <div class="text-xs">일자리</div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div
+                    class="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center"
+                  >
+                    <div class="text-white text-xs text-center">
+                      <div class="font-bold">정책</div>
+                      <div class="text-xs">뉴스</div>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </article>
+          {% endfor %} {% if not news_list %}
+          <div class="text-center py-8">
+            <div class="text-gray-400 mb-2">
+              <svg
+                class="w-12 h-12 mx-auto"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <p class="text-gray-500">검색 결과가 없습니다.</p>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- 더 많은 뉴스 보기 -->
+        <div class="text-center mt-8 py-6">
+          <button
+            class="text-gray-500 font-medium flex items-center justify-center mx-auto"
+          >
+            <span>더 많은 뉴스 보기</span>
+            <svg
+              class="w-4 h-4 ml-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </button>
+        </div>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 w-full bg-gray-50 border-t flex justify-around max-w-md mx-auto"
+      >
+        <a
+          href="{{ url_for('map.show_map') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>

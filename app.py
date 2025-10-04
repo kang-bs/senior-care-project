@@ -17,6 +17,7 @@ from utils.helpers import format_date, format_datetime, format_salary, get_work_
 from cli import register_cli  # ⬅ cli.py에서 만든 함수 import
 from routes.admin.admin import admin_bp
 from routes.map import map_bp
+from routes.news import news_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -105,7 +106,7 @@ app.register_blueprint(company_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(senior_resume_bp,url_prefix='/resume')
 app.register_blueprint(job_assistant_bp)
-
+app.register_blueprint(news_bp)
 app.register_blueprint(map_bp)
 
 
