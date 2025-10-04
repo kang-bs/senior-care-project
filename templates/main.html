@@ -19,13 +19,13 @@
       }
       /* 얼굴 토글 스위치 스타일 */
       :root {
-        --toggle-bg: #FFFFFF;
-        --face-color: #64748B;
+        --toggle-bg: #ffffff;
+        --face-color: #64748b;
       }
 
       body.toggle-active {
-        --toggle-bg: #C1E1C1;
-        --face-color: #4A5568;
+        --toggle-bg: #c1e1c1;
+        --face-color: #4a5568;
       }
 
       .toggle-container {
@@ -53,7 +53,7 @@
       #face-toggle:checked + label .roller {
         transform: rotate(360deg);
       }
-      
+
       #face-toggle:checked + label .face-front {
         opacity: 0;
         transition: opacity 0.1s linear 0.5s;
@@ -70,8 +70,12 @@
         height: 2px;
         top: 10px;
       }
-      .face-front .eye.left { left: 6px; }
-      .face-front .eye.right { right: 6px; }
+      .face-front .eye.left {
+        left: 6px;
+      }
+      .face-front .eye.right {
+        right: 6px;
+      }
 
       .face-front .mouth {
         width: 3.5px;
@@ -86,8 +90,12 @@
         height: 2.5px;
         top: 10px;
       }
-      .face-back .eye.left { left: 6.5px; }
-      .face-back .eye.right { right: 6.5px; }
+      .face-back .eye.left {
+        left: 6.5px;
+      }
+      .face-back .eye.right {
+        right: 6.5px;
+      }
 
       .face-back .mouth {
         width: 3.5px;
@@ -101,8 +109,8 @@
       }
     </style>
   </head>
-  <body class="bg-gray-100">
-    <div class="w-full bg-white shadow-lg min-h-screen">
+  <body class="bg-gray-50">
+    <div class="w-full bg-white shadow-lg min-h-screen max-w-md mx-auto">
       <!-- 상단 고정 영역 -->
       <div class="sticky top-0 z-10 bg-white shadow-sm">
         <!-- 상단 바 -->
@@ -118,21 +126,51 @@
             <div class="toggle-container" id="toggleContainer">
               <span class="toggle-text" id="toggleText">이음</span>
               <div class="relative w-[50px] h-[26px]">
-                <input type="checkbox" id="face-toggle" class="hidden">
-                <label for="face-toggle" class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]" style="background-color: var(--toggle-bg);">
-                  <div class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out">
-                    <div class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out">
+                <input type="checkbox" id="face-toggle" class="hidden" />
+                <label
+                  for="face-toggle"
+                  class="block w-full h-full cursor-pointer relative border border-gray-300 p-[1.5px] transition-colors duration-500 ease-in-out rounded-[13px]"
+                  style="background-color: var(--toggle-bg)"
+                >
+                  <div
+                    class="toggle-handle relative w-[22px] h-[22px] bg-transparent rounded-full transition-transform duration-[600ms] ease-in-out"
+                  >
+                    <div
+                      class="roller relative w-full h-full transition-transform duration-[600ms] ease-in-out"
+                    >
                       <!-- 앞면 (낮 모드) -->
-                      <div class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear">
-                        <div class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                        <div class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
-                        <div class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                      <div
+                        class="face-front absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-100 transition-opacity duration-100 linear"
+                      >
+                        <div
+                          class="face-feature eye left absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature eye right absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature mouth absolute border-b-[1px] rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
                       </div>
                       <!-- 뒷면 (밤 모드) -->
-                      <div class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear">
-                        <div class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
-                        <div class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out" style="background-color: var(--face-color);"></div>
-                        <div class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out" style="border-color: var(--face-color);"></div>
+                      <div
+                        class="face-back absolute w-full h-full flex justify-center items-center bg-white rounded-full shadow-sm opacity-0 transition-opacity duration-100 linear"
+                      >
+                        <div
+                          class="face-feature eye left absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="background-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature eye right absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="background-color: var(--face-color)"
+                        ></div>
+                        <div
+                          class="face-feature mouth absolute rounded-full transition-colors duration-500 ease-in-out"
+                          style="border-color: var(--face-color)"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -179,295 +217,372 @@
       </div>
 
       <!-- 메인 컨텐츠 -->
-      <main class="px-4 py-4 sm:px-6 bg-white pb-24">
-        <!-- 환영 메시지 -->
-        <section class="my-8">
-          <h1
-            class="text-2xl sm:text-3xl font-bold text-blue-900 leading-tight laundry-gothic"
-          >
-            {{ user.nickname or user.name }}님,<br />
-            건강도 챙기면서<br />
-            일할 수 있는 기회예요!
-          </h1>
+      <main class="px-4 py-4 sm:px-6 bg-gray-50 pb-24">
+        <!-- 위치 정보 -->
+        <section class="mb-6">
+          <div class="flex items-center text-gray-700">
+            <svg
+              class="w-5 h-5 mr-2 text-blue-600"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span class="text-lg font-medium">경상북도 경산시 조영동</span>
+            <svg
+              class="w-4 h-4 ml-2 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </div>
         </section>
 
-        <!-- 날씨 정보 -->
-        <section class="mb-6">
-          <div class="flex items-center bg-gray-100 rounded-full p-2">
-            <div class="flex items-center">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6 text-yellow-500"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+        <!-- 주요 기능 버튼들 -->
+        <section class="mb-8">
+          <div class="grid grid-cols-2 gap-4">
+            <!-- 이력서 작성 -->
+            <a
+              href="{{ url_for('auth.profile') }}"
+              class="bg-blue-600 rounded-2xl p-4 text-white flex items-center"
+            >
+              <div
+                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
               >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 5a2 2 0 012-2v1a2 2 0 002 2h4a2 2 0 002-2V3a2 2 0 012 2v6.5a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 014 11.5V5z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <span class="font-bold">이력서 작성</span>
+            </a>
+
+            <!-- 구인글 작성 -->
+            <a
+              href="{{ url_for('jobs.create_job') }}"
+              class="bg-red-500 rounded-2xl p-4 text-white flex items-center"
+            >
+              <div
+                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <span class="font-bold">구인글 작성</span>
+            </a>
+
+            <!-- 공고 검색 -->
+            <a
+              href="{{ url_for('jobs.job_list') }}"
+              class="bg-blue-500 rounded-2xl p-4 text-white flex items-center"
+            >
+              <div
+                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <span class="font-bold">공고 검색</span>
+            </a>
+
+            <!-- 이음 뉴스 -->
+            <a
+              href="{{ url_for('news.news_list') }}"
+              class="bg-gray-600 rounded-2xl p-4 text-white flex items-center"
+            >
+              <div
+                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fill-rule="evenodd"
+                    d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </div>
+              <span class="font-bold">이음 뉴스</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- 관리자 전용 승인관리 버튼 -->
+        {% if current_user.user_type == 2 %}
+        <section class="mb-6">
+          <div class="bg-orange-500 rounded-2xl p-4 text-white">
+            <div class="flex items-center mb-2">
+              <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fill-rule="evenodd"
-                  d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 14a1 1 0 01-1 1v1a1 1 0 112 0v-1a1 1 0 01-1-1zM5.293 5.293a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zm9.193 9.193a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM3 10a1 1 0 01-1 1H1a1 1 0 110-2h1a1 1 0 011 1zm9.707-4.707a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zm-9.193 9.193a1 1 0 010 1.414l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 5a5 5 0 100 10 5 5 0 000-10z"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                   clip-rule="evenodd"
                 />
               </svg>
-              <span class="ml-2 text-sm font-medium">맑음 / 20°C</span>
+              <span class="font-bold text-lg">관리자 메뉴</span>
             </div>
-            <div class="ml-4 text-sm text-gray-500 flex items-center">
-              <span>조영동</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-4 w-4 ml-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
+            <a
+              href="{{ url_for('admin.pending_companies') }}"
+              class="block bg-white bg-opacity-20 rounded-xl p-3 text-center font-bold hover:bg-opacity-30 transition-all"
+            >
+              기업회원 승인/거부 페이지
+            </a>
           </div>
         </section>
-
-        <!-- ✅ 관리자 전용 승인관리 버튼 -->
-        {% if current_user.user_type == 2 %}
-        <div
-          style="
-            padding: 15px;
-            background: #fff;
-            margin: 10px;
-            border-radius: 8px;
-          "
-        >
-          <a
-            href="{{ url_for('admin.pending_companies') }}"
-            style="
-              display: block;
-              background: #3498db;
-              color: white;
-              text-align: center;
-              padding: 12px;
-              border-radius: 6px;
-              font-weight: bold;
-              text-decoration: none;
-            "
-          >
-            기업회원 승인/거부 페이지
-          </a>
-        </div>
         {% endif %}
 
-        <!-- 추천 기업 이음 -->
+        <!-- AI 추천 -->
         <section class="mb-8">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">추천 기업 이음</h2>
-            <a
-              href="{{ url_for('company.company_list') }}"
-              class="text-sm text-gray-500"
-              >더보기 ></a
+          <div class="flex items-center mb-4">
+            <span
+              class="bg-blue-100 text-blue-800 text-sm font-bold px-3 py-1 rounded-full mr-3"
+              >AI 추천</span
             >
           </div>
-          <div class="space-y-4">
-            {% if company_jobs %} {% for job_data in company_jobs %} {% set job
-            = job_data.job %} {% set status = job_data.application_status %}
+          <div class="bg-white rounded-2xl p-4 shadow-sm border">
+            <div class="flex items-center mb-3">
+              <span class="text-red-500 text-lg mr-2">📌</span>
+              <span class="font-bold text-gray-800"
+                >철원님이 찾으실만한 공고예요!</span
+              >
+            </div>
+            {% if company_jobs %} {% for job_data in company_jobs[:2] %} {% set
+            job = job_data.job %} {% set status = job_data.application_status %}
             <div
-              class="bg-white p-4 rounded-lg border cursor-pointer"
+              class="border-b border-gray-100 pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0 cursor-pointer"
               onclick="location.href='{{ url_for('company.company_job_detail', job_id=job.id) }}'"
             >
-              <div class="flex items-start justify-between">
+              <div class="flex items-start justify-between mb-2">
                 <div class="flex items-start">
                   <div
-                    class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center text-gray-600 font-bold"
+                    class="w-8 h-8 bg-gray-200 rounded-full mr-3 flex items-center justify-center text-gray-600 text-sm font-bold"
                   >
                     {{ job.company[0] if job.company else '기' }}
                   </div>
                   <div>
                     <p class="text-sm text-gray-600">{{ job.company }}</p>
-                    <h3 class="font-bold text-lg">{{ job.title }}</h3>
-                    <p class="text-gray-800">{{ job.salary or '급여 협의' }}</p>
+                    <h3 class="font-bold text-base">{{ job.title }}</h3>
+                    <p class="text-blue-600 font-bold">
+                      월급 {{ job.salary or '3,000,000원' }}
+                    </p>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">
-                  {{ job.created_at.strftime('~%m/%d') }}
-                </p>
+                <div class="text-right">
+                  <p class="text-xs text-gray-500">
+                    {{ job.created_at.strftime('~%m/%d (%a)') }}
+                  </p>
+                  <button class="mt-1 text-gray-400 hover:text-red-500">
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center justify-between">
                 <div class="flex space-x-2">
-                  {% if job.recruitment_type %}
                   <span
-                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                    class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+                    >{{ job.recruitment_type or '정직원' }}</span
                   >
-                    {{ job.recruitment_type }}
-                  </span>
-                  {% endif %} {% if job.work_period %}
                   <span
-                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                    class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+                    >{{ job.work_period or '상주직' }}</span
                   >
-                    {{ job.work_period }}
-                  </span>
-                  {% endif %}
                 </div>
                 {% if current_user.user_type == 0 %} {% if status.applied %}
                 <button
-                  class="bg-green-500 text-white font-bold py-2 px-6 rounded-full"
+                  class="bg-green-500 text-white font-bold py-2 px-4 rounded-full text-sm"
                   onclick="event.stopPropagation(); goToChat({{ job.id }})"
                 >
                   채팅하기
                 </button>
                 {% else %}
                 <button
-                  class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
+                  class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full text-sm"
                   onclick="event.stopPropagation(); applyJob({{ job.id }})"
                 >
                   지원하기
                 </button>
-                {% endif %} {% elif current_user.user_type == 1 %} {% if
-                current_user.id == job.author_id %}
-                <button
-                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
-                  disabled
-                >
-                  내 공고
-                </button>
-                {% else %}
-                <button
-                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
-                  disabled
-                >
-                  타 기업 공고
-                </button>
-                {% endif %} {% else %}
-                <button
-                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
-                  disabled
-                >
-                  관리자 계정
-                </button>
-                {% endif %}
+                {% endif %} {% endif %}
               </div>
             </div>
             {% endfor %} {% else %}
-            <div
-              class="bg-white p-4 rounded-lg border text-center text-gray-500"
-            >
-              <p>등록된 기업 공고가 없습니다.</p>
-            </div>
+            <p class="text-gray-500 text-center py-4">
+              등록된 기업 공고가 없습니다.
+            </p>
             {% endif %}
+
+            <div class="text-center mt-4">
+              <a
+                href="{{ url_for('company.company_list') }}"
+                class="text-blue-600 text-sm font-medium"
+              >
+                더 많은 공고 보기 →
+              </a>
+            </div>
           </div>
         </section>
 
-        <!-- 실시간 사람 이음 -->
+        <!-- 시간대별 공고 -->
         <section>
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold">실시간 사람 이음</h2>
-            <a
-              href="{{ url_for('jobs.job_list') }}"
-              class="text-sm text-gray-500"
-              >더보기 ></a
+          <div class="flex items-center mb-4">
+            <span
+              class="bg-yellow-100 text-yellow-800 text-sm font-bold px-3 py-1 rounded-full mr-3"
+              >시간대</span
             >
           </div>
-          <div class="space-y-4">
-            {% if people_jobs %} {% for job_data in people_jobs %} {% set job =
-            job_data.job %} {% set status = job_data.application_status %}
+          <div class="bg-white rounded-2xl p-4 shadow-sm border">
+            <div class="flex items-center mb-3">
+              <span class="text-yellow-500 text-lg mr-2">👑</span>
+              <span class="font-bold text-gray-800"
+                >조영동의 실시간 공고예요!</span
+              >
+            </div>
+            {% if people_jobs %} {% for job_data in people_jobs[:2] %} {% set
+            job = job_data.job %} {% set status = job_data.application_status %}
             <div
-              class="bg-white p-4 rounded-lg border cursor-pointer"
+              class="border-b border-gray-100 pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0 cursor-pointer"
               onclick="location.href='{{ url_for('jobs.job_detail', job_id=job.id) }}'"
             >
-              <div class="flex items-start justify-between">
+              <div class="flex items-start justify-between mb-2">
                 <div class="flex items-start">
                   <div
-                    class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex items-center justify-center text-gray-600 font-bold"
+                    class="w-8 h-8 bg-gray-200 rounded-full mr-3 flex items-center justify-center text-gray-600 text-sm font-bold"
                   >
                     {{ job.author.nickname[0] if job.author.nickname else '사'
                     }}
                   </div>
                   <div>
                     <p class="text-sm text-gray-600">
-                      {{ job.author.nickname }} ({{ job.company }})
+                      {{ job.author.nickname or '익명' }}
                     </p>
-                    <h3 class="font-bold text-lg">{{ job.title }}</h3>
-                    <p class="text-gray-800">{{ job.salary or '급여 협의' }}</p>
+                    <h3 class="font-bold text-base">{{ job.title }}</h3>
+                    <p class="text-blue-600 font-bold">
+                      {{ job.salary or '50,000원' }}
+                    </p>
                   </div>
                 </div>
-                <p class="text-xs text-gray-500">
-                  {{ job.created_at.strftime('~%m/%d') }}
-                </p>
+                <div class="text-right">
+                  <p class="text-xs text-gray-500">
+                    {{ job.created_at.strftime('%m월 %d일') }}
+                  </p>
+                  <button class="mt-1 text-gray-400 hover:text-red-500">
+                    <svg
+                      class="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
-              <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center justify-between">
                 <div class="flex space-x-2">
-                  {% if job.recruitment_type %}
                   <span
-                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                    class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+                    >오늘</span
                   >
-                    {{ job.recruitment_type }}
-                  </span>
-                  {% endif %} {% if job.work_period %}
                   <span
-                    class="bg-gray-200 text-gray-700 text-xs font-semibold px-2.5 py-1 rounded-full"
+                    class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded"
+                    >{{ job.work_period or '시간대별' }}</span
                   >
-                    {{ job.work_period }}
-                  </span>
-                  {% endif %}
                 </div>
                 {% if current_user.user_type == 0 %} {% if current_user.id ==
                 job.author_id %}
                 <button
-                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
+                  class="bg-gray-400 text-white font-bold py-2 px-4 rounded-full text-sm cursor-not-allowed"
                   disabled
                 >
                   내 공고
                 </button>
                 {% elif status.applied %}
                 <button
-                  class="bg-green-500 text-white font-bold py-2 px-6 rounded-full"
+                  class="bg-green-500 text-white font-bold py-2 px-4 rounded-full text-sm"
                   onclick="event.stopPropagation(); goToChat({{ job.id }})"
                 >
                   채팅하기
                 </button>
                 {% else %}
                 <button
-                  class="bg-blue-900 text-white font-bold py-2 px-6 rounded-full"
+                  class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full text-sm"
                   onclick="event.stopPropagation(); applyJob({{ job.id }})"
                 >
                   지원하기
                 </button>
-                {% endif %} {% elif current_user.user_type == 1 %}
-                <button
-                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
-                  disabled
-                >
-                  기업 계정
-                </button>
-                {% else %}
-                <button
-                  class="bg-gray-400 text-white font-bold py-2 px-6 rounded-full cursor-not-allowed"
-                  disabled
-                >
-                  관리자 계정
-                </button>
-                {% endif %}
+                {% endif %} {% endif %}
               </div>
             </div>
             {% endfor %} {% else %}
-            <div
-              class="bg-white p-4 rounded-lg border text-center text-gray-500"
-            >
-              <p>등록된 사람 이음 공고가 없습니다.</p>
-            </div>
+            <p class="text-gray-500 text-center py-4">
+              등록된 사람 이음 공고가 없습니다.
+            </p>
             {% endif %}
+
+            <div class="text-center mt-4">
+              <a
+                href="{{ url_for('jobs.job_list') }}"
+                class="text-blue-600 text-sm font-medium"
+              >
+                더 많은 공고 보기 →
+              </a>
+            </div>
           </div>
         </section>
       </main>
 
       <!-- 하단 네비게이션 -->
       <footer
-        class="fixed bottom-0 left-0 right-0 w-full bg-gray-50 border-t flex justify-around"
+        class="fixed bottom-0 left-0 right-0 w-full bg-gray-50 border-t flex justify-around max-w-md mx-auto"
       >
-        <a href="{{ url_for('map.show_map') }}" class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500">
-            <div class="w-6 h-6 mb-1 flex items-center justify-center">
-                <img src="{{ url_for('static', filename='images/footer/map.png') }}" alt="지도" class="max-w-full max-h-full object-contain" />
-            </div>
-            <span class="text-xs">지도</span>
+        <a
+          href="{{ url_for('map.show_map') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
         </a>
         <a
           href="{{ url_for('jobs.bookmark_list') }}"
@@ -579,41 +694,41 @@
 
       // 토글 스위치 기능
       function updateToggleTheme() {
-        const toggle = document.getElementById('face-toggle');
+        const toggle = document.getElementById("face-toggle");
         const body = document.body;
-        const container = document.getElementById('toggleContainer');
-        const toggleText = document.getElementById('toggleText');
-        
+        const container = document.getElementById("toggleContainer");
+        const toggleText = document.getElementById("toggleText");
+
         if (toggle.checked) {
-          body.classList.add('toggle-active');
-          container.classList.add('active');
+          body.classList.add("toggle-active");
+          container.classList.add("active");
           isToggleActive = true;
-          
+
           // 1초 후에 토글 페이지로 이동 (애니메이션 완료 후)
           setTimeout(() => {
-            window.location.href = '/toggle-page';
+            window.location.href = "/toggle-page";
           }, 1000);
         } else {
-          body.classList.remove('toggle-active');
-          container.classList.remove('active');
+          body.classList.remove("toggle-active");
+          container.classList.remove("active");
           isToggleActive = false;
         }
       }
 
       // 페이지 로드 시 초기화
-      document.addEventListener('DOMContentLoaded', function() {
-        const toggle = document.getElementById('face-toggle');
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggle = document.getElementById("face-toggle");
         const urlParams = new URLSearchParams(window.location.search);
-        
+
         // reset_toggle 파라미터가 있으면 토글을 비활성화 상태로 설정
-        if (urlParams.get('reset_toggle') === 'true') {
+        if (urlParams.get("reset_toggle") === "true") {
           toggle.checked = false;
           updateToggleTheme();
         }
-        
+
         // 토글 변경 이벤트 리스너 추가
-        toggle.addEventListener('change', updateToggleTheme);
-        
+        toggle.addEventListener("change", updateToggleTheme);
+
         // 초기 상태 설정
         updateToggleTheme();
       });

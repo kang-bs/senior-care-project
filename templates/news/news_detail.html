@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ news.title }} - 이음 뉴스</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="w-full bg-white shadow-lg min-h-screen max-w-md mx-auto">
+      <!-- 상단 헤더 -->
+      <header class="bg-white border-b px-4 py-4">
+        <div class="flex items-center justify-between">
+          <button
+            onclick="history.back()"
+            class="flex items-center text-gray-600"
+          >
+            <svg
+              class="w-6 h-6 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            <span class="font-medium">뉴스</span>
+          </button>
+          <div class="flex items-center space-x-3">
+            <button class="text-gray-600">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                />
+              </svg>
+            </button>
+            <button class="text-gray-600">
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- 뉴스 내용 -->
+      <main class="px-4 py-6 pb-24">
+        <article>
+          <!-- 뉴스 제목 -->
+          <h1 class="text-2xl font-bold text-gray-900 mb-4 leading-tight">
+            {{ news.title }}
+          </h1>
+
+          <!-- 뉴스 메타 정보 -->
+          <div
+            class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200"
+          >
+            <div class="flex items-center">
+              <span class="text-sm text-gray-500">{{ news.pub_date }}</span>
+              <span class="mx-2 text-gray-300">|</span>
+              <span class="text-sm text-blue-600 font-medium"
+                >{{ news.category }}</span
+              >
+            </div>
+            <button class="text-gray-400 hover:text-red-500">
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- 뉴스 이미지 -->
+          <div class="mb-6">
+            {% if news.id == 1 %}
+            <div
+              class="w-full h-48 bg-gradient-to-br from-green-400 to-blue-500 rounded-lg flex items-center justify-center"
+            >
+              <div class="text-white text-center">
+                <div class="text-2xl mb-2">📺</div>
+                <div class="font-bold">뉴스 영상</div>
+                <div class="text-sm opacity-80">시니어 일자리 정책 발표</div>
+              </div>
+            </div>
+            {% elif news.id == 2 %}
+            <div
+              class="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center"
+            >
+              <div class="text-center text-gray-500">
+                <svg
+                  class="w-16 h-16 mx-auto mb-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <div class="text-sm">이미지</div>
+              </div>
+            </div>
+            {% else %}
+            <div
+              class="w-full h-48 bg-gradient-to-br from-blue-400 to-purple-500 rounded-lg flex items-center justify-center"
+            >
+              <div class="text-white text-center">
+                <div class="text-2xl mb-2">🏢</div>
+                <div class="font-bold text-lg">부산지역 시니어 공개채용</div>
+                <div class="text-sm opacity-80">대규모 채용 진행</div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- 뉴스 본문 -->
+          <div class="prose prose-gray max-w-none">
+            <p class="text-gray-700 leading-relaxed mb-4">
+              {{ news.description }}
+            </p>
+
+            {% if news.content and news.content != news.description %}
+            <p class="text-gray-700 leading-relaxed mb-4">{{ news.content }}</p>
+            {% endif %}
+
+            <div class="bg-blue-50 rounded-lg p-4 mb-6">
+              <p class="text-sm text-blue-800">
+                <strong>원문 보기:</strong>
+                <a
+                  href="{{ news.link }}"
+                  target="_blank"
+                  class="underline hover:text-blue-600"
+                >
+                  전체 기사 읽기 →
+                </a>
+              </p>
+            </div>
+
+            <p class="text-gray-700 leading-relaxed mb-4">
+              이번 정책은 시니어들의 경험과 전문성을 활용하여 사회에 기여할 수
+              있는 기회를 확대하는 것을 목표로 합니다. 특히 디지털 역량 강화
+              교육과 함께 다양한 분야의 일자리를 제공할 예정입니다.
+            </p>
+
+            <p class="text-gray-700 leading-relaxed mb-6">
+              관련 기관에서는 "시니어들의 풍부한 경험과 노하우를 젊은 세대와
+              연결하여 상호 발전할 수 있는 플랫폼을 구축하겠다"고 밝혔습니다.
+            </p>
+
+            <!-- 관련 링크 -->
+            <div class="bg-blue-50 rounded-lg p-4 mb-6">
+              <h3 class="font-bold text-blue-900 mb-2">관련 정보</h3>
+              <ul class="space-y-2">
+                <li>
+                  <a href="#" class="text-blue-600 text-sm hover:underline">
+                    • 시니어 일자리 신청 방법 안내
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-blue-600 text-sm hover:underline">
+                    • 디지털 역량 강화 교육 프로그램
+                  </a>
+                </li>
+                <li>
+                  <a href="#" class="text-blue-600 text-sm hover:underline">
+                    • 시니어 취업 지원 센터 찾기
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 공유 및 액션 버튼 -->
+          <div
+            class="flex items-center justify-between pt-6 border-t border-gray-200"
+          >
+            <div class="flex items-center space-x-4">
+              <button
+                class="flex items-center text-gray-600 hover:text-blue-600"
+              >
+                <svg
+                  class="w-5 h-5 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                <span class="text-sm">좋아요</span>
+              </button>
+              <button
+                class="flex items-center text-gray-600 hover:text-blue-600"
+              >
+                <svg
+                  class="w-5 h-5 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                  />
+                </svg>
+                <span class="text-sm">공유</span>
+              </button>
+            </div>
+            <button
+              class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-700"
+            >
+              관련 공고 보기
+            </button>
+          </div>
+        </article>
+      </main>
+
+      <!-- 하단 네비게이션 -->
+      <footer
+        class="fixed bottom-0 left-0 right-0 w-full bg-gray-50 border-t flex justify-around max-w-md mx-auto"
+      >
+        <a
+          href="{{ url_for('map.show_map') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/map.png') }}"
+              alt="지도"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">지도</span>
+        </a>
+        <a
+          href="{{ url_for('jobs.bookmark_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/favorite.png') }}"
+              alt="찜"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">찜</span>
+        </a>
+        <a
+          href="{{ url_for('auth.main') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/home.png') }}"
+              alt="홈"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">홈</span>
+        </a>
+        <a
+          href="{{ url_for('chat.chat_list') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/chatting.png') }}"
+              alt="채팅"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">채팅</span>
+        </a>
+        <a
+          href="{{ url_for('auth.profile') }}"
+          class="flex-1 flex flex-col items-center justify-center p-2 text-gray-500"
+        >
+          <div class="w-6 h-6 mb-1 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/footer/profile.png') }}"
+              alt="내정보"
+              class="max-w-full max-h-full object-contain"
+            />
+          </div>
+          <span class="text-xs">내정보</span>
+        </a>
+      </footer>
+    </div>
+  </body>
+</html>
