@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>사람이음 글쓰기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+
+      /* 스크롤 애니메이션 */
+      .scroll-section {
+        min-height: 100vh;
+        padding: 2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      /* 선택된 옵션 스타일 */
+      .option-selected {
+        background-color: #1d4ed8;
+        color: white;
+        border-color: #1d4ed8;
+      }
+
+      /* 라디오 버튼 스타일 */
+      .radio-option {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .radio-option:hover {
+        background-color: #f3f4f6;
+      }
+      .radio-option.selected {
+        background-color: #eff6ff;
+        border-color: #3b82f6;
+      }
+
+      /* 다음 버튼 고정 */
+      .next-btn-fixed {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        max-width: 28rem;
+        margin: 0 auto;
+        z-index: 50;
+      }
+
+      /* 부드러운 스크롤 */
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="w-full bg-white shadow-lg min-h-screen max-w-md mx-auto">
+      <!-- 상단 헤더 (고정) -->
+      <header
+        class="bg-white border-b px-4 py-4 fixed top-0 left-0 right-0 max-w-md mx-auto z-40"
+      >
+        <div class="flex items-center justify-between">
+          <button onclick="goBack()" class="text-gray-600">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <h1 class="text-lg font-bold text-gray-800">사람이음 글쓰기</h1>
+          <div class="w-6"></div>
+        </div>
+      </header>
+
+      <!-- 1단계: 어떤 분을 찾고 계세요? -->
+      <section id="step1" class="scroll-section pt-20">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            어떤 분을 찾고 계세요?
+          </h2>
+
+          <div class="space-y-4">
+            <!-- 함께 일하실 분 (업무) -->
+            <div
+              class="radio-option border-2 border-gray-200 rounded-2xl p-4"
+              data-value="업무"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <span class="text-2xl mr-3">🏪</span>
+                  <div>
+                    <h3 class="font-bold text-gray-900">
+                      함께 일하실 분 (업무)
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                      예) 서빙, 주방보조, 배장 관리, 판매 등
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                >
+                  <div
+                    class="w-3 h-3 bg-blue-600 rounded-full hidden radio-dot"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 도와주실 분 (이웃) -->
+            <div
+              class="radio-option border-2 border-gray-200 rounded-2xl p-4"
+              data-value="이웃"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <span class="text-2xl mr-3">💖</span>
+                  <div>
+                    <h3 class="font-bold text-gray-900">도와주실 분 (이웃)</h3>
+                    <p class="text-sm text-gray-500">
+                      예) 집 청기기, 아이 돌봄, 반려동물 등
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                >
+                  <div
+                    class="w-3 h-3 bg-blue-600 rounded-full hidden radio-dot"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 가르쳐 주실 분 (과외) -->
+            <div
+              class="radio-option border-2 border-gray-200 rounded-2xl p-4"
+              data-value="과외"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <span class="text-2xl mr-3">📚</span>
+                  <div>
+                    <h3 class="font-bold text-gray-900">
+                      가르쳐 주실 분 (과외)
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                      예) 외국어 회화, 골프 레슨 등
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                >
+                  <div
+                    class="w-3 h-3 bg-blue-600 rounded-full hidden radio-dot"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 만들어 주실 분 (제능) -->
+            <div
+              class="radio-option border-2 border-gray-200 rounded-2xl p-4"
+              data-value="제능"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <span class="text-2xl mr-3">✋</span>
+                  <div>
+                    <h3 class="font-bold text-gray-900">
+                      만들어 주실 분 (제능)
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                      예) 김치/장아찌, 수공예, 목공
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                >
+                  <div
+                    class="w-3 h-3 bg-blue-600 rounded-full hidden radio-dot"
+                  ></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 같이 즐기실 분 (문화) -->
+            <div
+              class="radio-option border-2 border-gray-200 rounded-2xl p-4"
+              data-value="문화"
+            >
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <span class="text-2xl mr-3">🎪</span>
+                  <div>
+                    <h3 class="font-bold text-gray-900">
+                      같이 즐기실 분 (문화)
+                    </h3>
+                    <p class="text-sm text-gray-500">
+                      예) 여행 동행, 등산/산책 친구, 동호회
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                >
+                  <div
+                    class="w-3 h-3 bg-blue-600 rounded-full hidden radio-dot"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2단계: 어떤 제목으로 올려볼까요? -->
+      <section id="step2" class="scroll-section">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            어떤 제목으로 올려볼까요?
+          </h2>
+
+          <div class="mb-8">
+            <input
+              type="text"
+              id="jobTitle"
+              placeholder="제목을 입력해 주세요"
+              class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none"
+              maxlength="50"
+            />
+            <p class="text-sm text-gray-500 mt-2 text-right">
+              <span id="titleCount">0</span>/50
+            </p>
+          </div>
+
+          <!-- 카테고리 선택 -->
+          <div class="grid grid-cols-3 gap-3">
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="주방보조"
+            >
+              주방 보조 / 설거지
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="편의점"
+            >
+              편의점
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="서빙"
+            >
+              서빙
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="카페"
+            >
+              카페 / 베이커리
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="아이돌봄"
+            >
+              아이돌봄
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="학원"
+            >
+              학원/과외
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="집정리"
+            >
+              집 정리기
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="진단지"
+            >
+              진단지 / 홍보
+            </button>
+            <button
+              class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-category="기타"
+            >
+              기타
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3단계: 원하는 근무 조건이 무엇인가요? -->
+      <section id="step3" class="scroll-section">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            원하는 근무 조건이 무엇인가요?
+          </h2>
+
+          <div class="flex gap-3 mb-8">
+            <button
+              class="period-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-period="단기"
+            >
+              단기
+            </button>
+            <button
+              class="period-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-period="1개월이상"
+            >
+              1개월 이상
+            </button>
+            <button
+              class="period-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-period="3개월이상"
+            >
+              3개월 이상
+            </button>
+            <button
+              class="period-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+              data-period="1년이상"
+            >
+              1년이상
+            </button>
+          </div>
+
+          <!-- 요일 선택 -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">
+              일하는 요일을 선택해 주세요
+            </h3>
+            <div class="flex gap-2 mb-4">
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="월"
+              >
+                월
+              </button>
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="화"
+              >
+                화
+              </button>
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="수"
+              >
+                수
+              </button>
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="목"
+              >
+                목
+              </button>
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="금"
+              >
+                금
+              </button>
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="토"
+              >
+                토
+              </button>
+              <button
+                class="day-btn w-12 h-12 rounded-full border-2 text-sm"
+                data-day="일"
+              >
+                일
+              </button>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="flexibleDays" class="mr-2" />
+              <label for="flexibleDays" class="text-sm text-gray-600"
+                >요일 협의 후 결정</label
+              >
+            </div>
+          </div>
+
+          <!-- 시간 선택 -->
+          <div class="mb-8">
+            <h3 class="text-lg font-medium text-gray-800 mb-4">
+              일하는 시간을 선택해 주세요
+            </h3>
+            <div class="flex gap-4 mb-4">
+              <select
+                id="startTimeSelect"
+                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500"
+              >
+                <option value="">시작 시간</option>
+                <option value="06:00">오전 06:00</option>
+                <option value="07:00">오전 07:00</option>
+                <option value="08:00">오전 08:00</option>
+                <option value="09:00">오전 09:00</option>
+                <option value="10:00">오전 10:00</option>
+                <option value="11:00">오전 11:00</option>
+                <option value="12:00">오후 12:00</option>
+                <option value="13:00">오후 01:00</option>
+                <option value="14:00">오후 02:00</option>
+                <option value="15:00">오후 03:00</option>
+                <option value="16:00">오후 04:00</option>
+                <option value="17:00">오후 05:00</option>
+                <option value="18:00">오후 06:00</option>
+              </select>
+              <select
+                id="endTimeSelect"
+                class="flex-1 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:border-blue-500"
+              >
+                <option value="">종료 시간</option>
+                <option value="12:00">오후 12:00</option>
+                <option value="13:00">오후 01:00</option>
+                <option value="14:00">오후 02:00</option>
+                <option value="15:00">오후 03:00</option>
+                <option value="16:00">오후 04:00</option>
+                <option value="17:00">오후 05:00</option>
+                <option value="18:00">오후 06:00</option>
+                <option value="19:00">오후 07:00</option>
+                <option value="20:00">오후 08:00</option>
+                <option value="21:00">오후 09:00</option>
+                <option value="22:00">오후 10:00</option>
+              </select>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="flexibleTime" class="mr-2" />
+              <label for="flexibleTime" class="text-sm text-gray-600"
+                >시간 협의 가능</label
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4단계: 날짜/요일 선택 (조건부) -->
+      <section id="step4" class="scroll-section">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            일하는 날짜를 선택해 주세요
+          </h2>
+
+          <!-- 단기용 달력 또는 장기용 요일 선택이 여기에 표시됩니다 -->
+          <div id="dateSelection">
+            <!-- JavaScript로 동적 생성 -->
+          </div>
+        </div>
+      </section>
+
+      <!-- 5단계: 급여를 적어주세요 -->
+      <section id="step5" class="scroll-section">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            급여를 적어주세요
+          </h2>
+
+          <div class="flex gap-3 mb-4">
+            <button
+              class="salary-type-btn px-4 py-2 rounded-full border-2 text-sm"
+              data-type="시급"
+            >
+              시급
+            </button>
+            <button
+              class="salary-type-btn px-4 py-2 rounded-full border-2 text-sm"
+              data-type="일급"
+            >
+              일급
+            </button>
+            <button
+              class="salary-type-btn px-4 py-2 rounded-full border-2 text-sm"
+              data-type="건당"
+            >
+              건당
+            </button>
+            <button
+              class="salary-type-btn px-4 py-2 rounded-full border-2 text-sm"
+              data-type="월급"
+            >
+              월급
+            </button>
+          </div>
+
+          <div class="relative mb-6">
+            <input
+              type="number"
+              id="salaryAmount"
+              placeholder="0"
+              class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none pr-12"
+            />
+            <span
+              class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+              >원</span
+            >
+          </div>
+
+          <div class="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+            <p>2025년 최저시급은 <strong>10,030원</strong>이에요</p>
+            <p>
+              이 조건으로 근무할 경우 최소 일급은
+              <strong>70,210원</strong>이에요
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6단계: 일할 장소를 알려주세요 -->
+      <section id="step6" class="scroll-section">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            일할 장소를 알려주세요
+          </h2>
+
+          <div class="space-y-4">
+            <div class="relative">
+              <input
+                type="text"
+                id="workLocation"
+                placeholder="울산 광역시 동구 서부동"
+                class="w-full px-4 py-4 text-lg border-2 border-blue-500 rounded-2xl focus:border-blue-600 focus:outline-none pr-12"
+              />
+              <button
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+              >
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <input
+              type="text"
+              id="detailAddress"
+              placeholder="상세 주소 입력"
+              class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- 7단계: 연락처를 알려주세요 -->
+      <section id="step7" class="scroll-section">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            연락처를 알려주세요
+          </h2>
+
+          <div class="space-y-4">
+            <input
+              type="tel"
+              id="contactPhone"
+              placeholder="010 - **** - ****"
+              class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none"
+            />
+
+            <!-- 상세 설명 -->
+            <div class="mt-8">
+              <h3 class="text-lg font-medium text-gray-800 mb-4">
+                일에 대하여 참고할 사항을 적어주세요
+              </h3>
+              <div class="mb-4">
+                <p class="text-sm text-gray-600 mb-2">이런 내용을 적어보세요</p>
+                <ul class="space-y-1 text-sm text-gray-600">
+                  <li>• 어떤 도움이 필요한가요?</li>
+                  <li>• 일을 위해 필요한 준비물이 있을까요?</li>
+                  <li>• 미리 협의해야 할 사항이 있나요?</li>
+                </ul>
+              </div>
+
+              <textarea
+                id="jobDescription"
+                rows="6"
+                placeholder="나중에 AI로 정리하여 보여드리니 구체적이고 자유롭게 작성해 주세요."
+                class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none resize-none"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 하단 다음 버튼 (고정) -->
+      <div class="next-btn-fixed bg-white border-t p-4">
+        <button
+          id="nextBtn"
+          onclick="goToNextStep()"
+          class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl disabled:bg-gray-300 disabled:cursor-not-allowed"
+          disabled
+        >
+          다음
+        </button>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+      let maxStep = 7;
+      let selectedData = {
+        category: "",
+        title: "",
+        categories: [],
+        workPeriod: "",
+        days: [],
+        startTime: "",
+        endTime: "",
+        salaryType: "",
+        salaryAmount: "",
+        location: "",
+        detailAddress: "",
+        phone: "",
+        description: "",
+      };
+
+      // 다음 단계로 이동
+      function goToNextStep() {
+        if (currentStep < maxStep) {
+          currentStep++;
+          const nextSection = document.getElementById(`step${currentStep}`);
+          if (nextSection) {
+            nextSection.scrollIntoView({ behavior: "smooth" });
+            updateNextButton();
+          }
+        } else {
+          // 마지막 단계에서 제출
+          submitJob();
+        }
+      }
+
+      // 뒤로가기
+      function goBack() {
+        if (currentStep > 1) {
+          currentStep--;
+          const prevSection = document.getElementById(`step${currentStep}`);
+          if (prevSection) {
+            prevSection.scrollIntoView({ behavior: "smooth" });
+            updateNextButton();
+          }
+        } else {
+          window.location.href = "{{ url_for('auth.main') }}";
+        }
+      }
+
+      // 다음 버튼 상태 업데이트
+      function updateNextButton() {
+        const nextBtn = document.getElementById("nextBtn");
+        let isValid = false;
+
+        switch (currentStep) {
+          case 1:
+            isValid = selectedData.category !== "";
+            break;
+          case 2:
+            isValid =
+              selectedData.title.length > 0 &&
+              selectedData.categories.length > 0;
+            break;
+          case 3:
+            isValid = selectedData.workPeriod !== "";
+            break;
+          case 4:
+            isValid = true; // 날짜 선택은 선택사항
+            break;
+          case 5:
+            isValid =
+              selectedData.salaryType !== "" &&
+              selectedData.salaryAmount !== "";
+            break;
+          case 6:
+            isValid = selectedData.location.length > 0;
+            break;
+          case 7:
+            isValid = selectedData.phone.length > 0;
+            nextBtn.textContent = "작성 완료";
+            break;
+        }
+
+        nextBtn.disabled = !isValid;
+      }
+
+      // 1단계: 라디오 옵션 선택
+      document.querySelectorAll(".radio-option").forEach((option) => {
+        option.addEventListener("click", function () {
+          // 기존 선택 해제
+          document.querySelectorAll(".radio-option").forEach((opt) => {
+            opt.classList.remove("selected");
+            opt.querySelector(".radio-dot").classList.add("hidden");
+          });
+
+          // 현재 옵션 선택
+          this.classList.add("selected");
+          this.querySelector(".radio-dot").classList.remove("hidden");
+          selectedData.category = this.dataset.value;
+          updateNextButton();
+        });
+      });
+
+      // 2단계: 제목 입력
+      document
+        .getElementById("jobTitle")
+        .addEventListener("input", function () {
+          const count = this.value.length;
+          document.getElementById("titleCount").textContent = count;
+          selectedData.title = this.value;
+          updateNextButton();
+        });
+
+      // 2단계: 카테고리 선택
+      document.querySelectorAll(".category-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          this.classList.toggle("option-selected");
+
+          const selectedCategories = [];
+          document
+            .querySelectorAll(".category-btn.option-selected")
+            .forEach((b) => {
+              selectedCategories.push(b.dataset.category);
+            });
+          selectedData.categories = selectedCategories;
+          updateNextButton();
+        });
+      });
+
+      // 3단계: 근무 기간 선택
+      document.querySelectorAll(".period-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".period-btn")
+            .forEach((b) => b.classList.remove("option-selected"));
+          this.classList.add("option-selected");
+          selectedData.workPeriod = this.dataset.period;
+          updateNextButton();
+        });
+      });
+
+      // 3단계: 요일 선택
+      document.querySelectorAll(".day-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          this.classList.toggle("option-selected");
+
+          const selectedDays = [];
+          document.querySelectorAll(".day-btn.option-selected").forEach((b) => {
+            selectedDays.push(b.dataset.day);
+          });
+          selectedData.days = selectedDays;
+        });
+      });
+
+      // 5단계: 급여 타입 선택
+      document.querySelectorAll(".salary-type-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".salary-type-btn")
+            .forEach((b) => b.classList.remove("option-selected"));
+          this.classList.add("option-selected");
+          selectedData.salaryType = this.dataset.type;
+          updateNextButton();
+        });
+      });
+
+      // 5단계: 급여 금액 입력
+      document
+        .getElementById("salaryAmount")
+        .addEventListener("input", function () {
+          selectedData.salaryAmount = this.value;
+          updateNextButton();
+        });
+
+      // 6단계: 근무 장소 입력
+      document
+        .getElementById("workLocation")
+        .addEventListener("input", function () {
+          selectedData.location = this.value;
+          updateNextButton();
+        });
+
+      document
+        .getElementById("detailAddress")
+        .addEventListener("input", function () {
+          selectedData.detailAddress = this.value;
+        });
+
+      // 7단계: 연락처 입력
+      document
+        .getElementById("contactPhone")
+        .addEventListener("input", function () {
+          selectedData.phone = this.value;
+          updateNextButton();
+        });
+
+      document
+        .getElementById("jobDescription")
+        .addEventListener("input", function () {
+          selectedData.description = this.value;
+        });
+
+      // 제출 함수
+      async function submitJob() {
+        console.log("제출 데이터:", selectedData);
+
+        // 폼 데이터 생성
+        const formData = new FormData();
+
+        // 필수 필드
+        formData.append("title", selectedData.title);
+        formData.append("company", selectedData.category); // 분야를 회사명으로 사용
+        formData.append(
+          "description",
+          selectedData.description || "상세 설명 없음"
+        );
+
+        // 모집 형태 (카테고리들을 모집형태로)
+        formData.append("recruitment_type", selectedData.categories.join(", "));
+
+        // 근무 기간
+        formData.append("work_period", selectedData.workPeriod);
+
+        // 급여 정보
+        formData.append(
+          "salary",
+          `${selectedData.salaryType} ${selectedData.salaryAmount}원`
+        );
+
+        // 지역 정보
+        formData.append("region", selectedData.location);
+        if (selectedData.detailAddress) {
+          formData.append(
+            "region",
+            `${selectedData.location} ${selectedData.detailAddress}`
+          );
+        }
+
+        // 연락처
+        formData.append("contact_phone", selectedData.phone);
+
+        // 근무 요일 (Boolean 값으로 전송)
+        formData.append(
+          "work_monday",
+          selectedData.days.includes("월") ? "true" : "false"
+        );
+        formData.append(
+          "work_tuesday",
+          selectedData.days.includes("화") ? "true" : "false"
+        );
+        formData.append(
+          "work_wednesday",
+          selectedData.days.includes("수") ? "true" : "false"
+        );
+        formData.append(
+          "work_thursday",
+          selectedData.days.includes("목") ? "true" : "false"
+        );
+        formData.append(
+          "work_friday",
+          selectedData.days.includes("금") ? "true" : "false"
+        );
+        formData.append(
+          "work_saturday",
+          selectedData.days.includes("토") ? "true" : "false"
+        );
+        formData.append(
+          "work_sunday",
+          selectedData.days.includes("일") ? "true" : "false"
+        );
+
+        // 근무 시간 설정 (select에서 가져오기)
+        const startTimeSelect = document.getElementById("startTimeSelect");
+        const endTimeSelect = document.getElementById("endTimeSelect");
+
+        if (startTimeSelect && startTimeSelect.value) {
+          formData.append("work_start_time", startTimeSelect.value);
+        }
+        if (endTimeSelect && endTimeSelect.value) {
+          formData.append("work_end_time", endTimeSelect.value);
+        }
+
+        try {
+          const response = await fetch("{{ url_for('jobs.create_job') }}", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            alert("공고가 성공적으로 작성되었습니다!");
+            window.location.href = "{{ url_for('jobs.job_list') }}";
+          } else {
+            const text = await response.text();
+            console.error("서버 응답:", text);
+            alert("공고 작성 중 오류가 발생했습니다.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("공고 작성 중 오류가 발생했습니다.");
+        }
+      }
+
+      // 초기 상태 설정
+      updateNextButton();
+    </script>
+  </body>
+</html>

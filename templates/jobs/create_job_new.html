@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>사람이음 글쓰기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+
+      /* 단계별 표시 */
+      .step {
+        display: none;
+      }
+      .step.active {
+        display: block;
+      }
+
+      /* 카테고리 버튼 스타일 */
+      .category-btn {
+        transition: all 0.3s ease;
+      }
+      .category-btn.selected {
+        background-color: #1d4ed8;
+        color: white;
+        border-color: #1d4ed8;
+      }
+      .category-btn:not(.selected) {
+        background-color: white;
+        color: #374151;
+        border-color: #d1d5db;
+      }
+
+      /* 라디오 버튼 커스텀 스타일 */
+      .radio-option {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .radio-option:hover {
+        background-color: #f3f4f6;
+      }
+      .radio-option.selected {
+        background-color: #eff6ff;
+        border-color: #3b82f6;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="w-full bg-white shadow-lg min-h-screen max-w-md mx-auto">
+      <!-- 상단 헤더 -->
+      <header class="bg-white border-b px-4 py-4">
+        <div class="flex items-center justify-between">
+          <button onclick="goBack()" class="text-gray-600">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <h1 class="text-lg font-bold text-gray-800">사람이음 글쓰기</h1>
+          <div class="w-6"></div>
+          <!-- 공간 확보용 -->
+        </div>
+      </header>
+
+      <!-- 1단계: 어떤 분을 찾고 계세요 -->
+      <div id="step1" class="step active">
+        <main class="px-4 py-6 pb-24">
+          <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">
+              어떤 분을 찾고 계세요?
+            </h2>
+
+            <!-- 세부 분야 옵션들 -->
+            <div class="space-y-4">
+              <!-- 함께 일하실 분 (업무) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="업무"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">🏪</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        함께 일하실 분 (업무)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 서빙, 주방보조, 배장 관리, 판매 등
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 도와주실 분 (이웃) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="이웃"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">💖</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        도와주실 분 (이웃)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 집 청기기, 아이 돌봄, 반려동물 등
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 가르쳐 주실 분 (과외) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="과외"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">📚</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        가르쳐 주실 분 (과외)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 외국어 회화, 골프 레슨 등
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 만들어 주실 분 (제능) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="제능"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">✋</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        만들어 주실 분 (제능)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 김치/장아찌, 수공예, 목공
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 같이 즐기실 분 (문화) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="문화"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">🎪</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        같이 즐기실 분 (문화)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 여행 동행, 등산/산책 친구, 동호회
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- 하단 다음 버튼 -->
+        <div
+          class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-4"
+        >
+          <button
+            id="nextBtn1"
+            onclick="goToStep2()"
+            class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled
+          >
+            다음
+          </button>
+        </div>
+      </div>
+
+      <!-- 2단계: 제목 입력 및 카테고리 선택 -->
+      <div id="step2" class="step">
+        <main class="px-4 py-6">
+          <div class="mb-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">
+              어떤 제목으로 올려볼까요?
+            </h2>
+
+            <!-- 제목 입력 -->
+            <div class="mb-8">
+              <input
+                type="text"
+                id="jobTitle"
+                placeholder="제목을 입력해 주세요"
+                class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-blue-500 focus:outline-none"
+                maxlength="50"
+              />
+              <p class="text-sm text-gray-500 mt-2 text-right">
+                <span id="titleCount">0</span>/50
+              </p>
+            </div>
+
+            <!-- 카테고리 선택 -->
+            <div class="grid grid-cols-3 gap-3">
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm selected"
+                data-category="주방보조"
+              >
+                주방 보조 / 설거지
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="편의점"
+              >
+                편의점
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm selected"
+                data-category="서빙"
+              >
+                서빙
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="카페"
+              >
+                카페 / 베이커리
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="아이돌봄"
+              >
+                아이돌봄
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="학원"
+              >
+                학원/과외
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="집정리"
+              >
+                집 정리기
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="진단지"
+              >
+                진단지 / 홍보
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="기타"
+              >
+                기타
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="업체청소"
+              >
+                업체 청소
+              </button>
+              <button
+                class="category-btn px-4 py-3 rounded-full border-2 font-medium text-sm"
+                data-category="기타2"
+              >
+                기타
+              </button>
+            </div>
+          </div>
+        </main>
+                </div>
+              </div>
+
+              <!-- 만들어 주실 분 (제능) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="제능"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">✋</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        만들어 주실 분 (제능)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 김치/장아찌, 수공예, 목공
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 같이 즐기실 분 (문화) -->
+              <div
+                class="radio-option border-2 border-gray-200 rounded-2xl p-4 cursor-pointer"
+                data-value="문화"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center">
+                    <span class="text-2xl mr-3">🎪</span>
+                    <div>
+                      <h3 class="font-bold text-gray-900">
+                        같이 즐기실 분 (문화)
+                      </h3>
+                      <p class="text-sm text-gray-500">
+                        예) 여행 동행, 등산/산책 친구, 동호회
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center"
+                  >
+                    <div class="w-3 h-3 bg-blue-600 rounded-full hidden"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+
+        <!-- 하단 다음 버튼 -->
+        <div
+          class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-4"
+        >
+          <button
+            id="nextBtn2"
+            onclick="goToStep3()"
+            class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl disabled:bg-gray-300 disabled:cursor-not-allowed"
+            disabled
+          >
+            다음
+          </button>
+        </div>
+      </div>
+
+      <!-- 3단계: 기존 폼 (임시) -->
+      <div id="step3" class="step">
+        <main class="px-4 py-6 pb-24">
+          <h2 class="text-xl font-bold text-gray-900 mb-6">
+            상세 정보를 입력해주세요
+          </h2>
+
+          <!-- 기존 폼 내용들이 여기에 들어갈 예정 -->
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >급여</label
+              >
+              <input
+                type="text"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: 시급 10,000원"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >근무 기간</label
+              >
+              <input
+                type="text"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="예: 1개월"
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >상세 설명</label
+              >
+              <textarea
+                rows="4"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="상세한 업무 내용을 입력해주세요"
+              ></textarea>
+            </div>
+          </div>
+        </main>
+
+        <!-- 하단 완료 버튼 -->
+        <div
+          class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-4"
+        >
+          <button
+            onclick="submitJob()"
+            class="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl"
+          >
+            작성 완료
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+      let selectedCategory = "";
+      let selectedDetail = "";
+
+      // 세부 분야 데이터
+      const detailOptions = {
+        주방보조: [
+          {
+            icon: "🏪",
+            title: "함께 일하실 분 (업무)",
+            desc: "예) 서빙, 주방보조, 배장 관리, 판매 등",
+          },
+          {
+            icon: "💖",
+            title: "도와주실 분 (이웃)",
+            desc: "예) 집 청기기, 아이 돌봄, 반려동물 등",
+          },
+          {
+            icon: "📚",
+            title: "가르쳐 주실 분 (과외)",
+            desc: "예) 외국어 회화, 골프 레슨 등",
+          },
+          {
+            icon: "✋",
+            title: "만들어 주실 분 (제능)",
+            desc: "예) 김치/장아찌, 수공예, 목공",
+          },
+          {
+            icon: "🎪",
+            title: "같이 즐기실 분 (문화)",
+            desc: "예) 여행 동행, 등산/산책 친구, 동호회",
+          },
+        ],
+        편의점: [
+          {
+            icon: "🏪",
+            title: "함께 일하실 분 (업무)",
+            desc: "예) 서빙, 주방보조, 배장 관리, 판매 등",
+          },
+          {
+            icon: "💖",
+            title: "도와주실 분 (이웃)",
+            desc: "예) 집 청기기, 아이 돌봄, 반려동물 등",
+          },
+        ],
+        서빙: [
+          {
+            icon: "🏪",
+            title: "함께 일하실 분 (업무)",
+            desc: "예) 서빙, 주방보조, 배장 관리, 판매 등",
+          },
+          {
+            icon: "💖",
+            title: "도와주실 분 (이웃)",
+            desc: "예) 집 청기기, 아이 돌봄, 반려동물 등",
+          },
+        ],
+        // 다른 카테고리들도 필요에 따라 추가
+      };
+
+      // 1단계 이벤트 리스너 설정 (어떤 분을 찾고 계세요)
+      document.querySelectorAll(".radio-option").forEach((option) => {
+        option.addEventListener("click", function () {
+          // 기존 선택 해제
+          document.querySelectorAll(".radio-option").forEach((opt) => {
+            opt.classList.remove("selected");
+            opt.querySelector(".w-3").classList.add("hidden");
+          });
+
+          // 현재 옵션 선택
+          this.classList.add("selected");
+          this.querySelector(".w-3").classList.remove("hidden");
+          selectedDetail = this.dataset.value;
+
+          // 다음 버튼 활성화
+          document.getElementById("nextBtn1").disabled = false;
+        });
+      });
+
+      // 2단계로 이동 (제목 입력)
+      function goToStep2() {
+        document.getElementById("step1").classList.remove("active");
+        document.getElementById("step2").classList.add("active");
+        currentStep = 2;
+
+        // 제목 입력 이벤트 리스너 설정
+        setupStep2Listeners();
+      }
+
+      // 2단계 이벤트 리스너 설정 (제목 입력)
+      function setupStep2Listeners() {
+        const jobTitle = document.getElementById("jobTitle");
+        const titleCount = document.getElementById("titleCount");
+        const nextBtn = document.getElementById("nextBtn2");
+        
+        // 제목 글자 수 카운터
+        jobTitle.addEventListener("input", function() {
+          const count = this.value.length;
+          titleCount.textContent = count;
+          checkStep2Validation();
+        });
+        
+        // 카테고리 선택 처리 (다중 선택 가능)
+        document.querySelectorAll(".category-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            // 현재 버튼 토글
+            this.classList.toggle("selected");
+            
+            // 선택된 카테고리들 수집
+            const selectedCategories = [];
+            document.querySelectorAll(".category-btn.selected").forEach((b) => {
+              selectedCategories.push(b.dataset.category);
+            });
+            selectedCategory = selectedCategories.join(", ");
+
+            checkStep2Validation();
+          });
+        });
+        
+        function checkStep2Validation() {
+          const title = jobTitle.value.trim();
+          const selectedCount = document.querySelectorAll(".category-btn.selected").length;
+
+          if (title.length > 0 && selectedCount > 0) {
+            nextBtn.disabled = false;
+          } else {
+            nextBtn.disabled = true;
+          }
+        }
+      }
+
+      // 3단계로 이동
+      function goToStep3() {
+        document.getElementById("step2").classList.remove("active");
+        document.getElementById("step3").classList.add("active");
+        currentStep = 3;
+      }
+
+      // 뒤로가기 처리
+      function goBack() {
+        if (currentStep === 1) {
+          // 메인 페이지로 이동
+          window.location.href = "{{ url_for('auth.main') }}";
+        } else if (currentStep === 2) {
+          document.getElementById("step2").classList.remove("active");
+          document.getElementById("step1").classList.add("active");
+          currentStep = 1;
+        } else if (currentStep === 3) {
+          document.getElementById("step3").classList.remove("active");
+          document.getElementById("step2").classList.add("active");
+          currentStep = 2;
+        }
+      }
+
+      // 임시 제출 함수
+      function submitJob() {
+        alert(
+          `제목: ${
+            document.getElementById("jobTitle").value
+          }\n카테고리: ${selectedCategory}\n세부분야: ${selectedDetail}`
+        );
+      }
+    </script>
+  </body>
+</html>
