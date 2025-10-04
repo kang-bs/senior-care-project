@@ -35,56 +35,69 @@
               />
             </svg>
           </button>
-          <div class="flex items-center">
-            <div
-              class="w-6 h-6 bg-green-500 rounded mr-2 flex items-center justify-center"
-            >
-              <svg
-                class="w-4 h-4 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-            <h1 class="text-xl font-bold text-gray-800">
-              최근 시니어 일자리 뉴스
-            </h1>
-          </div>
+          <h1 class="text-xl font-bold text-gray-800">
+            뉴스
+          </h1>
         </div>
       </header>
 
       <!-- 뉴스 목록 -->
       <main class="px-4 py-4 pb-24">
-        <!-- 검색 결과 정보 -->
-        {% if query %}
-        <div class="mb-4 text-sm text-gray-600">
-          <span class="font-medium">"{{ query }}"</span> 검색 결과 {% if total
-          %}(총 {{ total }}건){% endif %}
+        <!-- 카테고리 탭 -->
+        <div class="mb-6 overflow-x-auto">
+          <div class="flex gap-2 min-w-max">
+            <button
+              onclick="changeCategory('시니어 정책')"
+              class="category-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+              data-category="시니어 정책"
+            >
+              정책
+            </button>
+            <button
+              onclick="changeCategory('시니어 채용')"
+              class="category-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+              data-category="시니어 채용"
+            >
+              채용
+            </button>
+            <button
+              onclick="changeCategory('시니어 교육')"
+              class="category-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+              data-category="시니어 교육"
+            >
+              교육
+            </button>
+            <button
+              onclick="changeCategory('시니어 사례')"
+              class="category-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+              data-category="시니어 사례"
+            >
+              사례
+            </button>
+            <button
+              onclick="changeCategory('시니어 복지')"
+              class="category-btn px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors"
+              data-category="시니어 복지"
+            >
+              복지
+            </button>
+          </div>
         </div>
-        {% endif %}
 
         <div class="space-y-6">
           {% for news in news_list %}
           <article
             class="bg-white rounded-lg border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow"
-            onclick="location.href='{{ news.link }}'"
+            onclick="window.open('{{ news.link }}', '_blank')"
           >
             <div class="p-4">
-              <div class="flex justify-between items-start">
-                <div class="flex-1 pr-4">
+              <div class="flex gap-3 items-center">
+                <div class="flex-1">
                   <h2
                     class="text-lg font-bold text-gray-900 mb-2 leading-tight"
                   >
                     {{ news.title }}
                   </h2>
-                  <p class="text-sm text-gray-600 mb-2 line-clamp-2">
-                    {{ news.description }}
-                  </p>
                   <p class="text-sm text-gray-500 mb-3">{{ news.pub_date }}</p>
                   <div
                     class="flex items-center text-blue-600 text-sm font-medium"
@@ -105,52 +118,24 @@
                     </svg>
                   </div>
                 </div>
-                <div
-                  class="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden"
-                >
-                  {% set news_index = loop.index0 % 4 %} {% if news_index == 0
-                  %}
-                  <div
-                    class="w-full h-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center"
-                  >
-                    <div class="text-white text-xs text-center">
-                      <div class="font-bold">뉴스</div>
-                      <div>기사</div>
-                    </div>
-                  </div>
-                  {% elif news_index == 1 %}
-                  <div
-                    class="w-full h-full bg-gray-100 flex items-center justify-center"
-                  >
-                    <svg
-                      class="w-8 h-8 text-gray-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0
-                      00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                {% if news.image %}
+                <div class="w-24 h-24 flex-shrink-0">
+                  <img
+                    src="{{ news.image }}"
+                    alt="{{ news.title }}"
+                    class="w-full h-full object-cover rounded-lg"
+                    onerror="this.parentElement.innerHTML='<div class=\'w-full h-full bg-gray-200 rounded-lg flex items-center justify-center\'><svg class=\'w-8 h-8 text-gray-400\' fill=\'currentColor\' viewBox=\'0 0 20 20\'><path fill-rule=\'evenodd\' d=\'M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z\' clip-rule=\'evenodd\'/></svg></div>'"
+                  />
+                </div>
+                {% else %}
+                <div class="w-24 h-24 flex-shrink-0">
+                  <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
                     </svg>
                   </div>
-                  {% elif news_index == 2 %}
-                  <div
-                    class="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center"
-                  >
-                    <div class="text-white text-xs text-center">
-                      <div class="font-bold">시니어</div>
-                      <div class="text-xs">일자리</div>
-                    </div>
-                  </div>
-                  {% else %}
-                  <div
-                    class="w-full h-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center"
-                  >
-                    <div class="text-white text-xs text-center">
-                      <div class="font-bold">정책</div>
-                      <div class="text-xs">뉴스</div>
-                    </div>
-                  </div>
-                  {% endif %}
                 </div>
+                {% endif %}
               </div>
             </div>
           </article>
@@ -177,7 +162,8 @@
         <!-- 더 많은 뉴스 보기 -->
         <div class="text-center mt-8 py-6">
           <button
-            class="text-gray-500 font-medium flex items-center justify-center mx-auto"
+            onclick="loadMoreNews()"
+            class="text-blue-600 font-medium flex items-center justify-center mx-auto hover:text-blue-700"
           >
             <span>더 많은 뉴스 보기</span>
             <svg
@@ -190,7 +176,7 @@
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
+                d="M19 9l-7 7-7-7"
               />
             </svg>
           </button>
@@ -268,5 +254,66 @@
         </a>
       </footer>
     </div>
+    <script>
+      let currentPage = 1;
+      let currentQuery = "{{ query }}";
+
+      // 페이지 로드시 초기 카테고리 활성화
+      document.addEventListener('DOMContentLoaded', function() {
+        updateActiveCategory(currentQuery);
+      });
+
+      function updateActiveCategory(category) {
+        const buttons = document.querySelectorAll('.category-btn');
+        buttons.forEach(btn => {
+          if (btn.dataset.category === category) {
+            btn.classList.add('bg-blue-600', 'text-white');
+            btn.classList.remove('bg-gray-100', 'text-gray-700');
+          } else {
+            btn.classList.add('bg-gray-100', 'text-gray-700');
+            btn.classList.remove('bg-blue-600', 'text-white');
+          }
+        });
+      }
+
+      async function changeCategory(category) {
+        currentQuery = category;
+        currentPage = 1;
+        updateActiveCategory(category);
+
+        // 뉴스 목록 로드
+        const response = await fetch(`/news?q=${encodeURIComponent(category)}&page=1`);
+        const html = await response.text();
+
+        // HTML 파싱하여 뉴스 목록만 추출
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newArticles = doc.querySelectorAll('article');
+
+        // 기존 뉴스 목록 교체
+        const newsContainer = document.querySelector('.space-y-6');
+        newsContainer.innerHTML = '';
+        newArticles.forEach(article => {
+          newsContainer.appendChild(article);
+        });
+      }
+
+      async function loadMoreNews() {
+        currentPage += 1;
+        const response = await fetch(`/news?q=${encodeURIComponent(currentQuery)}&page=${currentPage}`);
+        const html = await response.text();
+
+        // HTML 파싱하여 뉴스 목록만 추출
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const newArticles = doc.querySelectorAll('article');
+
+        // 기존 뉴스 목록에 추가
+        const newsContainer = document.querySelector('.space-y-6');
+        newArticles.forEach(article => {
+          newsContainer.appendChild(article);
+        });
+      }
+    </script>
   </body>
 </html>

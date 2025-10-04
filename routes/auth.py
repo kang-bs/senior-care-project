@@ -12,6 +12,7 @@ import bcrypt
 from flask import request, flash
 from services.job_service import JobService
 from services.application_service import ApplicationService
+from services.naver_news_service import NaverNewsService
 
 # 인증 관련 라우트를 담당하는 블루프린트 생성
 auth_bp = Blueprint("auth", __name__)
@@ -200,8 +201,17 @@ def main():
         print(f"Error getting company jobs: {e}")
         company_jobs_with_status = []
         person_jobs_with_status = []
-    
-    return render_template("main.html", user=current_user, company_jobs=company_jobs_with_status, people_jobs=person_jobs_with_status)
+
+    # 뉴스 데이터 가져오기 (상위 3개)
+    try:
+        news_service = NaverNewsService()
+        news_data = news_service.search_news(query='시니어 일자리', display=3, start=1, sort='date')
+        news_list = news_data['items']
+    except Exception as e:
+        print(f"Error getting news: {e}")
+        news_list = []
+
+    return render_template("main.html", user=current_user, company_jobs=company_jobs_with_status, people_jobs=person_jobs_with_status, news_list=news_list)
 
 # 로그인한 사용자의 프로필 페이지
 @auth_bp.route("/profile")

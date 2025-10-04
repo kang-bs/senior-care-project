@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import os
 from urllib.parse import quote
+from bs4 import BeautifulSoup
 
 class NaverNewsService:
     def __init__(self):
@@ -61,33 +62,66 @@ class NaverNewsService:
             print(f"뉴스 데이터 처리 오류: {e}")
             return self._get_sample_news()
     
+    def _get_og_image(self, url):
+        """
+        URL에서 Open Graph 이미지를 추출합니다.
+        """
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
+            response = requests.get(url, headers=headers, timeout=3)
+            response.raise_for_status()
+
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            # Open Graph 이미지 태그 찾기
+            og_image = soup.find('meta', property='og:image')
+            if og_image and og_image.get('content'):
+                return og_image.get('content')
+
+            # og:image가 없으면 twitter:image 시도
+            twitter_image = soup.find('meta', property='twitter:image')
+            if twitter_image and twitter_image.get('content'):
+                return twitter_image.get('content')
+
+            return None
+        except Exception as e:
+            print(f"이미지 추출 오류 ({url}): {e}")
+            return None
+
     def _format_news_data(self, raw_data):
         """
         네이버 API 응답 데이터를 앱에서 사용할 형태로 변환합니다.
         """
         formatted_news = []
-        
+
         for item in raw_data.get('items', []):
             # HTML 태그 제거
             title = self._remove_html_tags(item.get('title', ''))
             description = self._remove_html_tags(item.get('description', ''))
-            
+
             # 날짜 포맷 변환
             pub_date = item.get('pubDate', '')
             formatted_date = self._format_date(pub_date)
-            
+
+            # Open Graph 이미지 추출
+            link = item.get('link', '')
+            image_url = self._get_og_image(link)
+
             news_item = {
-                'id': hash(item.get('link', '')),  # 링크를 기반으로 고유 ID 생성
+                'id': hash(link),  # 링크를 기반으로 고유 ID 생성
                 'title': title,
                 'description': description,
-                'link': item.get('link', ''),
+                'link': link,
                 'pub_date': formatted_date,
                 'original_link': item.get('originallink', ''),
                 'category': '시니어 일자리',
-                'content': description  # 상세 내용으로 description 사용
+                'content': description,  # 상세 내용으로 description 사용
+                'image': image_url  # 이미지 URL 추가
             }
             formatted_news.append(news_item)
-        
+
         return {
             'total': raw_data.get('total', 0),
             'start': raw_data.get('start', 1),
@@ -133,7 +167,8 @@ class NaverNewsService:
                     'pub_date': current_date,
                     'original_link': 'https://www.kyongbuk.co.kr/news/articleView.html?idxno=2169847',
                     'category': '정책',
-                    'content': '의성군이 제29회 노인의 날을 맞아 기념행사를 개최하고 28명의 어르신과 유공자에게 표창을 수여했습니다. 이번 행사는 어르신들의 노고를 치하하고 시니어 일자리 창출에 대한 의지를 다지는 자리였습니다.'
+                    'content': '의성군이 제29회 노인의 날을 맞아 기념행사를 개최하고 28명의 어르신과 유공자에게 표창을 수여했습니다. 이번 행사는 어르신들의 노고를 치하하고 시니어 일자리 창출에 대한 의지를 다지는 자리였습니다.',
+                    'image': None
                 },
                 {
                     'id': 2,
@@ -143,7 +178,8 @@ class NaverNewsService:
                     'pub_date': current_date,
                     'original_link': 'https://n.news.naver.com/mnews/article/028/0002769845',
                     'category': '경제',
-                    'content': '60대 이상 시니어들의 소득 구조가 변화하고 있습니다. 임대, 배당, 이자 소득으로 생활하는 시니어들이 늘어나고 있으며, 이들을 위한 새로운 일자리 정책이 필요한 상황입니다.'
+                    'content': '60대 이상 시니어들의 소득 구조가 변화하고 있습니다. 임대, 배당, 이자 소득으로 생활하는 시니어들이 늘어나고 있으며, 이들을 위한 새로운 일자리 정책이 필요한 상황입니다.',
+                    'image': None
                 },
                 {
                     'id': 3,
@@ -153,7 +189,8 @@ class NaverNewsService:
                     'pub_date': current_date,
                     'original_link': 'https://www.yna.co.kr/view/AKR20251004000100001',
                     'category': '교육',
-                    'content': '시니어들의 디지털 역량 강화를 위한 교육 프로그램이 확대됩니다. 특히 AI, 빅데이터 등 신기술 분야에서 시니어들이 활약할 수 있도록 체계적인 교육과정을 제공할 예정입니다.'
+                    'content': '시니어들의 디지털 역량 강화를 위한 교육 프로그램이 확대됩니다. 특히 AI, 빅데이터 등 신기술 분야에서 시니어들이 활약할 수 있도록 체계적인 교육과정을 제공할 예정입니다.',
+                    'image': None
                 },
                 {
                     'id': 4,
@@ -163,7 +200,8 @@ class NaverNewsService:
                     'pub_date': current_date,
                     'original_link': 'https://www.busan.com/view/busan/view.php?code=2025100400001',
                     'category': '채용',
-                    'content': '부산지역에서 시니어를 대상으로 한 대규모 채용 박람회가 개최됩니다. 100여 개 기업이 참여하여 경험과 전문성을 갖춘 시니어들에게 새로운 기회를 제공할 예정입니다.'
+                    'content': '부산지역에서 시니어를 대상으로 한 대규모 채용 박람회가 개최됩니다. 100여 개 기업이 참여하여 경험과 전문성을 갖춘 시니어들에게 새로운 기회를 제공할 예정입니다.',
+                    'image': None
                 },
                 {
                     'id': 5,
@@ -173,7 +211,8 @@ class NaverNewsService:
                     'pub_date': current_date,
                     'original_link': 'https://www.mk.co.kr/news/economy/10851234',
                     'category': '창업',
-                    'content': '시니어 창업 지원 프로그램의 성과가 발표되었습니다. 올해 지원받은 시니어 창업자들의 성공률이 85%에 달하며, 풍부한 경험을 바탕으로 한 시니어 창업이 주목받고 있습니다.'
+                    'content': '시니어 창업 지원 프로그램의 성과가 발표되었습니다. 올해 지원받은 시니어 창업자들의 성공률이 85%에 달하며, 풍부한 경험을 바탕으로 한 시니어 창업이 주목받고 있습니다.',
+                    'image': None
                 }
             ]
         }

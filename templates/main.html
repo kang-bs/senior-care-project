@@ -220,21 +220,23 @@
       <main class="px-4 py-4 sm:px-6 bg-gray-50 pb-24">
         <!-- 위치 정보 -->
         <section class="mb-6">
-          <div class="flex items-center text-gray-700">
+          <div class="flex items-center justify-between text-gray-700 h-12 px-4 rounded-full" style="background: #EEF1F9;">
+            <div class="flex items-center">
+              <svg
+                class="w-5 h-5 mr-2 text-blue-600"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="text-lg font-medium">경상북도 경산시 조영동</span>
+            </div>
             <svg
-              class="w-5 h-5 mr-2 text-blue-600"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <span class="text-lg font-medium">경상북도 경산시 조영동</span>
-            <svg
-              class="w-4 h-4 ml-2 text-gray-400"
+              class="w-4 h-4 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -255,78 +257,73 @@
             <!-- 이력서 작성 -->
             <a
               href="{{ url_for('auth.profile') }}"
-              class="bg-blue-600 rounded-2xl p-4 text-white flex items-center"
+              class="rounded-2xl p-4 text-white flex items-center"
+              style="background-color: #023591"
             >
               <div
-                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+                class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                  <path
-                    fill-rule="evenodd"
-                    d="M4 5a2 2 0 012-2v1a2 2 0 002 2h4a2 2 0 002-2V3a2 2 0 012 2v6.5a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 014 11.5V5z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                <img
+                  src="{{ url_for('static', filename='images/main_page/completion_of_Resume.png') }}"
+                  alt="이력서 작성"
+                  class="w-8 h-8 object-contain"
+                />
               </div>
-              <span class="font-bold">이력서 작성</span>
+              <span class="font-bold text-lg">이력서 작성</span>
             </a>
 
             <!-- 구인글 작성 -->
             <a
               href="{{ url_for('jobs.create_job') }}"
-              class="bg-red-500 rounded-2xl p-4 text-white flex items-center"
+              class="rounded-2xl p-4 text-white flex items-center"
+              style="background-color: #2D71EB"
             >
               <div
-                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+                class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                <img
+                  src="{{ url_for('static', filename='images/main_page/create_job_posting.png') }}"
+                  alt="구인글 작성"
+                  class="w-8 h-8 object-contain"
+                />
               </div>
-              <span class="font-bold">구인글 작성</span>
+              <span class="font-bold text-lg">구인글 작성</span>
             </a>
 
             <!-- 공고 검색 -->
             <a
               href="{{ url_for('jobs.job_list') }}"
-              class="bg-blue-500 rounded-2xl p-4 text-white flex items-center"
+              class="rounded-2xl p-4 text-white flex items-center"
+              style="background-color: #2D71EB"
             >
               <div
-                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+                class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                <img
+                  src="{{ url_for('static', filename='images/main_page/search_announcement.png') }}"
+                  alt="공고 검색"
+                  class="w-8 h-8 object-contain"
+                />
               </div>
-              <span class="font-bold">공고 검색</span>
+              <span class="font-bold text-lg">공고 검색</span>
             </a>
 
             <!-- 이음 뉴스 -->
             <a
               href="{{ url_for('news.news_list') }}"
-              class="bg-gray-600 rounded-2xl p-4 text-white flex items-center"
+              class="rounded-2xl p-4 text-white flex items-center"
+              style="background-color: #023591"
             >
               <div
-                class="w-8 h-8 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3"
+                class="w-10 h-10 bg-white bg-opacity-20 rounded-lg flex items-center justify-center mr-3 flex-shrink-0"
               >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fill-rule="evenodd"
-                    d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
+                <img
+                  src="{{ url_for('static', filename='images/main_page/news.png') }}"
+                  alt="이음 뉴스"
+                  class="w-8 h-8 object-contain"
+                />
               </div>
-              <span class="font-bold">이음 뉴스</span>
+              <span class="font-bold text-lg">이음 뉴스</span>
             </a>
           </div>
         </section>
@@ -430,7 +427,8 @@
                 </button>
                 {% else %}
                 <button
-                  class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full text-sm"
+                  class="text-white font-bold py-2 px-4 rounded-full text-sm"
+                  style="background-color: #023591"
                   onclick="event.stopPropagation(); applyJob({{ job.id }})"
                 >
                   지원하기
@@ -541,7 +539,8 @@
                 </button>
                 {% else %}
                 <button
-                  class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full text-sm"
+                  class="text-white font-bold py-2 px-4 rounded-full text-sm"
+                  style="background-color: #023591"
                   onclick="event.stopPropagation(); applyJob({{ job.id }})"
                 >
                   지원하기
@@ -561,6 +560,76 @@
                 class="text-blue-600 text-sm font-medium"
               >
                 더 많은 공고 보기 →
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- 최근 시니어 일자리 뉴스 -->
+        <section class="mt-8">
+          <div class="flex items-center mb-4">
+            <span
+              class="bg-green-100 text-green-800 text-sm font-bold px-3 py-1 rounded-full mr-3"
+              >최근 시니어 일자리 뉴스</span
+            >
+          </div>
+          <div class="bg-white rounded-2xl p-4 shadow-sm border">
+            {% if news_list %} {% for news in news_list %}
+            <div
+              class="border-b border-gray-100 pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0 cursor-pointer flex gap-3 items-center"
+              onclick="window.open('{{ news.link }}', '_blank')"
+            >
+              <div class="flex-1">
+                <h3 class="font-bold text-base mb-2">{{ news.title | safe }}</h3>
+                <p class="text-xs text-gray-500 mb-2">{{ news.pub_date }}</p>
+                <div class="flex items-center text-blue-600 text-sm font-medium">
+                  <span>더 읽기</span>
+                  <svg
+                    class="w-4 h-4 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </div>
+              </div>
+              {% if news.image %}
+              <div class="w-24 h-24 flex-shrink-0">
+                <img
+                  src="{{ news.image }}"
+                  alt="{{ news.title }}"
+                  class="w-full h-full object-cover rounded-lg"
+                  onerror="this.parentElement.innerHTML='<div class=\'w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center\'><svg class=\'w-8 h-8 text-gray-400\' fill=\'currentColor\' viewBox=\'0 0 20 20\'><path fill-rule=\'evenodd\' d=\'M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z\' clip-rule=\'evenodd\'/></svg></div>'"
+                />
+              </div>
+              {% else %}
+              <div class="w-24 h-24 flex-shrink-0">
+                <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                  <svg class="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+            {% endfor %} {% else %}
+            <p class="text-gray-500 text-center py-4">
+              뉴스를 불러올 수 없습니다.
+            </p>
+            {% endif %}
+
+            <div class="text-center mt-4">
+              <a
+                href="{{ url_for('news.news_list') }}"
+                class="text-blue-600 text-sm font-medium"
+              >
+                더 많은 뉴스 보기 →
               </a>
             </div>
           </div>

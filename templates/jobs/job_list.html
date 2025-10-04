@@ -141,15 +141,18 @@
     </div>
 
 
-        <!-- 글쓰기 버튼 -->
-        <section class="mb-6">
-          <a
-            href="{{ url_for('jobs.create_job') }}"
-            class="block w-full bg-blue-800 hover:bg-blue-900 text-white font-bold text-center py-3 px-4 rounded-lg transition-colors"
-          >
-            일자리 공고 작성하기 +
-          </a>
-        </section>
+        <!-- 글쓰기 버튼 (플로팅) -->
+        <a
+          href="{{ url_for('jobs.create_job') }}"
+          class="fixed bottom-24 right-4 z-50 w-16 h-16 flex items-center justify-center"
+          style="max-width: calc(448px - 2rem); margin-left: auto;"
+        >
+          <img
+            src="{{ url_for('static', filename='images/main_page/writing.png') }}"
+            alt="글쓰기"
+            class="w-full h-full object-contain"
+          />
+        </a>
 
         <!-- 공고 리스트 -->
         <section class="space-y-4">
