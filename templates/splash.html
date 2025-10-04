@@ -177,10 +177,10 @@
     class="welcome font-['Noto_Sans_KR'] min-h-screen"
     style="background-color: #ffffff"
   >
-    <!-- home.html 콘텐츠 미리 로드 -->
+    <!-- first_login_page.html 콘텐츠 미리 로드 -->
     <div class="home-content">
       <iframe
-        src="{{ url_for('auth.home') }}"
+        src="{{ url_for('auth.first_login_page') }}"
         width="100%"
         height="100%"
         frameborder="0"
@@ -207,11 +207,11 @@
     </div>
 
     <script>
-      // 3.1초 후 완전히 home.html로 전환 (안전장치)
+      // 3.1초 후 완전히 first_login_page.html로 전환 (안전장치)
       setTimeout(function () {
         // 이미 iframe으로 로드되어 있으므로 실제 리다이렉트는 필요없지만 안전장치로 유지
         if (window.location.pathname === "/") {
-          window.location.href = "{{ url_for('auth.home') }}";
+          window.location.href = "{{ url_for('auth.first_login_page') }}";
         }
       }, 3100);
     </script>

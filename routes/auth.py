@@ -25,10 +25,17 @@ def home():
             logout_user()
             flash("로그아웃되었습니다.", "info")
         return render_template("home.html")
-    
+
     if current_user.is_authenticated:
         return redirect(url_for("auth.main"))
     return render_template("home.html")
+
+# 첫 로그인 페이지 (회원가입/로그인 선택 화면)
+@auth_bp.route("/first_login_page")
+def first_login_page():
+    if current_user.is_authenticated:
+        return redirect(url_for("auth.main"))
+    return render_template("first_login_page.html")
 
 # 프로필 완성 여부 체크 함수
 def is_profile_complete(user):

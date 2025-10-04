@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>이음 - 초기화면</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        font-family: "LOTTERIA CHAB";
+        src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/LOTTERIACHAB.woff2")
+          format("woff2");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      body {
+        font-family: "Noto Sans KR", sans-serif;
+      }
+
+      .logo-font {
+        font-family: "LOTTERIA CHAB", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100">
+    <div
+      class="w-full max-w-md mx-auto px-4 bg-white shadow-lg min-h-screen flex items-center justify-center"
+    >
+      <div class="w-full p-6 sm:p-8">
+        <!-- Logo -->
+        <div class="flex justify-center mb-6">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
+            <img
+              src="{{ url_for('static', filename='images/header/logo.png') }}"
+              alt="이음 로고"
+              class="w-full h-full object-contain"
+            />
+          </div>
+        </div>
+
+        <!-- 이음 Title -->
+        <h1 class="logo-font text-3xl sm:text-4xl text-[#023591] text-center mb-8 sm:mb-12">
+          이음
+        </h1>
+
+        <!-- Card Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 sm:gap-5 mb-8 sm:mb-10">
+          <!-- 기업 회원가입 Card -->
+          <a
+            href="{{ url_for('auth.register_company') }}"
+            class="flex-1 bg-white shadow-[2px_2px_5px_1px_rgba(0,0,0,0.1)] rounded-[10px] p-6 flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow"
+          >
+            <div class="w-20 h-20 sm:w-24 sm:h-24 mb-3 sm:mb-4">
+              <img
+                src="{{ url_for('static', filename='images/login/business_register.png') }}"
+                alt="기업 회원가입"
+                class="w-full h-full object-contain"
+              />
+            </div>
+            <span class="font-bold text-lg sm:text-xl text-black text-center">
+              기업 회원가입
+            </span>
+          </a>
+
+          <!-- 개인 회원가입 Card -->
+          <a
+            href="{{ url_for('auth.register') }}"
+            class="flex-1 bg-white shadow-[2px_2px_5px_1px_rgba(0,0,0,0.1)] rounded-[10px] p-6 flex flex-col items-center cursor-pointer hover:shadow-lg transition-shadow"
+          >
+            <div class="w-20 h-20 sm:w-24 sm:h-24 mb-3 sm:mb-4">
+              <img
+                src="{{ url_for('static', filename='images/login/personal_register.png') }}"
+                alt="개인 회원가입"
+                class="w-full h-full object-contain"
+              />
+            </div>
+            <span class="font-bold text-lg sm:text-xl text-black text-center">
+              개인 회원가입
+            </span>
+          </a>
+        </div>
+
+        <!-- Login Button -->
+        <a
+          href="{{ url_for('auth.home') }}"
+          class="w-full h-14 sm:h-[59px] bg-[#F3F4F6] rounded-[10px] hover:bg-gray-300 transition-colors flex items-center justify-center"
+        >
+          <span class="font-medium text-lg sm:text-xl tracking-[-0.5px] text-black">
+            로그인하기
+          </span>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
