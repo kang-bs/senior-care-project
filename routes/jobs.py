@@ -132,6 +132,7 @@ def create_job():
             # 위도, 경도 폼 데이터
             latitude = request.form.get("latitude", type=float)
             longitude = request.form.get("longitude", type=float)
+            
             # 근무 시간
             work_start_time_str = request.form.get("work_start_time", "")
             work_end_time_str = request.form.get("work_end_time", "")
@@ -144,19 +145,19 @@ def create_job():
             if work_end_time_str:
                 work_end_time = datetime.strptime(work_end_time_str, "%H:%M").time()
             
-            # 근무 요일
-            work_monday = bool(request.form.get("work_monday"))
-            work_tuesday = bool(request.form.get("work_tuesday"))
-            work_wednesday = bool(request.form.get("work_wednesday"))
-            work_thursday = bool(request.form.get("work_thursday"))
-            work_friday = bool(request.form.get("work_friday"))
-            work_saturday = bool(request.form.get("work_saturday"))
-            work_sunday = bool(request.form.get("work_sunday"))
+            # 근무 요일 (문자열 "true"/"false"를 Boolean으로 변환)
+            work_monday = request.form.get("work_monday") == "true"
+            work_tuesday = request.form.get("work_tuesday") == "true"
+            work_wednesday = request.form.get("work_wednesday") == "true"
+            work_thursday = request.form.get("work_thursday") == "true"
+            work_friday = request.form.get("work_friday") == "true"
+            work_saturday = request.form.get("work_saturday") == "true"
+            work_sunday = request.form.get("work_sunday") == "true"
             
             # 필수 필드 검증
             if not all([title, company, description]):
                 flash("제목, 회사명, 설명은 필수 입력 항목입니다.", "error")
-                return render_template("jobs/create_job.html")
+                return render_template("jobs/create_job_scroll.html")
             
             # 정규직인 경우 work_period를 자동으로 설정
             if recruitment_type == "정규직":
@@ -171,8 +172,8 @@ def create_job():
                 work_period=work_period,
                 salary=salary,
                 region=region,
-                latitude=latitude,  # 여기에 추가
-                longitude=longitude,  # 여기에 추가
+                latitude=latitude,
+                longitude=longitude,
                 contact_phone=contact_phone,
                 recruitment_count=recruitment_count,
                 work_start_time=work_start_time,
@@ -184,7 +185,6 @@ def create_job():
                 work_friday=work_friday,
                 work_saturday=work_saturday,
                 work_sunday=work_sunday,
-                # --- 추가된 행정구역 필드 저장 ---
                 region_1depth_name=region_1depth_name,
                 region_2depth_name=region_2depth_name,
                 region_3depth_name=region_3depth_name,
@@ -199,10 +199,13 @@ def create_job():
             
         except Exception as e:
             db.session.rollback()
-            flash("공고 등록 중 오류가 발생했습니다. 다시 시도해주세요.", "error")
-            return render_template("jobs/create_job.html")
+            print(f"공고 등록 오류: {e}")
+            import traceback
+            traceback.print_exc()
+            flash(f"공고 등록 중 오류가 발생했습니다: {str(e)}", "error")
+            return render_template("jobs/create_job_scroll.html")
     
-    return render_template("jobs/create_job.html", kakao_key=kakao_api_key)
+    return render_template("jobs/create_job_scroll.html", kakao_key=kakao_api_key)
 
 # 공고 상세보기
 @jobs_bp.route("/jobs/<int:job_id>")
