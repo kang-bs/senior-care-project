@@ -208,11 +208,22 @@
             class="flex-1 text-center py-3 text-gray-500"
             >기업 이음</a
           >
-          <a
-            href="{{ url_for('jobs.job_list') }}"
-            class="flex-1 text-center py-3 text-gray-500"
-            >사람 이음</a
-          >
+          <!-- 로그인한 유저의 타입에 따라 '사람 이음' 링크를 다르게 표시 -->
+          {% if current_user.is_authenticated and current_user.user_type == 1 %}
+            <!-- 기업 회원(user_type=1)일 경우: 공개 이력서 목록으로 링크 -->
+            <a
+              href="{{ url_for('resumes.resume_list') }}"
+              class="flex-1 text-center py-3 text-gray-500"
+              >사람 이음</a
+            >
+          {% else %}
+            <!-- 일반 회원이거나 비로그인 상태일 경우: 구인글 목록으로 링크 -->
+            <a
+              href="{{ url_for('jobs.job_list') }}"
+              class="flex-1 text-center py-3 text-gray-500"
+              >사람 이음</a
+            >
+          {% endif %}
         </nav>
       </div>
 

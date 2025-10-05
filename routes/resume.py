@@ -185,3 +185,46 @@ def delete_certificate(cert_id):
         return jsonify({'success': True, 'message': '자격증이 삭제되었습니다.'})
     else:
         return jsonify({'success': False, 'message': '삭제에 실패했거나 권한이 없습니다.'}), 403
+
+
+# 4. 공개 이력서 목록 페이지 (첫 페이지 로딩)
+@resumes_bp.route("/list")
+@login_required
+def resume_list():
+    if current_user.user_type != 1:  # 기업회원(user_type == 1)만 접근 가능
+        flash("기업회원만 접근 가능한 페이지입니다.", "error")
+        return redirect(url_for('auth.main'))
+
+    page = request.args.get('page', 1, type=int)
+    per_page = 5  # 한 페이지에 5개씩 보여주기
+
+    pagination = ResumeService.get_public_resumes_paginated(page=page, per_page=per_page)
+
+    return render_template(
+        "resume/resume_list.html",  # templates/resume/resume_list.html 파일을 렌더링
+        resumes=pagination.items,
+        pagination=pagination
+    )
+
+
+# 5. '더 보기'를 위한 데이터 API (JSON 응답)
+@resumes_bp.route("/api/resumes")
+@login_required
+def api_resumes():
+    if current_user.user_type != 1:
+        return jsonify({'success': False, 'message': '권한 없음'}), 403
+
+    page = request.args.get('page', 1, type=int)
+    per_page = 5
+    pagination = ResumeService.get_public_resumes_paginated(page=page, per_page=per_page)
+
+    # HTML 조각을 렌더링
+    resumes_html = render_template(
+        "resume/_resume_cards.html",  # templates/resume/_resume_cards.html 파일을 렌더링
+        resumes=pagination.items
+    )
+
+    return jsonify({
+        'html': resumes_html,
+        'has_next': pagination.has_next  # 다음 페이지 존재 여부 전달
+    })

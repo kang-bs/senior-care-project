@@ -307,6 +307,9 @@ class Resume(db.Model):
     walkable_minutes = db.Column(db.Integer, nullable=True)  # 쉬지 않고 걸을 수 있는 시간 (분 단위)
     physical_notes = db.Column(db.Text, nullable=True)  # 신체적 특징
 
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     # --- 관계 설정 ---
     user = db.relationship('User', backref=db.backref('resume', uselist=False))
 
