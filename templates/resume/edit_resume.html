@@ -170,7 +170,20 @@
         function showStep(step) { document.querySelectorAll('.step-container').forEach(el => el.style.display = 'none'); document.getElementById(`step-${step}`).style.display = 'block'; }
         function nextStep(step) { currentStep = step; showStep(step); }
         function prevStep(step) { currentStep = step; showStep(step); }
-        function addCertificateField() { const c = document.getElementById('certificates-container'); const e = document.createElement('div'); e.className = 'certificate-entry'; e.innerHTML = `<input type="text" name="certificate_names" placeholder="자격증 이름" required style="flex: 1;"><input type="file" name="certificate_images" required style="flex: 2;">`; c.appendChild(e); }
+        function addCertificateField() {
+            const container = document.getElementById('certificates-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'certificate-entry';
+
+            // 입력 필드와 함께 'X' 삭제 버튼을 생성합니다.
+            // 이 버튼의 onclick 이벤트는 자신의 부모 요소(newEntry)를 DOM에서 제거합니다.
+            newEntry.innerHTML = `
+                <input type="text" name="certificate_names" placeholder="자격증 이름" required style="flex: 1;">
+                <input type="file" name="certificate_images" required style="flex: 2;">
+                <button type="button" class="delete-cert-btn" onclick="this.parentElement.remove()">X</button>
+            `;
+            container.appendChild(newEntry);
+        }
         const timeNegotiable = document.getElementById('time_negotiable'), startTime = document.getElementById('start_time'), endTime = document.getElementById('end_time');
         function toggleTime() { const d = timeNegotiable.checked; startTime.disabled = d; endTime.disabled = d; if (d) { startTime.value = ''; endTime.value = ''; } }
         timeNegotiable.addEventListener('change', toggleTime);

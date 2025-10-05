@@ -82,3 +82,18 @@ class ResumeService:
     @staticmethod
     def get_public_resume_by_user(user_id):
         return Resume.query.options(selectinload(Resume.certificates)).filter_by(user_id=user_id, is_public=True).first()
+
+    @staticmethod
+    def get_public_resumes_paginated(page, per_page=5):
+        """
+        공개 설정된 모든 이력서를 페이지별로 나누어 조회합니다.
+        page: 요청할 페이지 번호
+        per_page: 한 페이지당 보여줄 이력서 개수
+        """
+        # .paginate() 함수는 쿼리 결과를 페이지네이션 객체로 반환합니다.
+        pagination = Resume.query.options(selectinload(Resume.user)) \
+            .filter_by(is_public=True) \
+            .order_by(Resume.updated_at.desc()) \
+            .paginate(page=page, per_page=per_page, error_out=False)
+
+        return pagination

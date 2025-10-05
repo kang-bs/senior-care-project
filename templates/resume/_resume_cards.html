@@ -1,0 +1,31 @@
+{% for resume in resumes %}
+<div class="bg-white rounded-2xl p-4 shadow-md border border-gray-200 cursor-pointer" onclick="location.href='{{ url_for('resumes.view_resume', user_id=resume.user.id) }}'">
+    <div class="flex justify-between items-start mb-2">
+        <div class="flex items-center">
+            <div class="w-10 h-10 bg-gray-200 rounded-full mr-3 flex-shrink-0 flex items-center justify-center font-bold text-gray-500">
+                {{ resume.user.nickname[0] if resume.user.nickname else '익' }}
+            </div>
+            <p class="font-bold text-gray-800 text-lg">{{ resume.user.nickname or '익명' }}</p>
+        </div>
+        <div class="flex items-center space-x-2 text-xs text-gray-500">
+            <span>{{ resume.updated_at.strftime('%H:%M') }}</span>
+            <button onclick="event.stopPropagation(); alert('찜하기 기능은 구현 예정입니다.');">
+                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" /></svg>
+            </button>
+        </div>
+    </div>
+    <h3 class="font-bold text-xl text-gray-900 mb-3 truncate pl-1">{{ (resume.self_introduction or '성실하게 일할 준비가 되어있습니다.').split('\n')[0] }}</h3>
+    <div class="flex justify-between items-center mt-4">
+        <div>
+            {% if resume.desired_categories %}
+            <span class="bg-gray-100 text-gray-600 text-sm font-medium px-3 py-1 rounded-full">{{ resume.desired_categories.split(',')[0] }}</span>
+            {% else %}
+            <span class="bg-gray-100 text-gray-600 text-sm font-medium px-3 py-1 rounded-full">서비스·매장</span>
+            {% endif %}
+        </div>
+        <button class="bg-blue-800 text-white font-bold py-2 px-6 rounded-lg text-md" onclick="event.stopPropagation(); alert('제안하기 기능은 구현 예정입니다.');">
+            제안하기
+        </button>
+    </div>
+</div>
+{% endfor %}
